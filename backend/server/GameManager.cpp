@@ -29,7 +29,7 @@ void GameManager::thread_func() {
   }
 }
 
-IGamePtr GameManager::get_game(const JsonValue& value) {
+IGamePtr GameManager::get_game(const json::Value& value) {
   auto lock = std::lock_guard(m_games_mutex);
 
   // TODO: add some more logic to select game

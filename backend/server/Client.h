@@ -17,7 +17,7 @@ public:
   void on_received(std::string_view message) override;
 
 private:
-  void join_game(const JsonValue& value);
+  void join_game(const json::Value& value);
   void leave_game();
 
   const SendFunction m_send;

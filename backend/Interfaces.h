@@ -23,7 +23,7 @@ struct IClient : Interface {
 struct IGame : Interface {
   virtual void on_client_joined(IClient* client) = 0;
   virtual void on_client_left(IClient* client) = 0;
-  virtual void on_message_received(IClient* client, const JsonValue& value) = 0;
+  virtual void on_message_received(IClient* client, const json::Value& value) = 0;
   virtual void update() = 0;
 };
 
