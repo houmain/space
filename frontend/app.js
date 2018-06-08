@@ -20,9 +20,9 @@ function preload() {
   socket = new WebSocket(window.location.origin.replace(/https?/g, "ws"), "websocket");
   socket.onopen = function() {
     console.log("connected");
-    socket.send('{ "action": "join", "gameId": 0 }');
+    socket.send('{ "action": "joinGame", "gameId": 0 }');
     socket.send('{ "something": 10 }');
-    socket.send('{ "action": "attack" }');
+    socket.send('{ "action": "sendSquadron", sourcePlanetId: 1, targetPlanetId: 2, shipIds: [1,2,3,4] }');
   };
   socket.onclose = function() {
     console.log("disonnected");

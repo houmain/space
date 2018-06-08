@@ -19,17 +19,17 @@ void Client::send(std::string message) {
 
 void Client::on_received(std::string_view message) {
   try {
-    const auto value = parse_json(message);
-    const auto action = get_string(value, "action");
+    const auto value = json::parse(message);
+    const auto action = json::get_string(value, "action");
 
-    if (action == "join")
+    if (action == "joinGame")
       return join_game(value);
 
-    if (action == "leave")
+    if (action == "leaveGame")
       return leave_game();
 
     if (!m_game)
-      throw Exception("no game joined");
+      throw Exception("invalid action, no game joined");
 
     m_game->on_message_received(this, value);
   }
@@ -38,7 +38,7 @@ void Client::on_received(std::string_view message) {
   }
 }
 
-void Client::join_game(const JsonValue& value) {
+void Client::join_game(const json::Value& value) {
   leave_game();
 
   m_game = GameManager::instance().get_game(value);

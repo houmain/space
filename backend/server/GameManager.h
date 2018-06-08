@@ -12,7 +12,7 @@ class GameManager {
 public:
   static GameManager& instance();
 
-  IGamePtr get_game(const JsonValue& value);
+  IGamePtr get_game(const json::Value& value);
 
 private:
   GameManager();
