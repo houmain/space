@@ -38,6 +38,7 @@ export class Preloader extends Phaser.Scene {
         // load assets declared in the preload config
         this.loadAtlas();
         this.loadAudio();
+        this.loadTextures();
 
         //let url = window.location.origin.replace(/https?/g, "ws");
         let url = "ws://127.0.0.1:9995/";
@@ -45,9 +46,10 @@ export class Preloader extends Phaser.Scene {
         
         this._socket.onopen = ()=> {
             console.log("connected");
-            this._socket.send('{ "action": "join", "gameId": 0 }');
-            this._socket.send('{ "something": 30 }');
-            this._socket.send('{ "action": "attack", "strengt2":200 }');
+
+            this._socket.send('{ "action": "joinGame", "gameId": 0 }');
+            this._socket.send('{ "something": 10 }');
+            this._socket.send('{ "action": "sendSquadron", sourcePlanetId: 1, targetPlanetId: 2, shipIds: [1,2,3,4] }');
         };
         this._socket.onclose = function() {
             console.log("disonnected");
@@ -72,6 +74,10 @@ export class Preloader extends Phaser.Scene {
             this.load.atlas(sheets[i], `${sheets[i]}.png`, `${sheets[i]}.json`);
         }
     }
+
+    private loadTextures(){
+        let loader = this.load.image('background','../images/background.png');        
+    } 
 
     private loadAudio() {
         /*const audioPath = config.audioPath;
