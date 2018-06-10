@@ -9,6 +9,7 @@ Application {
   Depends { name: "cpp" }
   cpp.cxxLanguageVersion: "c++17"
   cpp.includePaths: [ "backend", "backend/libs" ]
+  cpp.defines: [ "RAPIDJSON_HAS_STDSTRING=1" ]
   consoleApplication: true
   files: [
         "backend/Interfaces.h",

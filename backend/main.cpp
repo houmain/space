@@ -18,8 +18,14 @@ int main(int argc, char *argv[]) {
   signal(SIGINT, [](int) { g_interrupted = true; });
 
   auto settings = server::Settings{ };
+
   settings.on_initialized =
-      [port = settings.port]() { open_browser(port); };
+      [port = settings.port]() {
+#if defined(NDEBUG)
+    open_browser(port);
+#endif
+  };
+
   settings.keep_running =
       []() { return !g_interrupted; };
 
