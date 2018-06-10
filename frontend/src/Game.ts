@@ -1,17 +1,34 @@
 "use strict"
 
 import 'phaser';
-import { Preloader } from './scenes/Preloader';
-import { Main } from './scenes/Main';
-    
-export class SpaceGame extends Phaser.Game{
+import { Preloader } from './scenes/preloader';
+import { Main } from './scenes/main';
+import { CommunicationHandler } from './model/communicationHandler';
+
+export enum States {
+    PRELOADER = 'preloader',
+    MAIN = 'main'
+}
+
+export class SpaceGame extends Phaser.Game {
+
+    private _communicationHandler: CommunicationHandler;
 
     constructor(config: GameConfig) {
-        super (config);
+        super(config);
+
+        this._communicationHandler = new CommunicationHandler();
+
+        this.scene.add(States.PRELOADER, new Preloader(this._communicationHandler), true);
+        this.scene.add(States.MAIN, new Main());
     }
 
-    public resize(width: number, height: number){
-        console.log(`TODO: should re4size to ${width} and ${height}`);
+    public get communcationHandler(): CommunicationHandler {
+        return this._communicationHandler;
+    }
+
+    public resize(width: number, height: number) {
+        console.log(`TODO: should resize to ${width} and ${height}`);
     }
 }
 
@@ -23,11 +40,11 @@ function startGame(): void {
         width: window.innerWidth,
         height: window.innerHeight,
         scene: [
-            Preloader,
-            Main
+            //Preloader,
+            // Main
         ]
     };
-    
+
     const game = new SpaceGame(config);
 
     window.addEventListener('resize', function (event) {
@@ -39,4 +56,3 @@ window.onload = () => {
     console.log('Starting game');
     startGame();
 }
-  

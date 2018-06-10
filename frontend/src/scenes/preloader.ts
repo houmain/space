@@ -1,12 +1,14 @@
 import { config } from '../config/preload';
+import { CommunicationHandler } from '../model/communicationHandler';
+import { States } from '../Game';
 
 export class Preloader extends Phaser.Scene {
 
-    private _socket:any;
+    private _communicationHandler: CommunicationHandler;
 
-    constructor() {
+    public constructor(communicationHandler: CommunicationHandler) {
         super({
-            key: 'preloader',
+            key: States.PRELOADER,
             pack: {
                 files: [
                     { type: 'image', key: 'bar', url: './assets/images/loadBar.png' },
@@ -14,10 +16,23 @@ export class Preloader extends Phaser.Scene {
                 ]
             }
         });
+
+        this._communicationHandler = communicationHandler;
     }
 
     public preload() {
-        // add the loading bar to use as a display for the loading progress of the remainder of the assets
+
+        this.showProgressBar();
+
+        // load assets declared in the preload config
+        this.loadAtlas();
+        this.loadAudio();
+        this.loadTextures();
+
+        this._communicationHandler.init();
+    }
+
+    private showProgressBar() {
         const barBg = this.add.image(this.sys.canvas.width / 2, this.sys.canvas.height / 2, 'barBg');
         const bar = this.add.sprite(this.sys.canvas.width / 2, this.sys.canvas.height / 2, 'bar');
 
@@ -29,39 +44,15 @@ export class Preloader extends Phaser.Scene {
         mask.fillRect(0, 0, 0, bar.height);
 
         bar.mask = new Phaser.Display.Masks.GeometryMask(this, mask);
-        
+
         this.load.on('progress', (progress: number) => {
             mask.clear();
             mask.fillRect(0, 0, bar.width * progress, bar.height);
         });
-
-        // load assets declared in the preload config
-        this.loadAtlas();
-        this.loadAudio();
-        this.loadTextures();
-
-        //let url = window.location.origin.replace(/https?/g, "ws");
-        let url = "ws://127.0.0.1:9995/";
-        this._socket = new WebSocket(url, "websocket");
-        
-        this._socket.onopen = ()=> {
-            console.log("connected");
-
-            this._socket.send('{ "action": "joinGame", "gameId": 0 }');
-            this._socket.send('{ "something": 10 }');
-            this._socket.send('{ "action": "sendSquadron", sourcePlanetId: 1, targetPlanetId: 2, shipIds: [1,2,3,4] }');
-        };
-        this._socket.onclose = function() {
-            console.log("disonnected");
-        };
-        this._socket.onmessage = function(event:any) {
-            console.log(event.data);
-        };
-        Object.seal(this._socket);
     }
-    
+
     public create() {
-        this.scene.start('main');
+        this.scene.start(States.MAIN);
     }
 
     private loadAtlas() {
@@ -75,9 +66,10 @@ export class Preloader extends Phaser.Scene {
         }
     }
 
-    private loadTextures(){
-        let loader = this.load.image('background','../images/background.png');        
-    } 
+    private loadTextures() {
+        let loader = this.load.image('background', '../images/background.png');
+
+    }
 
     private loadAudio() {
         /*const audioPath = config.audioPath;
@@ -90,7 +82,7 @@ export class Preloader extends Phaser.Scene {
         }*/
     }
 
-    private initConnection(){
+    private initConnection() {
 
     }
 }

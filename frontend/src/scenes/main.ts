@@ -17,7 +17,9 @@ export class Main extends Phaser.Scene {
                 music.play();
             }*/
 
-            logo.setPosition(pointer.x, pointer.y);
+            //background.setPosition(pointer.x, pointer.y);
+
+           // this.cameras.main.setPosition(pointer.x, pointer.y);
         });
     }
 }
