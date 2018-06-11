@@ -2,6 +2,7 @@
 #include <cassert>
 #include <cmath>
 #include "Game.h"
+#include "Messages.h"
 
 namespace game {
 
@@ -51,58 +52,19 @@ void Game::on_client_joined(IClient* client) {
   m_clients[client] = player;
   player->client = client;
 
-  client->send(json::build_message(
-    [&](json::Writer& writer) {
-      writer.StartObject();
-      writer.Key("event"); writer.String("gameJoined");
+  client->send(build_game_joined_message(m_planets));
 
-      writer.Key("planets");
-      writer.StartArray();
-      for (const auto& planet : m_planets) {
-        writer.StartObject();
-        writer.Key("id"); writer.Int(planet.id);
-        writer.Key("name"); writer.String(planet.name);
-        writer.Key("initialAngle"); writer.Double(planet.initial_angle);
-        writer.Key("angularVelocity"); writer.Double(planet.angular_velocity);
-        writer.Key("distance"); writer.Double(planet.distance);
-        if (planet.parent) {
-          writer.Key("parent");
-          writer.Int(planet.parent->id);
-        }
-        if (planet.owner) {
-          writer.Key("owner");
-          writer.Int(planet.owner->id);
-        }
-        writer.EndObject();
-      }
-      writer.EndArray();
-
-      writer.EndObject();
-    }));
-
-  broadcast(json::build_message(
-    [&](json::Writer& writer) {
-      writer.StartObject();
-      writer.Key("event"); writer.String("playerJoined");
-      writer.Key("player"); writer.Int(player->id);
-      writer.EndObject();
-    }));
+  broadcast(build_player_joined_message(*player));
 }
 
 void Game::on_client_left(IClient* client) {
   assert(m_clients.count(client));
 
   auto player = m_clients[client];
+  broadcast(build_player_left_message(*player));
+
   player->client = nullptr;
   m_clients.erase(client);
-
-  broadcast(json::build_message(
-    [&](json::Writer& writer) {
-      writer.StartObject();
-      writer.Key("event"); writer.String("playerLeft");
-      writer.Key("playerId"); writer.Int(player->id);
-      writer.EndObject();
-    }));
 }
 
 void Game::on_message_received(IClient* client, const json::Value& value) {
@@ -126,21 +88,10 @@ void Game::update() {
       std::chrono::duration<double>>(now - m_start_time).count();
   m_last_update_time = now;
 
+  broadcast(build_game_updated_message(time_since_start));
+
   update_planet_positions(time_since_start);
-
-  broadcast(json::build_message(
-    [&](json::Writer& writer) {
-      writer.StartArray();
-
-      writer.StartObject();
-      writer.Key("event"); writer.String("update");
-      writer.Key("time"); writer.Double(time_since_start);
-      writer.EndObject();
-
-      advance_squadrons(time_elapsed, writer);
-
-      writer.EndArray();
-    }));
+  advance_squadrons(time_elapsed);
 }
 
 void Game::update_planet_positions(double time_since_start) {
@@ -156,7 +107,7 @@ void Game::update_planet_positions(double time_since_start) {
   }
 }
 
-void Game::advance_squadrons(double time_elapsed, json::Writer& writer) {
+void Game::advance_squadrons(double time_elapsed) {
   for (auto it = m_squadrons.begin(), end = m_squadrons.end(); it != end; ) {
     auto& squadron = *it;
     const auto dx = squadron.target_planet->x - squadron.x;
@@ -166,10 +117,7 @@ void Game::advance_squadrons(double time_elapsed, json::Writer& writer) {
       // TODO: fight/ add to planet
       it = m_squadrons.erase(it);
 
-      writer.StartObject();
-      writer.Key("event"); writer.String("squadronArrived");
-      writer.Key("squadronId"); writer.Int(squadron.id);
-      writer.EndObject();
+      broadcast(build_squadron_arrived_message(squadron));
     }
     else {
       const auto f = time_elapsed * squadron.speed / distance;
@@ -191,14 +139,7 @@ void Game::send_squadron(Player& player, const json::Value& value) {
 
   // TODO:
 
-  broadcast(json::build_message(
-    [&](json::Writer& writer) {
-      writer.StartObject();
-      writer.Key("event"); writer.String("squadronCreated");
-      writer.Key("squadronId"); writer.Int(squadron.id);
-      // TODO:
-      writer.EndObject();
-    }));
+  broadcast(build_squadron_created_message(squadron));
 }
 
 } // namespace

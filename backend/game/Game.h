@@ -2,42 +2,9 @@
 
 #include <map>
 #include <chrono>
-#include "Interfaces.h"
+#include "Types.h"
 
 namespace game {
-
-struct Player {
-  int id;
-  IClient* client;
-};
-
-struct Ship {
-  int energy;
-};
-
-struct Planet {
-  int id;
-  Planet* parent;
-  double initial_angle;
-  double angular_velocity;
-  double distance;
-  std::string name;
-
-  Player* owner;
-  std::vector<int> ship_ids;
-  double x;
-  double y;
-};
-
-struct Squadron {
-  int id;
-  Planet* target_planet;
-  std::vector<int> ship_ids;
-  double speed;
-
-  double x;
-  double y;
-};
 
 class Game final : public IGame {
 public:
@@ -57,7 +24,7 @@ private:
   void broadcast(std::string_view message);
   void send_squadron(Player& player, const json::Value& value);
   void update_planet_positions(double time_since_start);
-  void advance_squadrons(double time_elapsed, json::Writer& writer);
+  void advance_squadrons(double time_elapsed);
 
   std::vector<Player> m_players;
   std::vector<Planet> m_planets;
