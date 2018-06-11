@@ -3,7 +3,7 @@
 import 'phaser';
 import { Preloader } from './scenes/preloader';
 import { Main } from './scenes/main';
-import { CommunicationHandler } from './model/communicationHandler';
+import { CommunicationHandler, MessageHandler } from './model/communicationHandler';
 
 export enum States {
     PRELOADER = 'preloader',
@@ -13,11 +13,13 @@ export enum States {
 export class SpaceGame extends Phaser.Game {
 
     private _communicationHandler: CommunicationHandler;
+    private _messageHandler: MessageHandler;
 
     constructor(config: GameConfig) {
         super(config);
 
-        this._communicationHandler = new CommunicationHandler();
+        this._messageHandler = new MessageHandler();
+        this._communicationHandler = new CommunicationHandler(this._messageHandler);
 
         this.scene.add(States.PRELOADER, new Preloader(this._communicationHandler), true);
         this.scene.add(States.MAIN, new Main());

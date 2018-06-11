@@ -28,12 +28,38 @@ export interface MessageUpdate extends GameMessage {
     time: number;
 }
 
+export class MessageHandler {
+
+    public handle(msg: GameMessage) {
+        try {
+            switch (msg.event) {
+                case MessageType.GAME_JOINED:
+                    console.log('gameJoind!!!')
+                    let joinedMessage = msg as MessageGameJoined;
+                    console.log(joinedMessage.planets.length + ' Planets');
+                    break;
+                case MessageType.PLAYER_JOINED:
+                    console.log('Player joined');
+                    break;
+                case MessageType.UPDATE:
+                    console.log('.');
+                    break;
+                default:
+                    console.warn(`Unhandled message found ${JSON.stringify(msg)}`);
+                    break;
+            }
+        } catch (e) {
+            console.error(`Exception when handling message ${JSON.stringify(msg)} -> ${e}`);
+        }
+    }
+}
 export class CommunicationHandler {
 
     private _socket: any;
+    private _messageHandler: MessageHandler;
 
-    public constructor() {
-
+    public constructor(messageHandler: MessageHandler) {
+        this._messageHandler = messageHandler;
     }
 
     public init() {
@@ -54,14 +80,17 @@ export class CommunicationHandler {
 
             try {
                 let msg = JSON.parse(event.data);
-
+                // console.log(JSON.stringify(msg));
                 switch (msg.event) {
                     case MessageType.GAME_JOINED:
                         console.log('gameJoind!!!')
                         let joinedMessage = msg as MessageGameJoined;
                         console.log(joinedMessage.planets.length + ' Planets');
                         break;
+                    case MessageType.PLAYER_JOINED:
+                        break;
                     default:
+                        //   console.log(msg.event);
                         console.log(event.data);
                         break;
                 }
