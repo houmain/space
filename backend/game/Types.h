@@ -4,13 +4,10 @@
 
 namespace game {
 
-struct Player {
+struct Faction {
   int id;
+  std::string name;
   IClient* client;
-};
-
-struct Ship {
-  int energy;
 };
 
 struct Planet {
@@ -20,11 +17,16 @@ struct Planet {
   double angular_velocity;
   double distance;
   std::string name;
+  int production_rate;
 
-  Player* owner;
+  Faction* owner;
   std::vector<int> ship_ids;
   double x;
   double y;
+};
+
+struct Ship {
+  int energy;
 };
 
 struct Squadron {

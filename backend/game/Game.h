@@ -22,17 +22,17 @@ private:
   using Clock = std::chrono::steady_clock;
 
   void broadcast(std::string_view message);
-  void send_squadron(Player& player, const json::Value& value);
+  void send_squadron(Faction& faction, const json::Value& value);
+  void update_planet_production();
   void update_planet_positions(double time_since_start);
   void advance_squadrons(double time_elapsed);
 
-  std::vector<Player> m_players;
+  std::vector<Faction> m_factions;
   std::vector<Planet> m_planets;
-  std::vector<Ship> m_ships;
-  std::vector<Squadron> m_squadrons;
+  std::map<int, Ship> m_ships;
+  std::map<int, Squadron> m_squadrons;
 
-  std::map<IClient*, Player*> m_clients;
-
+  std::map<IClient*, Faction*> m_clients;
   Clock::time_point m_start_time{ };
   Clock::time_point m_last_update_time{ };
 };
