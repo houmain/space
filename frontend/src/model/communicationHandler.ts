@@ -1,34 +1,35 @@
-enum MessageType {
-    GAME_JOINED = 'gameJoined',
-    PLAYER_JOINED = 'playerJoined',
-    UPDATE = 'update'
-}
+import { MessageType, MessageGameJoined, GameMessage, PlanetInfo } from './communicationInterfaces';
+import { SpaceGame } from '../Game';
+import { Galaxy, Planet } from './galaxy';
 
-export interface GameMessage {
-    event: string;
-}
+export class GalaxyFactory {
+    public static create(planetInfos: PlanetInfo[]): Galaxy {
 
-export interface MessageGameJoined extends GameMessage {
-    planets: PlanetInfo[];
-}
+        let infoMap: { [id: number]: PlanetInfo; } = {};
 
-export interface PlanetInfo {
-    id: number;
-    name: string;
-    initialAngle: number;
-    angularVelocity: number;
-    distance: number;
-}
+        planetInfos.forEach(planetInfo => {
+            infoMap[planetInfo.id] = planetInfo;
+        });
 
-export interface MessagePlayerJoined extends GameMessage {
-    player: number;
-}
+        let galaxy = new Galaxy();
 
-export interface MessageUpdate extends GameMessage {
-    time: number;
+        planetInfos.forEach(planetInfo => {
+            let planet = new Planet(planetInfo.id, '');
+            galaxy.planets.push(planet);
+            console.log('planet created');
+        });
+
+        return galaxy;
+    }
 }
 
 export class MessageHandler {
+
+    private _game: SpaceGame;
+
+    public constructor(game: SpaceGame) {
+        this._game = game;
+    }
 
     public handle(msg: GameMessage) {
         try {
@@ -36,12 +37,14 @@ export class MessageHandler {
                 case MessageType.GAME_JOINED:
                     console.log('gameJoind!!!')
                     let joinedMessage = msg as MessageGameJoined;
-                    console.log(joinedMessage.planets.length + ' Planets');
+                    console.log(JSON.stringify(msg));
+                    let galaxy = GalaxyFactory.create(joinedMessage.planets);
+                    this._game.initGalaxy(galaxy);
                     break;
                 case MessageType.PLAYER_JOINED:
                     console.log('Player joined');
                     break;
-                case MessageType.UPDATE:
+                case MessageType.GAME_UPDATED:
                     console.log('.');
                     break;
                 default:
@@ -53,6 +56,7 @@ export class MessageHandler {
         }
     }
 }
+
 export class CommunicationHandler {
 
     private _socket: any;
@@ -76,28 +80,20 @@ export class CommunicationHandler {
         this._socket.onclose = function () {
             console.log("disonnected");
         };
-        this._socket.onmessage = function (event: any) {
+        this._socket.onmessage = (event: any) => {
 
             try {
                 let msg = JSON.parse(event.data);
-                // console.log(JSON.stringify(msg));
-                switch (msg.event) {
-                    case MessageType.GAME_JOINED:
-                        console.log('gameJoind!!!')
-                        let joinedMessage = msg as MessageGameJoined;
-                        console.log(joinedMessage.planets.length + ' Planets');
-                        break;
-                    case MessageType.PLAYER_JOINED:
-                        break;
-                    default:
-                        //   console.log(msg.event);
-                        console.log(event.data);
-                        break;
-                }
+                this._messageHandler.handle(msg);
+
             } catch (e) {
-                console.log(JSON.stringify(event) + 'exception with ' + event.data);
+                console.log(JSON.stringify(event) + ' exception with ' + event.data);
             }
         };
         Object.seal(this._socket);
+    }
+
+    private instanceOfGameMessage(object: any): object is GameMessage {
+        return 'event' in object;
     }
 }

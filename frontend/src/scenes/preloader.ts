@@ -1,12 +1,13 @@
 import { config } from '../config/preload';
 import { CommunicationHandler } from '../model/communicationHandler';
-import { States } from '../Game';
+import { States, SpaceGame } from '../Game';
 
 export class Preloader extends Phaser.Scene {
 
+    private _game: SpaceGame;
     private _communicationHandler: CommunicationHandler;
 
-    public constructor(communicationHandler: CommunicationHandler) {
+    public constructor(game: SpaceGame, communicationHandler: CommunicationHandler) {
         super({
             key: States.PRELOADER,
             pack: {
@@ -16,7 +17,7 @@ export class Preloader extends Phaser.Scene {
                 ]
             }
         });
-
+        this._game = game;
         this._communicationHandler = communicationHandler;
     }
 
@@ -26,7 +27,6 @@ export class Preloader extends Phaser.Scene {
 
         // load assets declared in the preload config
         this.loadAtlas();
-        this.loadAudio();
         this.loadTextures();
 
         this._communicationHandler.init();
@@ -52,7 +52,7 @@ export class Preloader extends Phaser.Scene {
     }
 
     public create() {
-        this.scene.start(States.MAIN);
+        this._assetsLoaded = true;
     }
 
     private loadAtlas() {
@@ -67,22 +67,16 @@ export class Preloader extends Phaser.Scene {
     }
 
     private loadTextures() {
-        let loader = this.load.image('background', '../images/background.png');
-
+        this.load.image('background', '../images/background.png');
+        this.load.image('planet', '../images/planet_1.png');
+        this.load.image('sun', '../images/planet_13.png');
     }
 
-    private loadAudio() {
-        /*const audioPath = config.audioPath;
-        const audioFiles = config.audioFiles;
+    private _assetsLoaded: boolean = false;
 
-        this.load.setPath(audioPath);
-
-        for (let i = 0; i < audioFiles.length; i++) {
-            this.load.audio(audioFiles[i].key, audioFiles[i].mp3, audioFiles[i].ogg);
-        }*/
-    }
-
-    private initConnection() {
-
+    public update() {
+        if (this._game.initialized && this._assetsLoaded) {
+            this.scene.start(States.MAIN);
+        }
     }
 }

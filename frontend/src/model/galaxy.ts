@@ -4,19 +4,23 @@ export class Galaxy {
     private _planets: Planet[] = [];
     private _factions: Faction[] = [];
 
-    public constructor() {
-        this._planets = [
-            new Planet('Erde')
-        ];
-
+    public get planets() {
+        return this._planets;
     }
+
+    public set planets(p: Planet[]) {
+        this._planets = this.planets;
+    }
+
 }
 
 export class Planet {
     private _name: string;
     private _position: any;
+    private _id = 0;
 
-    public constructor(name: string) {
+    public constructor(id: number, name: string) {
+        this._id = id;
         this._name = name;
     }
 
@@ -28,3 +32,6 @@ export class Planet {
 export class Faction {
 
 }
+
+
+

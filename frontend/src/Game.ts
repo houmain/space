@@ -4,6 +4,7 @@ import 'phaser';
 import { Preloader } from './scenes/preloader';
 import { Main } from './scenes/main';
 import { CommunicationHandler, MessageHandler } from './model/communicationHandler';
+import { Galaxy } from './model/galaxy';
 
 export enum States {
     PRELOADER = 'preloader',
@@ -15,18 +16,35 @@ export class SpaceGame extends Phaser.Game {
     private _communicationHandler: CommunicationHandler;
     private _messageHandler: MessageHandler;
 
+    private _galaxy: Galaxy;
+
     constructor(config: GameConfig) {
         super(config);
 
-        this._messageHandler = new MessageHandler();
+        this._messageHandler = new MessageHandler(this);
         this._communicationHandler = new CommunicationHandler(this._messageHandler);
 
-        this.scene.add(States.PRELOADER, new Preloader(this._communicationHandler), true);
-        this.scene.add(States.MAIN, new Main());
+        this.scene.add(States.PRELOADER, new Preloader(this, this._communicationHandler), true);
+        this.scene.add(States.MAIN, new Main(this));
+
+        this._galaxy = new Galaxy();
     }
 
     public get communcationHandler(): CommunicationHandler {
         return this._communicationHandler;
+    }
+
+    public get galaxy(): Galaxy {
+        return this._galaxy;
+    }
+
+    public initGalaxy(galaxy: Galaxy) {
+        this._galaxy = galaxy;
+        console.log(this._galaxy.planets.length);
+    }
+
+    public get initialized(): boolean {
+        return this._galaxy.planets.length > 0;
     }
 
     public resize(width: number, height: number) {
