@@ -1,10 +1,11 @@
-"use strict"
+//"use strict"
 
 import 'phaser';
 import { Preloader } from './scenes/preloader';
 import { Main } from './scenes/main';
-import { CommunicationHandler, MessageHandler } from './model/communicationHandler';
+import { CommunicationHandler } from './model/communicationHandler';
 import { Galaxy } from './model/galaxy';
+import { MessageHandler } from './model/messageHandler';
 
 export enum States {
     PRELOADER = 'preloader',
@@ -17,6 +18,8 @@ export class SpaceGame extends Phaser.Game {
     private _messageHandler: MessageHandler;
 
     private _galaxy: Galaxy;
+
+    public timeSinceStart: number;
 
     constructor(config: GameConfig) {
         super(config);

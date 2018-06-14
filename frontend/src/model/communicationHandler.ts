@@ -2,60 +2,8 @@ import { MessageType, MessageGameJoined, GameMessage, PlanetInfo } from './commu
 import { SpaceGame } from '../Game';
 import { Galaxy, Planet } from './galaxy';
 
-export class GalaxyFactory {
-    public static create(planetInfos: PlanetInfo[]): Galaxy {
 
-        let infoMap: { [id: number]: PlanetInfo; } = {};
-
-        planetInfos.forEach(planetInfo => {
-            infoMap[planetInfo.id] = planetInfo;
-        });
-
-        let galaxy = new Galaxy();
-
-        planetInfos.forEach(planetInfo => {
-            let planet = new Planet(planetInfo.id, '');
-            galaxy.planets.push(planet);
-            console.log('planet created');
-        });
-
-        return galaxy;
-    }
-}
-
-export class MessageHandler {
-
-    private _game: SpaceGame;
-
-    public constructor(game: SpaceGame) {
-        this._game = game;
-    }
-
-    public handle(msg: GameMessage) {
-        try {
-            switch (msg.event) {
-                case MessageType.GAME_JOINED:
-                    console.log('gameJoind!!!')
-                    let joinedMessage = msg as MessageGameJoined;
-                    console.log(JSON.stringify(msg));
-                    let galaxy = GalaxyFactory.create(joinedMessage.planets);
-                    this._game.initGalaxy(galaxy);
-                    break;
-                case MessageType.PLAYER_JOINED:
-                    console.log('Player joined');
-                    break;
-                case MessageType.GAME_UPDATED:
-                    console.log('.');
-                    break;
-                default:
-                    console.warn(`Unhandled message found ${JSON.stringify(msg)}`);
-                    break;
-            }
-        } catch (e) {
-            console.error(`Exception when handling message ${JSON.stringify(msg)} -> ${e}`);
-        }
-    }
-}
+import { MessageHandler } from './messageHandler';
 
 export class CommunicationHandler {
 
