@@ -183,12 +183,16 @@ void Game::update_fighters(double time_elapsed) {
     }
 
     auto fighter_count = 0;
-    for (auto& squadron : planet.squadrons)
+    for (const auto& squadron : planet.squadrons)
       fighter_count += squadron.fighter_count;
     planet.fighters_to_destroy +=
       fighter_count * time_elapsed / m_rules.fight_duration;
 
     while (planet.fighters_to_destroy >= 1.0) {
+      if (planet.squadrons.size() <= 1) {
+        planet.fighters_to_destroy = 0.0;
+        break;
+      }
       destroy_random_fighter(planet);
       planet.fighters_to_destroy -= 1.0;
     }
@@ -196,6 +200,8 @@ void Game::update_fighters(double time_elapsed) {
 }
 
 void Game::destroy_random_fighter(Planet& planet) {
+  assert(planet.squadrons.size() >= 2);
+
   // select firing squadron
   auto probability = std::vector<int>();
   for (auto& squadron : planet.squadrons)
@@ -212,6 +218,7 @@ void Game::destroy_random_fighter(Planet& planet) {
 
   const auto& by_squadron = planet.squadrons[by_squadron_index];
   auto& squadron = planet.squadrons[squadron_index];
+  assert(&squadron != &by_squadron);
 
   squadron.fighter_count -= 1;
   broadcast(build_fighter_destroyed_message(squadron, by_squadron));
