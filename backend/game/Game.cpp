@@ -133,7 +133,7 @@ void Game::update_planet_production(double time_elapsed) {
         assert(squadron.faction == planet.faction);
         squadron.fighter_count += 1;
         planet.production_progress = 0;
-        broadcast(build_figther_created_message(squadron));
+        broadcast(build_fighter_created_message(squadron));
       }
     }
 }

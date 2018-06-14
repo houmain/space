@@ -77,7 +77,7 @@ std::string build_game_joined_message(
       writer.Int(squadron.planet->id);
       writer.Key("factionId");
       writer.Int(squadron.faction->id);
-      writer.Key("figtherCount");
+      writer.Key("fighterCount");
       writer.Double(squadron.fighter_count);
       writer.Key("speed");
       writer.Double(squadron.speed);
@@ -128,7 +128,7 @@ std::string build_player_left_message([[maybe_unused]]const IClient& client,
   });
 }
 
-std::string build_figther_created_message(const Squadron& squadron) {
+std::string build_fighter_created_message(const Squadron& squadron) {
   return json::build_message([&](json::Writer& writer) {
     writer.StartObject();
     writer.Key("event");
@@ -143,7 +143,7 @@ std::string build_figther_created_message(const Squadron& squadron) {
   });
 }
 
-std::string build_figther_destroyed_message(const Squadron& squadron, const Squadron& by_squadron) {
+std::string build_fighter_destroyed_message(const Squadron& squadron, const Squadron& by_squadron) {
   return json::build_message([&](json::Writer& writer) {
     writer.StartObject();
     writer.Key("event");
