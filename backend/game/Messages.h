@@ -25,4 +25,12 @@ std::string build_planet_conquered_message(const Planet& planet);
 std::string build_faction_destroyed_message(const Faction& faction);
 std::string build_faction_won_message(const Faction& faction);
 
+struct SendSquadron {
+  static auto action() { return "sendSquadron"; }
+  PlanetId source_planet_id;
+  PlanetId target_planet_id;
+  int fighter_count;
+};
+SendSquadron parse_send_squadron_message(const json::Value& value);
+
 } // namespace

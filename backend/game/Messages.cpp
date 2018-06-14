@@ -261,4 +261,12 @@ std::string build_faction_won_message(const Faction& faction) {
   });
 }
 
+SendSquadron parse_send_squadron_message(const json::Value& value) {
+  return {
+    json::get_int(value, "sourcePlanetId"),
+    json::get_int(value, "targetPlanetId"),
+    json::get_int(value, "fighterCount"),
+  };
+}
+
 } // namespace

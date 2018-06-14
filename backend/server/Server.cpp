@@ -30,7 +30,8 @@ void run(const Settings& settings) noexcept {
   };
 
   lws_protocol_vhost_options mime_types[] = {
-    { nullptr, nullptr, ".png", "image/png" },
+    { nullptr, nullptr, ".json", "application/json" },
+    { nullptr, nullptr, ".jpg", "image/jpeg" },
     { nullptr, nullptr, ".ogg", "audio/x-vorbis+ogg" }
   };
   for (auto i = 0u; i < std::size(mime_types) - 1; ++i)

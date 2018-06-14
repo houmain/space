@@ -93,7 +93,7 @@ void Game::on_message_received(IClient* client, const json::Value& value) {
   auto& faction = *it->second;
 
   const auto action = json::get_string(value, "action");
-  if (action == "sendSquadron")
+  if (action == SendSquadron::action())
     return send_squadron(faction, value);
 
   throw Exception("invalid action");
@@ -245,22 +245,22 @@ void Game::destroy_random_fighter(Planet& planet) {
 }
 
 void Game::send_squadron(Faction& faction, const json::Value& value) {
-  auto source_planet_id = json::get_int(value, "sourcePlanetId");
-  auto target_planet_id = json::get_int(value, "targetPlanetId");
-  auto fighter_count = json::get_int(value, "fighterCount");
-  auto& source_planet = m_planets.at(static_cast<size_t>(source_planet_id - 1));
-  auto& target_planet = m_planets.at(static_cast<size_t>(target_planet_id - 1));
+  const auto message = parse_send_squadron_message(value);
+  auto& source_planet = m_planets.at(
+    static_cast<size_t>(message.source_planet_id - 1));
+  auto& target_planet = m_planets.at(
+    static_cast<size_t>(message.target_planet_id - 1));
 
   // try to take fighters from source squadron
   auto source_squadron = find_planet_squadron(source_planet, &faction);
-  if (!source_squadron || !source_squadron->fighter_count)
-    return;
-  fighter_count = std::min(source_squadron->fighter_count, fighter_count);
-  source_squadron->fighter_count -= fighter_count;
-
-  auto squadron = create_squadron(target_planet, fighter_count, &faction);
-  m_moving_squadrons.push_back(squadron);
-  broadcast(build_squadron_sent_message(source_planet, squadron));
+  const auto fighter_count = std::min(message.fighter_count,
+    (source_squadron ? source_squadron->fighter_count : 0));
+  if (fighter_count > 0) {
+    source_squadron->fighter_count -= fighter_count;
+    auto squadron = create_squadron(target_planet, fighter_count, &faction);
+    m_moving_squadrons.push_back(squadron);
+    broadcast(build_squadron_sent_message(source_planet, squadron));
+  }
 }
 
 Squadron Game::create_squadron(Planet& planet, int fighter_count,
@@ -288,7 +288,7 @@ bool Game::faction_has_squadron(const Faction& faction) const {
 
 const Faction* Game::find_last_faction() const {
   auto last_faction = static_cast<const Faction*>(nullptr);
-  for (auto& faction : m_factions)
+  for (const auto& faction : m_factions)
     if (faction_has_squadron(faction))
       if (std::exchange(last_faction, &faction))
         return nullptr;
