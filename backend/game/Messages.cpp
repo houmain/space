@@ -6,8 +6,7 @@ namespace game {
 std::string build_game_joined_message(
     const std::vector<Faction>& factions,
     const std::vector<Planet>& planets,
-    const std::map<int, Ship>& ships,
-    const std::map<int, Squadron>& squadrons) {
+    const std::vector<Squadron>& moving_squadrons) {
   return json::build_message([&](json::Writer& writer) {
     writer.StartObject();
     writer.Key("event");
@@ -43,15 +42,25 @@ std::string build_game_joined_message(
         writer.Key("parent");
         writer.Int(planet.parent->id);
       }
-      if (planet.owner) {
-        writer.Key("owner");
-        writer.Int(planet.owner->id);
+      if (planet.faction) {
+        writer.Key("faction");
+        writer.Int(planet.faction->id);
       }
-      if (!planet.ship_ids.empty()) {
-        writer.Key("shipIds");
+      if (!planet.squadrons.empty()) {
+        writer.Key("squadrons");
         writer.StartArray();
-        for (auto id : planet.ship_ids)
-          writer.Int(id);
+        for (const auto& squadron : planet.squadrons) {
+          writer.StartObject();
+          writer.Key("squadronId");
+          writer.Int(squadron.id);
+          writer.Key("fighterCount");
+          writer.Int(squadron.fighter_count);
+          if (squadron.faction) {
+            writer.Key("factionId");
+            writer.Int(squadron.faction->id);
+          }
+          writer.EndObject();
+        }
         writer.EndArray();
       }
       writer.EndObject();
@@ -60,37 +69,22 @@ std::string build_game_joined_message(
 
     writer.Key("squadrons");
     writer.StartArray();
-    for (const auto& [id, squadron] : squadrons) {
+    for (const auto& squadron : moving_squadrons) {
       writer.StartObject();
       writer.Key("id");
-      writer.Int(id);
-      writer.Key("targetPlanetId");
-      writer.Int(squadron.target_planet->id);
+      writer.Int(squadron.id);
+      writer.Key("planetId");
+      writer.Int(squadron.planet->id);
+      writer.Key("factionId");
+      writer.Int(squadron.faction->id);
+      writer.Key("figtherCount");
+      writer.Double(squadron.fighter_count);
       writer.Key("speed");
       writer.Double(squadron.speed);
       writer.Key("x");
       writer.Double(squadron.x);
       writer.Key("y");
       writer.Double(squadron.y);
-      if (!squadron.ship_ids.empty()) {
-        writer.Key("shipIds");
-        writer.StartArray();
-        for (auto id : squadron.ship_ids)
-          writer.Int(id);
-        writer.EndArray();
-      }
-      writer.EndObject();
-    }
-    writer.EndArray();
-
-    writer.Key("ships");
-    writer.StartArray();
-    for (const auto& [id, ship] : ships) {
-      writer.StartObject();
-      writer.Key("id");
-      writer.Int(id);
-      writer.Key("energy");
-      writer.Int(ship.energy);
       writer.EndObject();
     }
     writer.EndArray();
@@ -134,25 +128,122 @@ std::string build_player_left_message([[maybe_unused]]const IClient& client,
   });
 }
 
-std::string build_squadron_created_message(const Squadron& squadron) {
+std::string build_figther_created_message(const Squadron& squadron) {
   return json::build_message([&](json::Writer& writer) {
     writer.StartObject();
     writer.Key("event");
-    writer.String("squadronCreated");
+    writer.String("fighterCreated");
+    writer.Key("planetId");
+    writer.Int(squadron.planet->id);
     writer.Key("squadronId");
     writer.Int(squadron.id);
-    // TODO:
+    writer.Key("fighterCount");
+    writer.Int(squadron.fighter_count);
     writer.EndObject();
   });
 }
 
-std::string build_squadron_arrived_message(const Squadron& squadron) {
+std::string build_figther_destroyed_message(const Squadron& squadron, const Squadron& by_squadron) {
   return json::build_message([&](json::Writer& writer) {
     writer.StartObject();
     writer.Key("event");
-    writer.String("squadronArrived");
+    writer.String("fighterDestroyed");
+    writer.Key("planetId");
+    writer.Int(squadron.planet->id);
     writer.Key("squadronId");
     writer.Int(squadron.id);
+    writer.Key("fighterCount");
+    writer.Int(squadron.fighter_count);
+    writer.Key("bySquadronId");
+    writer.Int(by_squadron.id);
+    writer.EndObject();
+  });
+}
+
+std::string build_squadron_sent_message(const Planet& source_planet, const Squadron& squadron) {
+  return json::build_message([&](json::Writer& writer) {
+    writer.StartObject();
+    writer.Key("event");
+    writer.String("squadronSent");
+    writer.Key("sourcePlanetId");
+    writer.Int(source_planet.id);
+    writer.Key("targetPlanetId");
+    writer.Int(squadron.planet->id);
+    writer.Key("squadronId");
+    writer.Int(squadron.id);
+    writer.Key("factionId");
+    writer.Int(squadron.faction->id);
+    writer.Key("fighterCount");
+    writer.Int(squadron.fighter_count);
+    writer.Key("speed");
+    writer.Double(squadron.speed);
+    writer.EndObject();
+  });
+}
+
+std::string build_squadrons_merged_message(const Squadron& squadron, const Squadron& into_squadron) {
+  return json::build_message([&](json::Writer& writer) {
+    writer.StartObject();
+    writer.Key("event");
+    writer.String("squadronsMerged");
+    writer.Key("planetId");
+    writer.Int(squadron.planet->id);
+    writer.Key("squadronId");
+    writer.Int(squadron.id);
+    writer.Key("intoSquadronId");
+    writer.Int(into_squadron.id);
+    writer.Key("fighterCount");
+    writer.Int(into_squadron.fighter_count);
+    writer.EndObject();
+  });
+}
+
+std::string build_squadron_attacks_message(const Squadron& squadron) {
+  return json::build_message([&](json::Writer& writer) {
+    writer.StartObject();
+    writer.Key("event");
+    writer.String("squadronAttacks");
+    writer.Key("planetId");
+    writer.Int(squadron.planet->id);
+    writer.Key("squadronId");
+    writer.Int(squadron.id);
+    writer.EndObject();
+  });
+}
+
+std::string build_squadron_destroyed_message(const Squadron& squadron) {
+  return json::build_message([&](json::Writer& writer) {
+    writer.StartObject();
+    writer.Key("event");
+    writer.String("squadronDestroyed");
+    writer.Key("planetId");
+    writer.Int(squadron.planet->id);
+    writer.Key("squadronId");
+    writer.Int(squadron.id);
+    writer.EndObject();
+  });
+}
+
+std::string build_planet_conquered(const Planet& planet) {
+  return json::build_message([&](json::Writer& writer) {
+    writer.StartObject();
+    writer.Key("event");
+    writer.String("planetConquered");
+    writer.Key("planetId");
+    writer.Int(planet.id);
+    writer.Key("factionId");
+    writer.Int(planet.faction->id);
+    writer.EndObject();
+  });
+}
+
+std::string build_faction_destroyed(const Faction& faction) {
+  return json::build_message([&](json::Writer& writer) {
+    writer.StartObject();
+    writer.Key("event");
+    writer.String("factionDestroyed");
+    writer.Key("factionId");
+    writer.Int(faction.id);
     writer.EndObject();
   });
 }

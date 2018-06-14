@@ -1,40 +1,46 @@
 #pragma once
 
+#include <map>
 #include "Interfaces.h"
 
 namespace game {
 
+using FactionId = int;
+using PlanetId = int;
+using SquadronId = int;
+struct Faction;
+struct Planet;
+struct Squadron;
+
 struct Faction {
-  int id;
+  FactionId id;
   std::string name;
   IClient* client;
 };
 
+struct Squadron {
+  SquadronId id;
+  Faction* faction;
+  Planet* planet;
+  int fighter_count;
+  double speed;
+
+  double x;
+  double y;
+};
+
 struct Planet {
-  int id;
+  PlanetId id;
   Planet* parent;
   double initial_angle;
   double angular_velocity;
   double distance;
   std::string name;
-  int production_rate;
+  double production_rate;
 
-  Faction* owner;
-  std::vector<int> ship_ids;
-  double x;
-  double y;
-};
-
-struct Ship {
-  int energy;
-};
-
-struct Squadron {
-  int id;
-  Planet* target_planet;
-  std::vector<int> ship_ids;
-  double speed;
-
+  Faction* faction;
+  std::vector<Squadron> squadrons;
+  double production_progress;
   double x;
   double y;
 };

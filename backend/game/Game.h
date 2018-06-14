@@ -1,6 +1,5 @@
 #pragma once
 
-#include <map>
 #include <chrono>
 #include "Types.h"
 
@@ -21,20 +20,23 @@ public:
 private:
   using Clock = std::chrono::steady_clock;
 
+  Squadron create_squadron(Planet& planet,
+    int fighter_count, Faction* faction = nullptr);
   void broadcast(std::string_view message);
   void send_squadron(Faction& faction, const json::Value& value);
-  void update_planet_production();
   void update_planet_positions(double time_since_start);
-  void advance_squadrons(double time_elapsed);
+  void update_planet_production(double time_elapsed);
+  void update_moving_squadrons(double time_elapsed);
+  void update_fighters(double time_elapsed);
 
   std::vector<Faction> m_factions;
   std::vector<Planet> m_planets;
-  std::map<int, Ship> m_ships;
-  std::map<int, Squadron> m_squadrons;
+  std::vector<Squadron> m_moving_squadrons;
 
   std::map<IClient*, Faction*> m_clients;
   Clock::time_point m_start_time{ };
   Clock::time_point m_last_update_time{ };
+  SquadronId m_next_squadron_id{ 1 };
 };
 
 } // namespace
