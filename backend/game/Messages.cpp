@@ -3,8 +3,7 @@
 
 namespace game {
 
-std::string build_game_joined_message(
-    const std::vector<Faction>& factions,
+std::string build_game_joined_message(const std::vector<Faction>& factions,
     const std::vector<Planet>& planets,
     const std::vector<Squadron>& moving_squadrons) {
   return json::build_message([&](json::Writer& writer) {
@@ -143,7 +142,8 @@ std::string build_fighter_created_message(const Squadron& squadron) {
   });
 }
 
-std::string build_fighter_destroyed_message(const Squadron& squadron, const Squadron& by_squadron) {
+std::string build_fighter_destroyed_message(const Squadron& squadron,
+    const Squadron& by_squadron) {
   return json::build_message([&](json::Writer& writer) {
     writer.StartObject();
     writer.Key("event");
@@ -160,7 +160,8 @@ std::string build_fighter_destroyed_message(const Squadron& squadron, const Squa
   });
 }
 
-std::string build_squadron_sent_message(const Planet& source_planet, const Squadron& squadron) {
+std::string build_squadron_sent_message(const Planet& source_planet,
+    const Squadron& squadron) {
   return json::build_message([&](json::Writer& writer) {
     writer.StartObject();
     writer.Key("event");
@@ -181,7 +182,8 @@ std::string build_squadron_sent_message(const Planet& source_planet, const Squad
   });
 }
 
-std::string build_squadrons_merged_message(const Squadron& squadron, const Squadron& into_squadron) {
+std::string build_squadrons_merged_message(const Squadron& squadron,
+    const Squadron& into_squadron) {
   return json::build_message([&](json::Writer& writer) {
     writer.StartObject();
     writer.Key("event");
@@ -224,7 +226,7 @@ std::string build_squadron_destroyed_message(const Squadron& squadron) {
   });
 }
 
-std::string build_planet_conquered(const Planet& planet) {
+std::string build_planet_conquered_message(const Planet& planet) {
   return json::build_message([&](json::Writer& writer) {
     writer.StartObject();
     writer.Key("event");
@@ -237,11 +239,22 @@ std::string build_planet_conquered(const Planet& planet) {
   });
 }
 
-std::string build_faction_destroyed(const Faction& faction) {
+std::string build_faction_destroyed_message(const Faction& faction) {
   return json::build_message([&](json::Writer& writer) {
     writer.StartObject();
     writer.Key("event");
     writer.String("factionDestroyed");
+    writer.Key("factionId");
+    writer.Int(faction.id);
+    writer.EndObject();
+  });
+}
+
+std::string build_faction_won_message(const Faction& faction) {
+  return json::build_message([&](json::Writer& writer) {
+    writer.StartObject();
+    writer.Key("event");
+    writer.String("factionWon");
     writer.Key("factionId");
     writer.Int(faction.id);
     writer.EndObject();

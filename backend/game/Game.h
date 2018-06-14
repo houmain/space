@@ -1,6 +1,7 @@
 #pragma once
 
 #include <chrono>
+#include <random>
 #include "Types.h"
 
 namespace game {
@@ -28,7 +29,12 @@ private:
   void update_planet_production(double time_elapsed);
   void update_moving_squadrons(double time_elapsed);
   void update_fighters(double time_elapsed);
+  void destroy_random_fighter(Planet& planet);
+  bool faction_has_squadron(const Faction& faction) const;
+  const Faction* find_last_faction() const;
 
+  std::mt19937 m_random;
+  Rules m_rules;
   std::vector<Faction> m_factions;
   std::vector<Planet> m_planets;
   std::vector<Squadron> m_moving_squadrons;

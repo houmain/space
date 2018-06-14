@@ -15,9 +15,13 @@ namespace {
   }
 } // namespace
 
-Game::Game() {
-  m_start_time = Clock::now();
-  m_last_update_time = Clock::now();
+Game::Game()
+  : m_random(std::random_device()()),
+    m_start_time(Clock::now()),
+    m_last_update_time(Clock::now()) {
+
+  m_rules.squadron_speed = 5.0;
+  m_rules.fight_duration = 5.0;
 
   for (auto i = 0; i < 4; ++i) {
     auto& faction = m_factions.emplace_back();
@@ -128,11 +132,10 @@ void Game::update_planet_production(double time_elapsed) {
   for (auto& planet : m_planets)
     if (planet.faction) {
       planet.production_progress += planet.production_rate * time_elapsed;
-      if (planet.production_progress >= 1) {
-        auto& squadron = planet.squadrons.at(0);
-        assert(squadron.faction == planet.faction);
+      if (planet.production_progress >= 1.0) {
+        auto& squadron = *find_planet_squadron(planet, planet.faction);
         squadron.fighter_count += 1;
-        planet.production_progress = 0;
+        planet.production_progress = 0.0;
         broadcast(build_fighter_created_message(squadron));
       }
     }
@@ -173,10 +176,65 @@ void Game::update_moving_squadrons(double time_elapsed) {
 }
 
 void Game::update_fighters(double time_elapsed) {
-  for (auto& planet : m_planets)
-    if (planet.squadrons.size() > 1) {
-      // TODO: fight
+  for (auto& planet : m_planets) {
+    if (planet.squadrons.size() <= 1) {
+      planet.fighters_to_destroy = 0.0;
+      continue;
     }
+
+    auto fighter_count = 0;
+    for (auto& squadron : planet.squadrons)
+      fighter_count += squadron.fighter_count;
+    planet.fighters_to_destroy +=
+      fighter_count * time_elapsed / m_rules.fight_duration;
+
+    while (planet.fighters_to_destroy >= 1.0) {
+      destroy_random_fighter(planet);
+      planet.fighters_to_destroy -= 1.0;
+    }
+  }
+}
+
+void Game::destroy_random_fighter(Planet& planet) {
+  // select firing squadron
+  auto probability = std::vector<int>();
+  for (auto& squadron : planet.squadrons)
+    probability.push_back(squadron.fighter_count);
+  const auto by_squadron_index = std::discrete_distribution<size_t>(
+    begin(probability), end(probability))(m_random);
+
+  // select hit squadron
+  probability.clear();
+  for (auto i = 0u; i < planet.squadrons.size(); ++i)
+    probability.push_back((i == by_squadron_index ? 0 : 1));
+  const auto squadron_index = std::discrete_distribution<size_t>(
+    begin(probability), end(probability))(m_random);
+
+  const auto& by_squadron = planet.squadrons[by_squadron_index];
+  auto& squadron = planet.squadrons[squadron_index];
+
+  squadron.fighter_count -= 1;
+  broadcast(build_fighter_destroyed_message(squadron, by_squadron));
+  if (squadron.fighter_count == 0) {
+    // squadron destroyed
+
+    if (squadron.faction == planet.faction) {
+      // defender destroyed, update planet faction
+      planet.faction = by_squadron.faction;
+      broadcast(build_planet_conquered_message(planet));
+    }
+
+    broadcast(build_squadron_destroyed_message(squadron));
+    const auto& faction = *squadron.faction;
+    planet.squadrons.erase(begin(planet.squadrons) +
+      static_cast<int>(squadron_index));
+
+    if (!faction_has_squadron(faction)) {
+      broadcast(build_faction_destroyed_message(faction));
+      if (auto last_faction = find_last_faction())
+        broadcast(build_faction_won_message(*last_faction));
+    }
+  }
 }
 
 void Game::send_squadron(Faction& faction, const json::Value& value) {
@@ -205,8 +263,29 @@ Squadron Game::create_squadron(Planet& planet, int fighter_count,
   squadron.fighter_count = fighter_count;
   squadron.planet = &planet;
   squadron.faction = (faction ? faction : planet.faction);
-  squadron.speed = 5.0;
+  squadron.speed = m_rules.squadron_speed;
   return squadron;
+}
+
+bool Game::faction_has_squadron(const Faction& faction) const {
+  for (const auto& planet : m_planets) {
+    for (const auto& squadron : planet.squadrons)
+      if (squadron.faction == &faction)
+        return true;
+  }
+  for (const auto& squadron : m_moving_squadrons)
+    if (squadron.faction == &faction)
+      return true;
+  return false;
+}
+
+const Faction* Game::find_last_faction() const {
+  auto last_faction = static_cast<const Faction*>(nullptr);
+  for (auto& faction : m_factions)
+    if (faction_has_squadron(faction))
+      if (std::exchange(last_faction, &faction))
+        return nullptr;
+  return last_faction;
 }
 
 void Game::broadcast(std::string_view message) {

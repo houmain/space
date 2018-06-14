@@ -12,6 +12,11 @@ struct Faction;
 struct Planet;
 struct Squadron;
 
+struct Rules {
+  double squadron_speed;
+  double fight_duration;
+};
+
 struct Faction {
   FactionId id;
   std::string name;
@@ -41,6 +46,7 @@ struct Planet {
   Faction* faction;
   std::vector<Squadron> squadrons;
   double production_progress;
+  double fighters_to_destroy;
   double x;
   double y;
 };
