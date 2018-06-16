@@ -1,17 +1,71 @@
-import { SpaceGame } from "../Game";
-import { Galaxy } from "../model/galaxy";
+import { SpaceGame } from '../Game';
+import { Galaxy } from '../model/galaxy';
+import { Camera } from '../model/camera';
+
+
+export interface InputListenerCallback {
+    (x: number, y: number): void;
+}
+
+export class InputHandler {
+
+    private _dragging: boolean = false;
+
+    public onDrag: InputListenerCallback;
+
+    public constructor(scene: Phaser.Scene) {
+
+        scene.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+            this.onMouseDown(pointer);
+        });
+
+        scene.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
+            this.onMouseUp(pointer);
+        });
+
+        scene.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
+            this.onMouseMove(pointer);
+        });
+    }
+
+    private onMouseDown(pointer: Phaser.Input.Pointer) {
+        this._dragging = true;
+    }
+
+    private onMouseUp(pointer: Phaser.Input.Pointer) {
+        this._dragging = false;
+    }
+
+    private onMouseMove(pointer: Phaser.Input.Pointer) {
+        if (this._dragging) {
+            console.log('dragging ' + pointer.x);
+
+            if (this.onDrag) {
+                this.onDrag(pointer.x, pointer.y);
+            }
+        }
+    }
+}
 
 export class Main extends Phaser.Scene {
 
     private _game: SpaceGame;
     private _galaxy: Galaxy;
 
+    private _camera: Camera;
+
+    private _inputHandler: InputHandler;
+
     public constructor(game: SpaceGame) {
-        super("main");
+        super('main');
         this._game = game;
     }
 
     public create() {
+
+        this._inputHandler = new InputHandler(this);
+        this._camera = new Camera(this.cameras.main);
+        this._inputHandler.onDrag = this._camera.update.bind(this._camera);
 
         const background = this.add.sprite(this.sys.canvas.width / 2, this.sys.canvas.height / 2, 'background');
         //  background.setOrigin()
@@ -24,6 +78,16 @@ export class Main extends Phaser.Scene {
             planet.sprite.setScale(0.5);
         });
 
+        this.input.on('drag', (pointer: Phaser.Input.Pointer) => {
+            /*if (!music.isPlaying) {
+                music.play();
+            }*/
+
+            //background.setPosition(pointer.x, pointer.y);
+
+            // this.cameras.main.setPosition(pointer.x, pointer.y);
+        });
+
         // const music = this.sound.add('DOG');
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
             /*if (!music.isPlaying) {
@@ -32,7 +96,19 @@ export class Main extends Phaser.Scene {
 
             //background.setPosition(pointer.x, pointer.y);
 
-            // this.cameras.main.setPosition(pointer.x, pointer.y);
+            //  this.cameras.main.setPosition(pointer.x, pointer.y);
+            //console.log('pointerdown');
+        });
+
+        this.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
+            console.log('pointerup');
+            /*if (!music.isPlaying) {
+                music.play();
+            }*/
+
+            //background.setPosition(pointer.x, pointer.y);
+
+            //  this.cameras.main.setPosition(pointer.x, pointer.y);
         });
 
     }
@@ -53,19 +129,5 @@ export class Main extends Phaser.Scene {
             planet.sprite.x = planet.x + 400;
             planet.sprite.y = planet.y + 400;
         });
-        /*
-        void Game::update_planet_positions(double time_since_start) {
-          for (auto& planet : m_planets) {
-            const auto angle = planet.initial_angle +
-                planet.angular_velocity * time_since_start;
-            planet.x = std::cos(angle) * planet.distance;
-            planet.y = std::sin(angle) * planet.distance;
-            if (planet.parent) {
-              planet.x += planet.parent->x;
-              planet.y += planet.parent->y;
-            }
-          }
-        }
-        */
     }
 }

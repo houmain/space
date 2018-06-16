@@ -1,4 +1,4 @@
-//"use strict"
+'use strict';
 
 import 'phaser';
 import { Preloader } from './scenes/preloader';
@@ -6,6 +6,7 @@ import { Main } from './scenes/main';
 import { CommunicationHandler } from './model/communicationHandler';
 import { Galaxy } from './model/galaxy';
 import { MessageHandler } from './model/messageHandler';
+import { Engine } from './utils';
 
 export enum States {
     PRELOADER = 'preloader',
@@ -23,6 +24,8 @@ export class SpaceGame extends Phaser.Game {
 
     constructor(config: GameConfig) {
         super(config);
+
+        Engine.init(this);
 
         this._messageHandler = new MessageHandler(this);
         this._communicationHandler = new CommunicationHandler(this._messageHandler);
@@ -59,7 +62,7 @@ function startGame(): void {
 
     const config: GameConfig = {
         type: Phaser.AUTO,
-        parent: "canvas",
+        parent: 'canvas',
         width: window.innerWidth,
         height: window.innerHeight,
         scene: [
@@ -78,4 +81,4 @@ function startGame(): void {
 window.onload = () => {
     console.log('Starting game');
     startGame();
-}
+};

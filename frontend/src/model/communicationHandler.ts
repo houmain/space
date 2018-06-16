@@ -2,7 +2,6 @@ import { MessageType, MessageGameJoined, GameMessage, PlanetInfo } from './commu
 import { SpaceGame } from '../Game';
 import { Galaxy, Planet } from './galaxy';
 
-
 import { MessageHandler } from './messageHandler';
 
 export class CommunicationHandler {
@@ -15,18 +14,18 @@ export class CommunicationHandler {
     }
 
     public init() {
-        let url = "ws://127.0.0.1:9995/";
-        this._socket = new WebSocket(url, "websocket");
+        let url = 'ws://127.0.0.1:9995/';
+        this._socket = new WebSocket(url, 'websocket');
 
         this._socket.onopen = () => {
-            console.log("connected");
+            console.log('connected');
 
             this._socket.send('{ "action": "joinGame", "gameId": 0 }');
             this._socket.send('{ "something": 10 }');
             this._socket.send('{ "action": "sendSquadron", sourcePlanetId: 1, targetPlanetId: 2, shipIds: [1,2,3,4] }');
         };
         this._socket.onclose = function () {
-            console.log("disonnected");
+            console.log('disonnected');
         };
         this._socket.onmessage = (event: any) => {
 

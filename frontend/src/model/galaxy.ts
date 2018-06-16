@@ -1,4 +1,4 @@
-import { PlanetInfo, FactionInfo } from "./communicationInterfaces";
+import { PlanetInfo, FactionInfo } from './communicationInterfaces';
 
 //https://gamedevacademy.org/create-a-basic-multiplayer-game-in-phaser-3-with-socket-io-part-2/
 
@@ -57,7 +57,7 @@ export class GalaxyFactory {
             }
 
             if (planetInfo.parent) {
-                planet.parent = planetMap[planetInfo.parent]
+                planet.parent = planetMap[planetInfo.parent];
             }
 
             planets.push(planet);

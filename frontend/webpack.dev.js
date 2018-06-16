@@ -21,11 +21,14 @@ module.exports = {
     module: {
         rules: [
             {
+                test: /\.ts$/, enforce: 'pre', loader: 'tslint-loader'
+            },
+            {
                 test: /\.ts?$/,
                 use: 'ts-loader'
             },
             {
-                test: [ /\.vert$/, /\.frag$/ ],
+                test: [/\.vert$/, /\.frag$/],
                 use: 'raw-loader'
             }
         ]
@@ -33,16 +36,16 @@ module.exports = {
     optimization: {
         splitChunks: {
             cacheGroups: {
-                commons: { 
-                    test: /[\\/]node_modules[\\/]/, 
-                    name: "vendors", 
-                    chunks: "all" 
+                commons: {
+                    test: /[\\/]node_modules[\\/]/,
+                    name: "vendors",
+                    chunks: "all"
                 }
             }
         }
     },
     resolve: {
-        extensions: [ '.tsx', '.ts', '.js' ]
+        extensions: ['.tsx', '.ts', '.js']
     },
     stats: true,
     plugins: [
@@ -52,18 +55,18 @@ module.exports = {
             'typeof WEBGL_RENDERER': JSON.stringify(true)
         }),
         new CopyWebpackPlugin(
-        [
-            {
-                from: './assets',
-                to: './assets',
-                force: true
-            },
-            {
-                from: './app.css',
-                to: './app.css',
-                force: true
-            }
-        ]),
+            [
+                {
+                    from: './assets',
+                    to: './assets',
+                    force: true
+                },
+                {
+                    from: './app.css',
+                    to: './app.css',
+                    force: true
+                }
+            ]),
         new HtmlWebpackPlugin({
             filename: 'index.html',
             template: 'index.html'

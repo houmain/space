@@ -14,7 +14,7 @@ export class MessageHandler {
         try {
             switch (msg.event) {
                 case MessageType.GAME_JOINED:
-                    console.log('gameJoind!!!')
+                    console.log('gameJoined!!!');
                     let joinedMessage = msg as MessageGameJoined;
                     console.log(JSON.stringify(msg));
                     let galaxy = GalaxyFactory.create(joinedMessage.factions, joinedMessage.planets);
