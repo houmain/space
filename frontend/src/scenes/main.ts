@@ -1,51 +1,8 @@
 import { SpaceGame } from '../Game';
 import { Galaxy } from '../model/galaxy';
 import { Camera } from '../model/camera';
-
-
-export interface InputListenerCallback {
-    (x: number, y: number): void;
-}
-
-export class InputHandler {
-
-    private _dragging: boolean = false;
-
-    public onDrag: InputListenerCallback;
-
-    public constructor(scene: Phaser.Scene) {
-
-        scene.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-            this.onMouseDown(pointer);
-        });
-
-        scene.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
-            this.onMouseUp(pointer);
-        });
-
-        scene.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
-            this.onMouseMove(pointer);
-        });
-    }
-
-    private onMouseDown(pointer: Phaser.Input.Pointer) {
-        this._dragging = true;
-    }
-
-    private onMouseUp(pointer: Phaser.Input.Pointer) {
-        this._dragging = false;
-    }
-
-    private onMouseMove(pointer: Phaser.Input.Pointer) {
-        if (this._dragging) {
-            console.log('dragging ' + pointer.x);
-
-            if (this.onDrag) {
-                this.onDrag(pointer.x, pointer.y);
-            }
-        }
-    }
-}
+import { InputHandler } from '../model/inputHandler';
+import { GameTimeHandler } from '../model/gameTimeHandler';
 
 export class Main extends Phaser.Scene {
 
@@ -55,70 +12,45 @@ export class Main extends Phaser.Scene {
     private _camera: Camera;
 
     private _inputHandler: InputHandler;
+    private _timeHandler: GameTimeHandler;
 
-    public constructor(game: SpaceGame) {
+    public constructor(game: SpaceGame, timeHandler: GameTimeHandler) {
         super('main');
         this._game = game;
+        this._timeHandler = timeHandler;
     }
 
     public create() {
 
         this._inputHandler = new InputHandler(this);
         this._camera = new Camera(this.cameras.main);
-        this._inputHandler.onDrag = this._camera.update.bind(this._camera);
+        this._inputHandler.onDrag = this._camera.setPosition.bind(this._camera);
 
         const background = this.add.sprite(this.sys.canvas.width / 2, this.sys.canvas.height / 2, 'background');
-        //  background.setOrigin()
-        //background.setScale(15);
 
         this._galaxy = this._game.galaxy;
 
         this._game.galaxy.planets.forEach(planet => {
             planet.sprite = this.add.sprite(0, 0, planet.parent ? 'planet' : 'sun');
-            planet.sprite.setScale(0.5);
+            planet.sprite.setScale(planet.parent ? 0.25 : 0.35);
+            planet.sprite.setInteractive();
         });
 
-        this.input.on('drag', (pointer: Phaser.Input.Pointer) => {
-            /*if (!music.isPlaying) {
-                music.play();
-            }*/
 
-            //background.setPosition(pointer.x, pointer.y);
-
-            // this.cameras.main.setPosition(pointer.x, pointer.y);
+        this.input.on('gameobjectdown', (p: any, o: Phaser.GameObjects.GameObject) => {
+            (o as Phaser.GameObjects.Sprite).setTint(0xff0000);
         });
-
-        // const music = this.sound.add('DOG');
-        this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-            /*if (!music.isPlaying) {
-                music.play();
-            }*/
-
-            //background.setPosition(pointer.x, pointer.y);
-
-            //  this.cameras.main.setPosition(pointer.x, pointer.y);
-            //console.log('pointerdown');
-        });
-
-        this.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
-            console.log('pointerup');
-            /*if (!music.isPlaying) {
-                music.play();
-            }*/
-
-            //background.setPosition(pointer.x, pointer.y);
-
-            //  this.cameras.main.setPosition(pointer.x, pointer.y);
-        });
-
     }
 
-    public update() {
+    public update(timeSinceStart: number, timeSinceLastFrame: number) {
 
-        let timeSinceStart = this._game.timeSinceStart;
+        this._camera.update();
+
+        this._timeHandler.addLocalElapsedTime(timeSinceLastFrame);
+        let timeElapsed = this._timeHandler.timeSinceStart;
 
         this._galaxy.planets.forEach(planet => {
-            let angle = planet.initialAngle + planet.angularVelocity * timeSinceStart;
+            let angle = planet.initialAngle + planet.angularVelocity * timeElapsed;
             planet.x = Math.cos(angle) * planet.distance;
             planet.y = Math.sin(angle) * planet.distance;
             if (planet.parent) {

@@ -7,6 +7,7 @@ import { CommunicationHandler } from './model/communicationHandler';
 import { Galaxy } from './model/galaxy';
 import { MessageHandler } from './model/messageHandler';
 import { Engine } from './utils';
+import { GameTimeHandler } from './model/gameTimeHandler';
 
 export enum States {
     PRELOADER = 'preloader',
@@ -17,21 +18,23 @@ export class SpaceGame extends Phaser.Game {
 
     private _communicationHandler: CommunicationHandler;
     private _messageHandler: MessageHandler;
+    private _gameTimeHandler: GameTimeHandler;
 
     private _galaxy: Galaxy;
-
-    public timeSinceStart: number;
 
     constructor(config: GameConfig) {
         super(config);
 
         Engine.init(this);
 
+        this._gameTimeHandler = new GameTimeHandler();
         this._messageHandler = new MessageHandler(this);
         this._communicationHandler = new CommunicationHandler(this._messageHandler);
 
+        this._messageHandler.onMessageHandlerServerTimeUpdate = this._gameTimeHandler.updateServerTime.bind(this._gameTimeHandler);
+
         this.scene.add(States.PRELOADER, new Preloader(this, this._communicationHandler), true);
-        this.scene.add(States.MAIN, new Main(this));
+        this.scene.add(States.MAIN, new Main(this, this._gameTimeHandler));
 
         this._galaxy = new Galaxy();
     }

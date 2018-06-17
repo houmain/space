@@ -2,12 +2,24 @@ import { MessageType, GameMessage, MessageGameJoined, MessagePlayerJoined, Messa
 import { SpaceGame } from '../Game';
 import { GalaxyFactory } from './galaxy';
 
+export interface MessageHandlerServerTimeUpdate {
+    (timeSinceStart: number): void;
+}
+
 export class MessageHandler {
 
     private _game: SpaceGame;
 
+    private _onMessageHandlerServerTimeUpdate: MessageHandlerServerTimeUpdate = (timeSinceStart: number) => {
+        console.log('update');
+    }
+
     public constructor(game: SpaceGame) {
         this._game = game;
+    }
+
+    public set onMessageHandlerServerTimeUpdate(onMessageHandlerServerTimeUpdate: MessageHandlerServerTimeUpdate) {
+        this._onMessageHandlerServerTimeUpdate = onMessageHandlerServerTimeUpdate;
     }
 
     public handle(msg: GameMessage) {
@@ -26,11 +38,10 @@ export class MessageHandler {
                     break;
                 case MessageType.GAME_UPDATED:
                     let gameUpdatedMessage = msg as MessageGameUpdated;
-                    this._game.timeSinceStart = gameUpdatedMessage.time;
-                    console.log('.');
+                    this._onMessageHandlerServerTimeUpdate(gameUpdatedMessage.time);
                     break;
                 case MessageType.FIGHTER_CREATED:
-                    console.log('fighter created');
+                    //  console.log('fighter created');
                     break;
                 default:
                     console.warn(`Unhandled message found ${JSON.stringify(msg)}`);

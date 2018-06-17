@@ -1,4 +1,3 @@
-import { config } from '../config/preload';
 import { CommunicationHandler } from '../model/communicationHandler';
 import { States, SpaceGame } from '../Game';
 
@@ -6,6 +5,8 @@ export class Preloader extends Phaser.Scene {
 
     private _game: SpaceGame;
     private _communicationHandler: CommunicationHandler;
+
+    private _assetsLoaded: boolean = false;
 
     public constructor(game: SpaceGame, communicationHandler: CommunicationHandler) {
         super({
@@ -25,8 +26,6 @@ export class Preloader extends Phaser.Scene {
 
         this.showProgressBar();
 
-        // load assets declared in the preload config
-        this.loadAtlas();
         this.loadTextures();
 
         this._communicationHandler.init();
@@ -51,28 +50,18 @@ export class Preloader extends Phaser.Scene {
         });
     }
 
+    private loadTextures() {
+
+        this.load.setPath('./assets/');
+
+        this.load.image('background', './images/background.png');
+        this.load.image('planet', './images/planet_1.png');
+        this.load.image('sun', './images/planet_13.png');
+    }
+
     public create() {
         this._assetsLoaded = true;
     }
-
-    private loadAtlas() {
-        const sheetPath = config.ssPath;
-        const sheets = config.sheets;
-
-        this.load.setPath(sheetPath);
-
-        for (let i = 0; i < sheets.length; i++) {
-            this.load.atlas(sheets[i], `${sheets[i]}.png`, `${sheets[i]}.json`);
-        }
-    }
-
-    private loadTextures() {
-        this.load.image('background', '../images/background.png');
-        this.load.image('planet', '../images/planet_1.png');
-        this.load.image('sun', '../images/planet_13.png');
-    }
-
-    private _assetsLoaded: boolean = false;
 
     public update() {
         if (this._game.initialized && this._assetsLoaded) {
