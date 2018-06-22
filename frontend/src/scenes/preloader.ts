@@ -1,5 +1,6 @@
-import { CommunicationHandler } from '../model/communicationHandler';
+
 import { States, SpaceGame } from '../Game';
+import { CommunicationHandler } from '../communication/communicationHandler';
 
 export class Preloader extends Phaser.Scene {
 

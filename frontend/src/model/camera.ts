@@ -1,5 +1,3 @@
-import { Engine } from '../utils';
-
 export class Camera {
 
     private _camera: Phaser.Cameras.Scene2D.Camera;

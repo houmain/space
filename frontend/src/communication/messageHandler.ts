@@ -1,12 +1,12 @@
-import { MessageType, GameMessage, MessageGameJoined, MessagePlayerJoined, MessageGameUpdated } from './communicationInterfaces';
+import { ServerMessageType, ServerMessage, MessageGameJoined, MessagePlayerJoined, MessageGameUpdated } from './communicationInterfaces';
 import { SpaceGame } from '../Game';
-import { GalaxyFactory } from './galaxy';
+import { GalaxyFactory } from '../model/galaxyFactory';
 
 export interface MessageHandlerServerTimeUpdate {
     (timeSinceStart: number): void;
 }
 
-export class MessageHandler {
+export class ServerMessageHandler {
 
     private _game: SpaceGame;
 
@@ -22,25 +22,25 @@ export class MessageHandler {
         this._onMessageHandlerServerTimeUpdate = onMessageHandlerServerTimeUpdate;
     }
 
-    public handle(msg: GameMessage) {
+    public handle(msg: ServerMessage) {
         try {
             switch (msg.event) {
-                case MessageType.GAME_JOINED:
+                case ServerMessageType.GAME_JOINED:
                     console.log('gameJoined!!!');
                     let joinedMessage = msg as MessageGameJoined;
                     console.log(JSON.stringify(msg));
                     let galaxy = GalaxyFactory.create(joinedMessage.factions, joinedMessage.planets);
                     this._game.initGalaxy(galaxy);
                     break;
-                case MessageType.PLAYER_JOINED:
+                case ServerMessageType.PLAYER_JOINED:
                     let playerJoinedMessage = msg as MessagePlayerJoined;
                     console.log('Player joined ' + playerJoinedMessage.factionId);
                     break;
-                case MessageType.GAME_UPDATED:
+                case ServerMessageType.GAME_UPDATED:
                     let gameUpdatedMessage = msg as MessageGameUpdated;
                     this._onMessageHandlerServerTimeUpdate(gameUpdatedMessage.time);
                     break;
-                case MessageType.FIGHTER_CREATED:
+                case ServerMessageType.FIGHTER_CREATED:
                     //  console.log('fighter created');
                     break;
                 default:

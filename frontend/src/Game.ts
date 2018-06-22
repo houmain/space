@@ -1,13 +1,13 @@
 'use strict';
-
+//https://gamedevacademy.org/how-to-create-a-game-hud-plugin-in-phaser/
 import 'phaser';
 import { Preloader } from './scenes/preloader';
 import { Main } from './scenes/main';
-import { CommunicationHandler } from './model/communicationHandler';
-import { Galaxy } from './model/galaxy';
-import { MessageHandler } from './model/messageHandler';
-import { Engine } from './utils';
+import { Engine } from './model/utils';
 import { GameTimeHandler } from './model/gameTimeHandler';
+import { CommunicationHandler, ClientMessageHandler } from './communication/communicationHandler';
+import { ServerMessageHandler } from './communication/messageHandler';
+import { Galaxy } from './model/galaxyModels';
 
 export enum States {
     PRELOADER = 'preloader',
@@ -17,8 +17,9 @@ export enum States {
 export class SpaceGame extends Phaser.Game {
 
     private _communicationHandler: CommunicationHandler;
-    private _messageHandler: MessageHandler;
+    private _messageHandler: ServerMessageHandler;
     private _gameTimeHandler: GameTimeHandler;
+    private _clientMessageHandler: ClientMessageHandler;
 
     private _galaxy: Galaxy;
 
@@ -28,8 +29,9 @@ export class SpaceGame extends Phaser.Game {
         Engine.init(this);
 
         this._gameTimeHandler = new GameTimeHandler();
-        this._messageHandler = new MessageHandler(this);
+        this._messageHandler = new ServerMessageHandler(this);
         this._communicationHandler = new CommunicationHandler(this._messageHandler);
+        this._clientMessageHandler = new ClientMessageHandler(this._communicationHandler);
 
         this._messageHandler.onMessageHandlerServerTimeUpdate = this._gameTimeHandler.updateServerTime.bind(this._gameTimeHandler);
 
@@ -63,7 +65,7 @@ export class SpaceGame extends Phaser.Game {
 
 function startGame(): void {
 
-    const config: GameConfig = {
+    const config = {
         type: Phaser.AUTO,
         parent: 'canvas',
         width: window.innerWidth,

@@ -1,15 +1,35 @@
-export enum MessageType {
+
+export enum ClientMessageType {
+    GAME_JOINED = 'gameJoined',
+    SEND_SQUADRON = 'sendSquadron'
+}
+
+export interface ClientMessage {
+    action: string;
+}
+
+export interface JoinMessage extends ClientMessage {
+    gameId: number;
+}
+
+export interface SendSquadron extends ClientMessage {
+    sourcePlanetId: number;
+    targetPlanetId: number;
+    shipIds: number[];
+}
+
+export enum ServerMessageType {
     GAME_JOINED = 'gameJoined',
     PLAYER_JOINED = 'playerJoined',
     GAME_UPDATED = 'gameUpdated',
     FIGHTER_CREATED = 'fighterCreated'
 }
 
-export interface GameMessage {
+export interface ServerMessage {
     event: string;
 }
 
-export interface MessageGameJoined extends GameMessage {
+export interface MessageGameJoined extends ServerMessage {
     planets: PlanetInfo[];
     factions: FactionInfo[];
 }
@@ -36,15 +56,15 @@ export interface SquadronInfo {
     factionId: number;
 }
 
-export interface MessagePlayerJoined extends GameMessage {
+export interface MessagePlayerJoined extends ServerMessage {
     factionId: number;
 }
 
-export interface MessageGameUpdated extends GameMessage {
+export interface MessageGameUpdated extends ServerMessage {
     time: number;
 }
 
-export interface MessageFighterCreated extends GameMessage {
+export interface MessageFighterCreated extends ServerMessage {
     planetId: number;
     squadronId: number;
     fighterCount: number;
