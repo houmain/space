@@ -1,9 +1,8 @@
 import { ServerMessageType, MessageGameJoined, ServerMessage, PlanetInfo, ClientMessage, ClientMessageType, JoinMessage, SendSquadron } from './communicationInterfaces';
 import { SpaceGame } from '../Game';
-
 import { ServerMessageHandler } from './messageHandler';
 
-export class ClientMessageHandler {
+export class ClientMessageSender {
 
     private _communicationHandler: CommunicationHandler;
 
@@ -13,7 +12,7 @@ export class ClientMessageHandler {
 
     public joinGame(gameId: number) {
         let msg: JoinMessage = {
-            action: ClientMessageType.GAME_JOINED,
+            action: ClientMessageType.JOIN_GAME,
             gameId: gameId
         };
 
@@ -45,6 +44,8 @@ export class CommunicationHandler {
     private _socket: any;
     private _messageHandler: ServerMessageHandler;
 
+    public onConnectionEstablished: Function;
+
     public constructor(messageHandler: ServerMessageHandler) {
         this._messageHandler = messageHandler;
     }
@@ -54,16 +55,13 @@ export class CommunicationHandler {
         this._socket = new WebSocket(url, 'websocket');
 
         this._socket.onopen = () => {
-            console.log('connected');
-            this._socket.send(JSON.stringify({
-                action: 'joinGame',
-                gameId: 1
-            }));
-            this._socket.send('{ "something": 10 }');
-            this._socket.send('{ "action": "sendSquadron", sourcePlanetId: 1, targetPlanetId: 2, shipIds: [1,2,3,4] }');
+            if (this.onConnectionEstablished) {
+                this.onConnectionEstablished();
+            }
+            // this._socket.send('{ "action": "sendSquadron", sourcePlanetId: 1, targetPlanetId: 2, shipIds: [1,2,3,4] }');
         };
         this._socket.onclose = function () {
-            console.log('disonnected');
+            console.log('Disonnected from server');
         };
         this._socket.onmessage = (event: any) => {
 
@@ -83,8 +81,14 @@ export class CommunicationHandler {
     }
 
     public send(msg: ClientMessage) {
-        this._socket.send(JSON.stringify({
-            msg
-        }));
+        try {
+            let jsonMessage = JSON.stringify(
+                msg
+            );
+            console.log(`Sending ${jsonMessage} to server.`);
+            this._socket.send(jsonMessage);
+        } catch (e) {
+            alert(e);
+        }
     }
 }

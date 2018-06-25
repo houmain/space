@@ -15,8 +15,8 @@ export class InputHandler {
     private _dragStartX: number;
     private _dragStartY: number;
 
-    private _selectKey = 'Shift';
-    private _selectKeyDown = false;
+    private _moveCameraKey = 'Shift';
+    private _moveCameraKeyDown = false;
 
     public constructor(scene: Phaser.Scene) {
 
@@ -44,8 +44,8 @@ export class InputHandler {
     private onKeyDown(keyCode: string) {
 
         switch (keyCode) {
-            case this._selectKey:
-                this._selectKeyDown = true;
+            case this._moveCameraKey:
+                this._moveCameraKeyDown = true;
                 break;
             default:
                 console.log(`Unhandled key ${keyCode} down`);
@@ -55,25 +55,31 @@ export class InputHandler {
     private onKeyUp(keyCode: string) {
 
         switch (keyCode) {
-            case this._selectKey:
-                this._selectKeyDown = false;
+            case this._moveCameraKey:
+                this._moveCameraKeyDown = false;
                 break;
             default:
                 console.log(`Unhandled key ${keyCode} up`);
         }
     }
 
+    private _mouseDown: boolean = false;
+
     private onMouseDown(pointer: Phaser.Input.Pointer) {
-        if (this._selectKeyDown) {
+        this._mouseDown = true;
+
+        if (this._moveCameraKeyDown) {
+            this._dragging = true;
+        } else {
             if (this.onSelectStart) {
                 this.onSelectStart(pointer.x, pointer.y);
             }
-        } else {
-            this._dragging = true;
         }
     }
 
     private onMouseUp(pointer: Phaser.Input.Pointer) {
+        this._mouseDown = false;
+
         this._dragging = false;
 
         if (this.onSelectStart) {
@@ -82,14 +88,26 @@ export class InputHandler {
     }
 
     private onMouseMove(pointer: Phaser.Input.Pointer) {
-        if (this._dragging) {
-            if (this.onDrag) {
-                this.onDrag(pointer.x - pointer.downX, pointer.y - pointer.downY);
-            }
-        } else if (this._selectKeyDown) {
-            if (this.onSelectedMouseMove) {
+
+        if (this._mouseDown) {
+            if (this._moveCameraKeyDown) {
+                if (this.onDrag) {
+                    this.onDrag(pointer.x - pointer.downX, pointer.y - pointer.downY);
+                }
+            } else {
                 this.onSelectedMouseMove(pointer.x, pointer.y);
             }
         }
+        /*
+        if (this._moveCameraKeyDown) {
+            if (this.onDrag) {
+                this.onDrag(pointer.x - pointer.downX, pointer.y - pointer.downY);
+            }
+
+        } else {
+            if (this.onSelectedMouseMove) {
+                this.onSelectedMouseMove(pointer.x, pointer.y);
+            }
+        }*/
     }
 }

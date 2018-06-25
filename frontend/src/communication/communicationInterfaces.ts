@@ -1,6 +1,6 @@
 
 export enum ClientMessageType {
-    GAME_JOINED = 'gameJoined',
+    JOIN_GAME = 'joinGame',
     SEND_SQUADRON = 'sendSquadron'
 }
 

@@ -5,7 +5,7 @@ import { Preloader } from './scenes/preloader';
 import { Main } from './scenes/main';
 import { Engine } from './model/utils';
 import { GameTimeHandler } from './model/gameTimeHandler';
-import { CommunicationHandler, ClientMessageHandler } from './communication/communicationHandler';
+import { CommunicationHandler, ClientMessageSender } from './communication/communicationHandler';
 import { ServerMessageHandler } from './communication/messageHandler';
 import { Galaxy } from './model/galaxyModels';
 
@@ -19,7 +19,7 @@ export class SpaceGame extends Phaser.Game {
     private _communicationHandler: CommunicationHandler;
     private _messageHandler: ServerMessageHandler;
     private _gameTimeHandler: GameTimeHandler;
-    private _clientMessageHandler: ClientMessageHandler;
+    private _clientMessageSender: ClientMessageSender;
 
     private _galaxy: Galaxy;
 
@@ -31,11 +31,11 @@ export class SpaceGame extends Phaser.Game {
         this._gameTimeHandler = new GameTimeHandler();
         this._messageHandler = new ServerMessageHandler(this);
         this._communicationHandler = new CommunicationHandler(this._messageHandler);
-        this._clientMessageHandler = new ClientMessageHandler(this._communicationHandler);
+        this._clientMessageSender = new ClientMessageSender(this._communicationHandler);
 
         this._messageHandler.onMessageHandlerServerTimeUpdate = this._gameTimeHandler.updateServerTime.bind(this._gameTimeHandler);
 
-        this.scene.add(States.PRELOADER, new Preloader(this, this._communicationHandler), true);
+        this.scene.add(States.PRELOADER, new Preloader(this, this._communicationHandler, this._clientMessageSender), true);
         this.scene.add(States.MAIN, new Main(this, this._gameTimeHandler));
 
         this._galaxy = new Galaxy();

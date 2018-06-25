@@ -1,15 +1,16 @@
 
 import { States, SpaceGame } from '../Game';
-import { CommunicationHandler } from '../communication/communicationHandler';
+import { CommunicationHandler, ClientMessageSender } from '../communication/communicationHandler';
 
 export class Preloader extends Phaser.Scene {
 
     private _game: SpaceGame;
     private _communicationHandler: CommunicationHandler;
+    private _clientMessageSender: ClientMessageSender;
 
     private _assetsLoaded: boolean = false;
 
-    public constructor(game: SpaceGame, communicationHandler: CommunicationHandler) {
+    public constructor(game: SpaceGame, communicationHandler: CommunicationHandler, clientMessageSender: ClientMessageSender) {
         super({
             key: States.PRELOADER,
             pack: {
@@ -21,6 +22,12 @@ export class Preloader extends Phaser.Scene {
         });
         this._game = game;
         this._communicationHandler = communicationHandler;
+        this._clientMessageSender = clientMessageSender;
+
+        this._communicationHandler.onConnectionEstablished = () => {
+            console.log('connection established, joining game ...');
+            this._clientMessageSender.joinGame(1);
+        };
     }
 
     public preload() {
