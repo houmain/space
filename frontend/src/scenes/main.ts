@@ -30,7 +30,10 @@ export class Main extends Phaser.Scene {
 
     public create() {
 
-        this._inputHandler = new InputHandler(this);
+        this._inputHandler = new InputHandler(this, this.cameras.main);
+
+
+
         this._camera = new Camera(this.cameras.main);
         this._inputHandler.onDrag = this._camera.setPosition.bind(this._camera);
 
@@ -50,10 +53,12 @@ export class Main extends Phaser.Scene {
 
         this._gameInfoHandler.addInfoText('Test');
 
-        this._selectionHandler = new SelectionHandler(this);
+        this._selectionHandler = new SelectionHandler(this, this._galaxy.planets);
         this._inputHandler.onSelectStart = this._selectionHandler.onStartSelect.bind(this._selectionHandler);
         this._inputHandler.onSelectEnd = this._selectionHandler.onEndSelect.bind(this._selectionHandler);
         this._inputHandler.onSelectedMouseMove = this._selectionHandler.onSelectPosChanged.bind(this._selectionHandler);
+
+        this.cameras.main.setBounds(-2048, -2048, 2048 * 2, 2048 * 2);
     }
 
     public update(timeSinceStart: number, timeSinceLastFrame: number) {
@@ -72,9 +77,10 @@ export class Main extends Phaser.Scene {
                 planet.y += planet.parent.y;
             }
 
-            planet.sprite.x = planet.x + 600;
-            planet.sprite.y = planet.y + 600;
+            planet.sprite.x = planet.x;
+            planet.sprite.y = planet.y;
         });
+
 
         this._selectionHandler.update();
     }

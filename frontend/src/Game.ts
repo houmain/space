@@ -51,7 +51,6 @@ export class SpaceGame extends Phaser.Game {
 
     public initGalaxy(galaxy: Galaxy) {
         this._galaxy = galaxy;
-        console.log(this._galaxy.planets.length);
     }
 
     public get initialized(): boolean {

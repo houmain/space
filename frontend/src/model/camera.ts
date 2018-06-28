@@ -12,6 +12,10 @@ export class Camera {
     public setPosition(x: number, y: number) {
         this._x = x;
         this._y = y;
+
+        //console.log(`Camera Pos: ${x} ${y}`);
+
+        this._camera.getWorldPoint
     }
 
     public update() {

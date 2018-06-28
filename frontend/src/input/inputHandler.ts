@@ -3,7 +3,7 @@ export interface InputHandlerUpdate {
 }
 
 export class InputHandler {
-
+    private _camera: Phaser.Cameras.Scene2D.Camera;
     private _dragging: boolean = false;
 
     public onDrag: InputHandlerUpdate;
@@ -18,7 +18,9 @@ export class InputHandler {
     private _moveCameraKey = 'Shift';
     private _moveCameraKeyDown = false;
 
-    public constructor(scene: Phaser.Scene) {
+    public constructor(scene: Phaser.Scene, camera: Phaser.Cameras.Scene2D.Camera) {
+
+        this._camera = camera;
 
         scene.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
             this.onMouseDown(pointer);
@@ -72,9 +74,15 @@ export class InputHandler {
             this._dragging = true;
         } else {
             if (this.onSelectStart) {
+                // let worldPos: Vector2Like = this._camera.getWorldPoint(pointer.x, pointer.y);
                 this.onSelectStart(pointer.x, pointer.y);
             }
         }
+    }
+
+    private getWorldPosition(x: number, y: number): Vector2Like {
+        let worldPos: Vector2Like = this._camera.getWorldPoint(x, y);
+        return worldPos;
     }
 
     private onMouseUp(pointer: Phaser.Input.Pointer) {
@@ -83,12 +91,12 @@ export class InputHandler {
         this._dragging = false;
 
         if (this.onSelectStart) {
+            //    let worldPos: Vector2Like = this._camera.getWorldPoint(pointer.x, pointer.y);
             this.onSelectEnd(pointer.x, pointer.y);
         }
     }
 
     private onMouseMove(pointer: Phaser.Input.Pointer) {
-
         if (this._mouseDown) {
             if (this._moveCameraKeyDown) {
                 if (this.onDrag) {
