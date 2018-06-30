@@ -1,5 +1,4 @@
-import { ServerMessageType, MessageGameJoined, ServerMessage, PlanetInfo, ClientMessage, ClientMessageType, JoinMessage, SendSquadron } from './communicationInterfaces';
-import { SpaceGame } from '../Game';
+import { ClientMessage, ClientMessageType, JoinMessage, SendSquadron } from './communicationInterfaces';
 import { ServerMessageHandler } from './messageHandler';
 
 export class ClientMessageSender {
@@ -39,45 +38,51 @@ export class ClientMessageSender {
     }
 }
 
+export interface SpaceGameConfig {
+    url: string;
+}
+
 export class CommunicationHandler {
 
     private _socket: any;
     private _messageHandler: ServerMessageHandler;
 
     public onConnectionEstablished: Function;
+    public onDisconnected: Function;
 
     public constructor(messageHandler: ServerMessageHandler) {
         this._messageHandler = messageHandler;
     }
 
-    public init() {
-        let url = 'ws://127.0.0.1:9995/';
-        this._socket = new WebSocket(url, 'websocket');
+    public init(gameConfig: SpaceGameConfig) {
+        try {
+            let url = gameConfig.url;
+            this._socket = new WebSocket(url, 'websocket');
 
-        this._socket.onopen = () => {
-            if (this.onConnectionEstablished) {
-                this.onConnectionEstablished();
-            }
-            // this._socket.send('{ "action": "sendSquadron", sourcePlanetId: 1, targetPlanetId: 2, shipIds: [1,2,3,4] }');
-        };
-        this._socket.onclose = function () {
-            console.log('Disonnected from server');
-        };
-        this._socket.onmessage = (event: any) => {
-
-            try {
-                let msg = JSON.parse(event.data);
-                this._messageHandler.handle(msg);
-
-            } catch (e) {
-                console.log(JSON.stringify(event) + ' exception with ' + event.data);
-            }
-        };
-        Object.seal(this._socket);
-    }
-
-    private instanceOfServerMessage(object: any): object is ServerMessage {
-        return 'event' in object;
+            this._socket.onopen = () => {
+                if (this.onConnectionEstablished) {
+                    this.onConnectionEstablished();
+                }
+                // this._socket.send('{ "action": "sendSquadron", sourcePlanetId: 1, targetPlanetId: 2, shipIds: [1,2,3,4] }');
+            };
+            this._socket.onclose = () => {
+                console.log('Disonnected from server');
+                if (this.onDisconnected) {
+                    this.onDisconnected();
+                }
+            };
+            this._socket.onmessage = (event: any) => {
+                try {
+                    let msg = JSON.parse(event.data);
+                    this._messageHandler.handle(msg);
+                } catch (e) {
+                    console.log(JSON.stringify(event) + ' exception with ' + event.data);
+                }
+            };
+            Object.seal(this._socket);
+        } catch (e) {
+            alert(e);
+        }
     }
 
     public send(msg: ClientMessage) {
@@ -90,5 +95,9 @@ export class CommunicationHandler {
         } catch (e) {
             alert(e);
         }
+    }
+
+    public close() {
+        this._socket.close();
     }
 }

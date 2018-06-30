@@ -15,7 +15,7 @@ export class Camera {
 
         //console.log(`Camera Pos: ${x} ${y}`);
 
-        this._camera.getWorldPoint
+        //this._camera.getWorldPoint
     }
 
     public update() {

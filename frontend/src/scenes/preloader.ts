@@ -1,16 +1,19 @@
 
 import { States, SpaceGame } from '../Game';
-import { CommunicationHandler, ClientMessageSender } from '../communication/communicationHandler';
+import { CommunicationHandler, ClientMessageSender, SpaceGameConfig } from '../communication/communicationHandler';
+import { SIGPROF } from 'constants';
 
 export class Preloader extends Phaser.Scene {
 
     private _game: SpaceGame;
+    private _gameConfig: SpaceGameConfig;
     private _communicationHandler: CommunicationHandler;
     private _clientMessageSender: ClientMessageSender;
 
     private _assetsLoaded: boolean = false;
+    private _connectionFailed: boolean = false;
 
-    public constructor(game: SpaceGame, communicationHandler: CommunicationHandler, clientMessageSender: ClientMessageSender) {
+    public constructor(game: SpaceGame, gameConfig: SpaceGameConfig, communicationHandler: CommunicationHandler, clientMessageSender: ClientMessageSender) {
         super({
             key: States.PRELOADER,
             pack: {
@@ -21,12 +24,18 @@ export class Preloader extends Phaser.Scene {
             }
         });
         this._game = game;
+        this._gameConfig = gameConfig;
         this._communicationHandler = communicationHandler;
         this._clientMessageSender = clientMessageSender;
 
         this._communicationHandler.onConnectionEstablished = () => {
             console.log('connection established, joining game ...');
             this._clientMessageSender.joinGame(1);
+        };
+
+        this._communicationHandler.onDisconnected = () => {
+            console.log('connection failed');
+            this._connectionFailed = true;
         };
     }
 
@@ -36,7 +45,7 @@ export class Preloader extends Phaser.Scene {
 
         this.loadTextures();
 
-        this._communicationHandler.init();
+        this._communicationHandler.init(this._gameConfig);
     }
 
     private showProgressBar() {
@@ -72,8 +81,14 @@ export class Preloader extends Phaser.Scene {
     }
 
     public update() {
-        if (this._game.initialized && this._assetsLoaded) {
-            this.scene.start(States.MAIN);
+
+        if (this._assetsLoaded) {
+            if (this._game.initialized) {
+                this.scene.start(States.MAIN);
+            } else if (this._connectionFailed) {
+                this.scene.start(States.GAME);
+                this.scene.start(States.HUD);
+            }
         }
     }
 }

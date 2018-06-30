@@ -16,6 +16,7 @@ export class GameInfoHandler {
 
         let info = new GameInfo();
         info.text = this._scene.add.text(0, 0, text);
+        info.text.setScrollFactor(0);
         info.age = 0;
     }
 

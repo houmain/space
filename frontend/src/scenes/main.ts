@@ -2,7 +2,6 @@ import 'phaser';
 import { SpaceGame } from '../Game';
 import { Camera } from '../model/camera';
 import { GameTimeHandler } from '../model/gameTimeHandler';
-import { Engine } from '../model/utils';
 import { SelectionHandler } from '../input/selectionHandler';
 import { GameInfoHandler } from '../model/gameInfo';
 import { Galaxy } from '../model/galaxyModels';
@@ -30,9 +29,7 @@ export class Main extends Phaser.Scene {
 
     public create() {
 
-        this._inputHandler = new InputHandler(this, this.cameras.main);
-
-
+        this._inputHandler = new InputHandler(this);
 
         this._camera = new Camera(this.cameras.main);
         this._inputHandler.onDrag = this._camera.setPosition.bind(this._camera);
@@ -53,7 +50,7 @@ export class Main extends Phaser.Scene {
 
         this._gameInfoHandler.addInfoText('Test');
 
-        this._selectionHandler = new SelectionHandler(this, this._galaxy.planets);
+        this._selectionHandler = new SelectionHandler(this, this.cameras.main, this._galaxy.planets);
         this._inputHandler.onSelectStart = this._selectionHandler.onStartSelect.bind(this._selectionHandler);
         this._inputHandler.onSelectEnd = this._selectionHandler.onEndSelect.bind(this._selectionHandler);
         this._inputHandler.onSelectedMouseMove = this._selectionHandler.onSelectPosChanged.bind(this._selectionHandler);

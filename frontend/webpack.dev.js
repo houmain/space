@@ -68,8 +68,8 @@ module.exports = {
                 }
             ]),
         new HtmlWebpackPlugin({
-            filename: 'index.html',
-            template: 'index.html'
+            filename: './index.html',
+            template: './index.html'
         })
     ]
 };

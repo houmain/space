@@ -5,13 +5,17 @@ import { Preloader } from './scenes/preloader';
 import { Main } from './scenes/main';
 import { Engine } from './model/utils';
 import { GameTimeHandler } from './model/gameTimeHandler';
-import { CommunicationHandler, ClientMessageSender } from './communication/communicationHandler';
+import { CommunicationHandler, ClientMessageSender, SpaceGameConfig } from './communication/communicationHandler';
 import { ServerMessageHandler } from './communication/messageHandler';
 import { Galaxy } from './model/galaxyModels';
+import { GameScene } from './scenes/game';
+import { HudScene } from './scenes/hud';
 
 export enum States {
     PRELOADER = 'preloader',
-    MAIN = 'main'
+    MAIN = 'main',
+    GAME = 'game',
+    HUD = 'hud'
 }
 
 export class SpaceGame extends Phaser.Game {
@@ -35,8 +39,14 @@ export class SpaceGame extends Phaser.Game {
 
         this._messageHandler.onMessageHandlerServerTimeUpdate = this._gameTimeHandler.updateServerTime.bind(this._gameTimeHandler);
 
-        this.scene.add(States.PRELOADER, new Preloader(this, this._communicationHandler, this._clientMessageSender), true);
+        let gameConfig: SpaceGameConfig = {
+            url: 'ws://127.0.0.1:9995/'
+        };
+
+        this.scene.add(States.PRELOADER, new Preloader(this, gameConfig, this._communicationHandler, this._clientMessageSender), true);
         this.scene.add(States.MAIN, new Main(this, this._gameTimeHandler));
+        this.scene.add(States.GAME, new GameScene(this, this._gameTimeHandler));
+        this.scene.add(States.HUD, new HudScene());
 
         this._galaxy = new Galaxy();
     }
@@ -81,7 +91,6 @@ function startGame(): void {
         game.resize(window.innerWidth, window.innerHeight);
     }, false);
 }
-
 window.onload = () => {
     console.log('Starting game');
     startGame();
