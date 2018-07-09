@@ -21,6 +21,8 @@ export class GameScene extends Phaser.Scene {
 
 	private _galaxy: Galaxy;
 
+	private _graphics: any;
+
 	public constructor(game: SpaceGame, timeHandler: GameTimeHandler) {
 		super('game');
 		this._game = game;
@@ -35,7 +37,6 @@ export class GameScene extends Phaser.Scene {
 		this._camera = new Camera(this.cameras.main);
 		this._inputHandler.onDrag = this._camera.setPosition.bind(this._camera);
 
-		//const background = this.add.sprite(0, 0, 'background');
 		new Background(this).create();
 
 		this._gameInfoHandler.addInfoText('Test');
@@ -77,6 +78,15 @@ export class GameScene extends Phaser.Scene {
 		this._inputHandler.onSelectStart = this._selectionHandler.onStartSelect.bind(this._selectionHandler);
 		this._inputHandler.onSelectEnd = this._selectionHandler.onEndSelect.bind(this._selectionHandler);
 		this._inputHandler.onSelectedMouseMove = this._selectionHandler.onSelectPosChanged.bind(this._selectionHandler);
+
+
+		this._graphics = this.add.graphics({ lineStyle: { width: 2, color: 0xff0000, alpha: 1 } });
+		/*
+				let color = 0xff0000;
+				let thickness = 20;
+				let alpha = 1;
+				this._graphics.lineStyle(thickness, color, alpha);*/
+
 	}
 
 	public update(timeSinceStart: number, timeSinceLastFrame: number) {
@@ -99,6 +109,17 @@ export class GameScene extends Phaser.Scene {
 					planet.sprite.y = planet.y;
 				});
 		*/
+
+		this._graphics.clear();
+
+		this._galaxy.planets.forEach(planet => {
+			this._graphics.strokeCircle(
+				planet.x,
+				planet.y,
+				30
+			);
+		});
+
 		this._selectionHandler.update();
 	}
 }

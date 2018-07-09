@@ -12,7 +12,8 @@ export class Background {
 
 		for (let x = 0; x < numTiles; x++) {
 			for (let y = 0; y < numTiles; y++) {
-				this._scene.add.sprite(x * 1024, y * 1024, 'background');
+				let s = this._scene.add.sprite(- 1024 + x * 1024, -1024 + y * 1024, 'background');
+				s.setScale(2, 2);
 			}
 		}
 	}

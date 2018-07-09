@@ -18,4 +18,5 @@ export class Planet {
 
 export class Faction {
     id: number;
+    color: number;
 }

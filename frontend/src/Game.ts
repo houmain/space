@@ -77,8 +77,8 @@ function startGame(): void {
     const config = {
         type: Phaser.AUTO,
         parent: 'canvas',
-        width: window.innerWidth,
-        height: window.innerHeight,
+        width: 1024,//window.innerWidth,
+        height: 768,// window.innerHeight,
         scene: [
             //Preloader,
             // Main

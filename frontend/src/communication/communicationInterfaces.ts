@@ -41,7 +41,7 @@ export interface PlanetInfo {
     angularVelocity: number;
     distance: number;
     parent: number;
-    owner: number;
+    faction: number;
     squadrons: SquadronInfo[];
 }
 

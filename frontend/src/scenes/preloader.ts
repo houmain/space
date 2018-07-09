@@ -74,6 +74,7 @@ export class Preloader extends Phaser.Scene {
         this.load.image('background', './images/background.png');
         this.load.image('planet', './images/planet_1.png');
         this.load.image('sun', './images/planet_13.png');
+        this.load.image('pixel', './images/pixel.png');
     }
 
     public create() {
@@ -85,6 +86,7 @@ export class Preloader extends Phaser.Scene {
         if (this._assetsLoaded) {
             if (this._game.initialized) {
                 this.scene.start(States.MAIN);
+                this.scene.start(States.HUD);
             } else if (this._connectionFailed) {
                 this.scene.start(States.GAME);
                 this.scene.start(States.HUD);
