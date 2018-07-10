@@ -64,8 +64,6 @@ export class InputHandler {
 
     private _mouseDown: boolean = false;
 
-    private _mouseDownX: number;
-    private mouseDownY: number;
     private onMouseDown(pointer: Phaser.Input.Pointer) {
         this._mouseDown = true;
 

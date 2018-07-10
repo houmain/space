@@ -7,6 +7,7 @@ import { GameInfoHandler } from '../model/gameInfo';
 import { Galaxy } from '../model/galaxyModels';
 import { InputHandler } from '../input/inputHandler';
 import { Background } from '../model/background';
+import { ClientMessageSender } from '../communication/communicationHandler';
 
 export class Main extends Phaser.Scene {
 
@@ -17,16 +18,18 @@ export class Main extends Phaser.Scene {
 
     private _inputHandler: InputHandler;
     private _timeHandler: GameTimeHandler;
+    private _clientMessageSender: ClientMessageSender;
     private _selectionHandler: SelectionHandler;
 
     private _gameInfoHandler: GameInfoHandler;
 
     private _graphics: Phaser.GameObjects.Graphics;
 
-    public constructor(game: SpaceGame, timeHandler: GameTimeHandler) {
+    public constructor(game: SpaceGame, timeHandler: GameTimeHandler, clientMessageSender: ClientMessageSender) {
         super('main');
         this._game = game;
         this._timeHandler = timeHandler;
+        this._clientMessageSender = clientMessageSender;
         this._gameInfoHandler = new GameInfoHandler(this);
     }
 
@@ -35,11 +38,11 @@ export class Main extends Phaser.Scene {
         this._inputHandler = new InputHandler(this);
 
         this._camera = new Camera(this.cameras.main);
-        this._camera.setPosition(0, 0);
+        //this._camera.setPosition(0, 0);
         //this.cameras.main.setPosition(100, 0);
         //  this.cameras.main.setBounds(-2048, -2048, 2048 * 2, 2048 * 2);
         this.cameras.main.setSize(2048, 2048);
-        this._inputHandler.onDrag = this._camera.setPosition.bind(this._camera);
+        this._inputHandler.onDrag = this._camera.setDeltaPosition.bind(this._camera);
 
         //const background = this.add.sprite(this.sys.canvas.width / 2, this.sys.canvas.height / 2, 'background');
         new Background(this).create();
@@ -58,7 +61,7 @@ export class Main extends Phaser.Scene {
 
         this._gameInfoHandler.addInfoText('Test');
 
-        this._selectionHandler = new SelectionHandler(this, this.cameras.main, this._galaxy.planets);
+        this._selectionHandler = new SelectionHandler(this, this.cameras.main, this._galaxy.planets, this._clientMessageSender);
         this._inputHandler.onSelectStart = this._selectionHandler.onStartSelect.bind(this._selectionHandler);
         this._inputHandler.onSelectEnd = this._selectionHandler.onEndSelect.bind(this._selectionHandler);
         this._inputHandler.onSelectedMouseMove = this._selectionHandler.onSelectPosChanged.bind(this._selectionHandler);

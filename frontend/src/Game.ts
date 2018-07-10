@@ -44,8 +44,8 @@ export class SpaceGame extends Phaser.Game {
         };
 
         this.scene.add(States.PRELOADER, new Preloader(this, gameConfig, this._communicationHandler, this._clientMessageSender), true);
-        this.scene.add(States.MAIN, new Main(this, this._gameTimeHandler));
-        this.scene.add(States.GAME, new GameScene(this, this._gameTimeHandler));
+        this.scene.add(States.MAIN, new Main(this, this._gameTimeHandler, this._clientMessageSender));
+        this.scene.add(States.GAME, new GameScene(this, this._gameTimeHandler, this._clientMessageSender));
         this.scene.add(States.HUD, new HudScene());
 
         this._galaxy = new Galaxy();
@@ -70,6 +70,10 @@ export class SpaceGame extends Phaser.Game {
     public resize(width: number, height: number) {
         console.log(`TODO: should resize to ${width} and ${height}`);
     }
+
+    public createFighter(planetId: number, squadronId: number, fighterCount: number) {
+
+    }
 }
 
 function startGame(): void {
@@ -77,8 +81,8 @@ function startGame(): void {
     const config = {
         type: Phaser.AUTO,
         parent: 'canvas',
-        width: 1024,//window.innerWidth,
-        height: 768,// window.innerHeight,
+        width: window.innerWidth,
+        height: window.innerHeight,
         scene: [
             //Preloader,
             // Main

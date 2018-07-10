@@ -14,9 +14,20 @@ export class Planet {
     initialAngle: number;
     angularVelocity: number;
     sprite: Phaser.GameObjects.Sprite;
+    squadrons: Squadron[] = [];
 }
 
 export class Faction {
     id: number;
     color: number;
+}
+
+export class Squadron {
+    id: number;
+    faction: Faction;
+    fighters: Fighter[] = [];
+}
+
+export class Fighter {
+
 }

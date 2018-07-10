@@ -18,12 +18,12 @@ export class ClientMessageSender {
         this.send(msg);
     }
 
-    public sendSquadron(sourcePlanetId: number, targetPlanetId: number, shipIds: number[]) {
+    public sendSquadron(sourcePlanetId: number, targetPlanetId: number, fighterCount: number) {
         let msg: SendSquadron = {
             action: ClientMessageType.SEND_SQUADRON,
             sourcePlanetId: sourcePlanetId,
             targetPlanetId: targetPlanetId,
-            shipIds: shipIds
+            fighterCount: fighterCount
         };
 
         this.send(msg);

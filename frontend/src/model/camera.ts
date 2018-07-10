@@ -2,23 +2,20 @@ export class Camera {
 
     private _camera: Phaser.Cameras.Scene2D.Camera;
 
-    private _x: number = 0;
-    private _y: number = 0;
+    private _targetPositionX: number = 0;
+    private _targetPositionY: number = 0;
 
     public constructor(camera: Phaser.Cameras.Scene2D.Camera) {
         this._camera = camera;
     }
 
-    public setPosition(x: number, y: number) {
-        this._x = x;
-        this._y = y;
-
-        //console.log(`Camera Pos: ${x} ${y}`);
-
-        //this._camera.getWorldPoint
+    public setDeltaPosition(x: number, y: number) {
+        this._targetPositionX += x;
+        this._targetPositionY += y;
     }
 
     public update() {
-        this._camera.setPosition(this._x, this._y);
+        this._camera.scrollX = (this._targetPositionX - this._camera.scrollX) * 0.1;
+        this._camera.scrollY = (this._targetPositionY - this._camera.scrollY) * 0.1;
     }
 }

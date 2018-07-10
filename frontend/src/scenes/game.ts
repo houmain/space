@@ -6,6 +6,7 @@ import { SelectionHandler } from '../input/selectionHandler';
 import { GameInfoHandler } from '../model/gameInfo';
 import { Planet, Galaxy } from '../model/galaxyModels';
 import { Background } from '../model/background';
+import { ClientMessageSender } from '../communication/communicationHandler';
 
 export class GameScene extends Phaser.Scene {
 
@@ -15,6 +16,7 @@ export class GameScene extends Phaser.Scene {
 
 	private _inputHandler: InputHandler;
 	private _timeHandler: GameTimeHandler;
+	private _clientMessageSender: ClientMessageSender;
 	private _selectionHandler: SelectionHandler;
 
 	private _gameInfoHandler: GameInfoHandler;
@@ -23,10 +25,11 @@ export class GameScene extends Phaser.Scene {
 
 	private _graphics: any;
 
-	public constructor(game: SpaceGame, timeHandler: GameTimeHandler) {
+	public constructor(game: SpaceGame, timeHandler: GameTimeHandler, clientMessageSender: ClientMessageSender) {
 		super('game');
 		this._game = game;
 		this._timeHandler = timeHandler;
+		this._clientMessageSender = clientMessageSender;
 		this._gameInfoHandler = new GameInfoHandler(this);
 	}
 
@@ -35,7 +38,7 @@ export class GameScene extends Phaser.Scene {
 		this._inputHandler = new InputHandler(this);
 
 		this._camera = new Camera(this.cameras.main);
-		this._inputHandler.onDrag = this._camera.setPosition.bind(this._camera);
+		this._inputHandler.onDrag = this._camera.setDeltaPosition.bind(this._camera);
 
 		new Background(this).create();
 
@@ -74,7 +77,7 @@ export class GameScene extends Phaser.Scene {
 			planet.sprite.setInteractive();
 		});
 
-		this._selectionHandler = new SelectionHandler(this, this.cameras.main, this._galaxy.planets);
+		this._selectionHandler = new SelectionHandler(this, this.cameras.main, this._galaxy.planets, this._clientMessageSender);
 		this._inputHandler.onSelectStart = this._selectionHandler.onStartSelect.bind(this._selectionHandler);
 		this._inputHandler.onSelectEnd = this._selectionHandler.onEndSelect.bind(this._selectionHandler);
 		this._inputHandler.onSelectedMouseMove = this._selectionHandler.onSelectPosChanged.bind(this._selectionHandler);
