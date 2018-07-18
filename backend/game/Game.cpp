@@ -33,16 +33,16 @@ Game::Game()
   m_planets.reserve(50);
   auto& sun = m_planets.emplace_back();
   sun.id = next_planet_id++;
-  sun.x = 400;
-  sun.y = 400;
+  sun.x = 0;
+  sun.y = 0;
   for (auto i = 0; i < 4; ++i) {
     auto& planet = m_planets.emplace_back();
     planet.id = next_planet_id++;
     planet.parent = &sun;
     planet.faction = &m_factions.at(static_cast<size_t>(i));
-    planet.distance = (i + 1) * 100;
-    planet.initial_angle = i * 3.14 / 3;
-    planet.angular_velocity = 3.14 / 25;
+    planet.distance = 200;
+    planet.initial_angle = i * 6.28 / 5;
+    planet.angular_velocity = 6.28 / 50;
     planet.production_rate = (i == 0 ? 0.4 : 0.2);
     planet.squadrons.push_back(create_squadron(planet, 5));
 
@@ -50,9 +50,9 @@ Game::Game()
       auto& moon = m_planets.emplace_back();
       moon.id = next_planet_id++;
       moon.parent = &planet;
-      moon.distance = (j + 1) * 10;
-      moon.initial_angle = j * 3.14 / 3;
-      moon.angular_velocity = 3.14 / 25;
+      moon.distance = 60;
+      moon.initial_angle = j * 6.28 / 3;
+      moon.angular_velocity = 6.28 / 15;
       moon.production_rate = 0.02;
       moon.squadrons.push_back(create_squadron(moon, 3));
     }
