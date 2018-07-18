@@ -7,7 +7,7 @@ import { Engine } from './model/utils';
 import { GameTimeHandler } from './model/gameTimeHandler';
 import { CommunicationHandler, ClientMessageSender, SpaceGameConfig } from './communication/communicationHandler';
 import { ServerMessageHandler } from './communication/messageHandler';
-import { Galaxy } from './model/galaxyModels';
+import { Galaxy, Planet, Faction, Squadron } from './model/galaxyModels';
 import { GameScene } from './scenes/game';
 import { HudScene } from './scenes/hud';
 
@@ -18,6 +18,35 @@ export enum States {
     HUD = 'hud'
 }
 
+class GalaxyHelper {
+    private _factions: { [id: number]: Faction; } = {};
+    private _planets: { [id: number]: Planet; } = {};
+    private _squadrons: { [id: number]: Squadron; } = {};
+
+    public init(galaxy: Galaxy) {
+
+        galaxy.planets.forEach(planet => {
+            this._planets[planet.id] = planet;
+        });
+
+        galaxy.factions.forEach(faction => {
+            this._factions[faction.id] = faction;
+        });
+    }
+
+    public get factions(): { [id: number]: Faction; } {
+        return this._factions;
+    }
+
+    public get planets(): { [id: number]: Planet; } {
+        return this._planets;
+    }
+
+    public get squadrons(): { [id: number]: Squadron; } {
+        return this._squadrons;
+    }
+}
+
 export class SpaceGame extends Phaser.Game {
 
     private _communicationHandler: CommunicationHandler;
@@ -26,6 +55,7 @@ export class SpaceGame extends Phaser.Game {
     private _clientMessageSender: ClientMessageSender;
 
     private _galaxy: Galaxy;
+    private _galaxyHelper: GalaxyHelper;
 
     constructor(config: GameConfig) {
         super(config);
@@ -49,6 +79,7 @@ export class SpaceGame extends Phaser.Game {
         this.scene.add(States.HUD, new HudScene());
 
         this._galaxy = new Galaxy();
+
     }
 
     public get communcationHandler(): CommunicationHandler {
@@ -61,6 +92,8 @@ export class SpaceGame extends Phaser.Game {
 
     public initGalaxy(galaxy: Galaxy) {
         this._galaxy = galaxy;
+        this._galaxyHelper = new GalaxyHelper();
+        this._galaxyHelper.init(this._galaxy);
     }
 
     public get initialized(): boolean {
@@ -73,6 +106,18 @@ export class SpaceGame extends Phaser.Game {
 
     public createFighter(planetId: number, squadronId: number, fighterCount: number) {
 
+    }
+
+    public squadronSent(sourcePlanetId: number, factionId: number, targetPlanetId: number,
+        squadronId: number, fighterCount: number) {
+
+        if (this._galaxyHelper.squadrons[squadronId] === null) {
+            // create squadron
+            let squadron: Squadron = new Squadron();
+            squadron.id = squadronId;
+            squadron.faction = this._galaxyHelper.factions[factionId];
+            // squadron.fighters.sp
+        }
     }
 }
 

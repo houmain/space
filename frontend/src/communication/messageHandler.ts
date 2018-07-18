@@ -1,4 +1,4 @@
-import { ServerMessageType, ServerMessage, MessageGameJoined, MessagePlayerJoined, MessageGameUpdated, MessageFighterCreated } from './communicationInterfaces';
+import { ServerMessageType, ServerMessage, MessageGameJoined, MessagePlayerJoined, MessageGameUpdated, MessageFighterCreated, MessageSquadronSent } from './communicationInterfaces';
 import { SpaceGame } from '../Game';
 import { GalaxyFactory } from '../model/galaxyFactory';
 
@@ -42,11 +42,14 @@ export class ServerMessageHandler {
                     break;
                 case ServerMessageType.FIGHTER_CREATED:
                     //  console.log('fighter created');
-                    let fighterCreatedMessage = msg as MessageFighterCreated;;
+                    let fighterCreatedMessage = msg as MessageFighterCreated;
                     this._game.createFighter(fighterCreatedMessage.planetId, fighterCreatedMessage.squadronId, fighterCreatedMessage.fighterCount);
                     break;
                 case ServerMessageType.SQUADRON_SENT:
-                    console.log('SQUADRON_SENT');
+                    let squadronSentEvent = msg as MessageSquadronSent;
+                    this._game.squadronSent(squadronSentEvent.sourcePlanetId, squadronSentEvent.targetPlanetId,
+                        squadronSentEvent.squadronId, squadronSentEvent.fighterCount);
+                    console.log('SQUADRON_SENT' + JSON.stringify(msg));
                     break;
                 default:
                     console.warn(`Unhandled message found ${JSON.stringify(msg)}`);
