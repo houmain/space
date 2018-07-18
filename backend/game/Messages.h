@@ -15,7 +15,7 @@ std::string build_player_left_message(const IClient& client,
 std::string build_fighter_created_message(const Squadron& squadron);
 std::string build_fighter_destroyed_message(const Squadron& squadron,
   const Squadron& by_squadron);
-std::string build_squadron_sent_message(const Planet& source_planet,
+std::string build_squadron_sent_message(const Squadron& source_squadron,
   const Squadron& squadron);
 std::string build_squadrons_merged_message(const Squadron& squadron,
   const Squadron& into_squadron);

@@ -160,16 +160,18 @@ std::string build_fighter_destroyed_message(const Squadron& squadron,
   });
 }
 
-std::string build_squadron_sent_message(const Planet& source_planet,
+std::string build_squadron_sent_message(const Squadron& source_squadron,
     const Squadron& squadron) {
   return json::build_message([&](json::Writer& writer) {
     writer.StartObject();
     writer.Key("event");
     writer.String("squadronSent");
     writer.Key("sourcePlanetId");
-    writer.Int(source_planet.id);
+    writer.Int(source_squadron.planet->id);
     writer.Key("targetPlanetId");
     writer.Int(squadron.planet->id);
+    writer.Key("sourceSquadronId");
+    writer.Int(source_squadron.id);
     writer.Key("squadronId");
     writer.Int(squadron.id);
     writer.Key("factionId");
