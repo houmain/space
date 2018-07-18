@@ -20,7 +20,7 @@ Game::Game()
     m_start_time(Clock::now()),
     m_last_update_time(Clock::now()) {
 
-  m_rules.squadron_speed = 5.0;
+  m_rules.squadron_speed = 50.0;
   m_rules.fight_duration = 5.0;
 
   for (auto i = 0; i < 4; ++i) {
@@ -43,7 +43,7 @@ Game::Game()
     planet.distance = (i + 1) * 100;
     planet.initial_angle = i * 3.14 / 3;
     planet.angular_velocity = 3.14 / 25;
-    planet.production_rate = 0.2;
+    planet.production_rate = (i == 0 ? 0.4 : 0.2);
     planet.squadrons.push_back(create_squadron(planet, 5));
 
     for (auto j = 0; j < 2; ++j) {
@@ -144,8 +144,7 @@ void Game::update_planet_production(double time_elapsed) {
 }
 
 void Game::update_moving_squadrons(double time_elapsed) {
-  for (auto it = m_moving_squadrons.begin(),
-           end = m_moving_squadrons.end(); it != end; ) {
+  for (auto it = m_moving_squadrons.begin(); it != m_moving_squadrons.end(); ) {
     // advance towards target planet
     auto& squadron = *it;
     auto& planet = *squadron.planet;
