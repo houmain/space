@@ -3,11 +3,11 @@
 import 'phaser';
 import { Preloader } from './scenes/preloader';
 import { Main } from './scenes/main';
-import { Engine } from './model/utils';
+import { Engine, Assert } from './model/utils';
 import { GameTimeHandler } from './model/gameTimeHandler';
 import { CommunicationHandler, ClientMessageSender, SpaceGameConfig } from './communication/communicationHandler';
 import { ServerMessageHandler } from './communication/messageHandler';
-import { Galaxy, Planet, Faction, Squadron } from './model/galaxyModels';
+import { Galaxy, Planet, Faction, Squadron, Fighter } from './model/galaxyModels';
 import { GameScene } from './scenes/game';
 import { HudScene } from './scenes/hud';
 
@@ -18,19 +18,29 @@ export enum States {
     HUD = 'hud'
 }
 
-class GalaxyHelper {
+class GalaxyHandler {
     private _factions: { [id: number]: Faction; } = {};
     private _planets: { [id: number]: Planet; } = {};
     private _squadrons: { [id: number]: Squadron; } = {};
 
     public init(galaxy: Galaxy) {
 
-        galaxy.planets.forEach(planet => {
-            this._planets[planet.id] = planet;
-        });
-
         galaxy.factions.forEach(faction => {
             this._factions[faction.id] = faction;
+        });
+
+        galaxy.planets.forEach(planet => {
+            this._planets[planet.id] = planet;
+
+            let squadrons = planet.squadrons;
+
+            squadrons.forEach(squadron => {
+                this._squadrons[squadron.id] = squadron;
+            });
+        });
+
+        galaxy.squadrons.forEach(squadron => {
+            this._squadrons[squadron.id] = squadron;
         });
     }
 
@@ -55,7 +65,7 @@ export class SpaceGame extends Phaser.Game {
     private _clientMessageSender: ClientMessageSender;
 
     private _galaxy: Galaxy;
-    private _galaxyHelper: GalaxyHelper;
+    private _galaxyHandler: GalaxyHandler;
 
     constructor(config: GameConfig) {
         super(config);
@@ -92,8 +102,8 @@ export class SpaceGame extends Phaser.Game {
 
     public initGalaxy(galaxy: Galaxy) {
         this._galaxy = galaxy;
-        this._galaxyHelper = new GalaxyHelper();
-        this._galaxyHelper.init(this._galaxy);
+        this._galaxyHandler = new GalaxyHandler();
+        this._galaxyHandler.init(this._galaxy);
     }
 
     public get initialized(): boolean {
@@ -105,19 +115,74 @@ export class SpaceGame extends Phaser.Game {
     }
 
     public createFighter(planetId: number, squadronId: number, fighterCount: number) {
+        let squadron = this._galaxyHandler.squadrons[squadronId];
 
+        if (squadron) {
+            squadron.fighters.push(new Fighter());
+        } else {
+            console.error('Unknown squadron with id ' + squadronId);
+        }
+
+        //  Assert.equals(squadron.fighters.length, fighterCount, `Game::createFighter: Incorrect Fighter count client: ${squadron.fighters.length} server: ${fighterCount}`);
     }
 
-    public squadronSent(sourcePlanetId: number, factionId: number, targetPlanetId: number,
+    public squadronSent(factionId: number, sourcePlanetId: number, sourceSquadronId: number, targetPlanetId: number,
         squadronId: number, fighterCount: number) {
 
-        if (this._galaxyHelper.squadrons[squadronId] === null) {
-            // create squadron
-            let squadron: Squadron = new Squadron();
-            squadron.id = squadronId;
-            squadron.faction = this._galaxyHelper.factions[factionId];
-            // squadron.fighters.sp
+        let sentSquadron: Squadron = this._galaxyHandler.squadrons[squadronId];
+
+        if (!sentSquadron) {
+            sentSquadron = this.createSquadron(factionId, squadronId);
         }
+
+        let sourceSquadron = this._galaxyHandler.squadrons[sourceSquadronId];
+        let sentFighters = sourceSquadron.fighters.splice(sourceSquadron.fighters.length - fighterCount, fighterCount);
+        sentSquadron.fighters.push(sentFighters);
+    }
+
+    private createSquadron(factionId: number, squadronId: number): Squadron {
+        // TODO update galaxy squadrons
+        let squadron = new Squadron();
+        squadron.id = squadronId;
+        squadron.faction = this._galaxyHandler.factions[factionId];
+        this._galaxyHandler.squadrons[squadronId] = squadron;
+        return squadron;
+    }
+
+    public squadronAttacks(planetId: number, squadronId: number) {
+        let sentSquadron: Squadron = this._galaxyHandler.squadrons[squadronId];
+        let planet = this._galaxyHandler.planets[planetId];
+        planet.squadrons.push(sentSquadron);
+    }
+
+    public fighterDestroyed(planetId: number, squadronId: number, remainingFighterCount: number, bySquadronId: number) {
+        let squadron = this._galaxyHandler.squadrons[squadronId];
+
+        if (squadron) {
+            squadron.fighters.splice(squadron.fighters.length - 2, 1);
+            //      Assert.equals(squadron.fighters.length, remainingFighterCount, `Game::fighterDestroyed: Incorrect Fighter count client: ${squadron.fighters.length} server: ${remainingFighterCount}`);
+        } else {
+            console.error('Unknown squadron with id ' + squadronId);
+        }
+    }
+
+    public planetConquered(factionId: number, planetId: number) {
+        let faction = this._galaxyHandler.factions[factionId];
+        let planet = this._galaxyHandler.planets[planetId];
+
+        planet.faction = faction;
+    }
+
+    public squadronDestroyed(planetId: number, squadronId: number) {
+        let planet = this._galaxyHandler.planets[planetId];
+        let squadron = this._galaxyHandler.squadrons[squadronId];
+
+        let index = planet.squadrons.indexOf(squadron);
+        if (index !== -1) {
+            planet.squadrons.splice(index, 1);
+        }
+
+        delete this._galaxyHandler.squadrons[squadronId];
     }
 }
 

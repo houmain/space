@@ -1,4 +1,4 @@
-import { ServerMessageType, ServerMessage, MessageGameJoined, MessagePlayerJoined, MessageGameUpdated, MessageFighterCreated, MessageSquadronSent } from './communicationInterfaces';
+import { ServerMessageType, ServerMessage, MessageGameJoined, MessagePlayerJoined, MessageGameUpdated, MessageFighterCreated, MessageSquadronSent, MessageFighterDestroyed, MessagePlanetConquered, MessageSquadronAttacks, MessageSquadronDestroyed } from './communicationInterfaces';
 import { SpaceGame } from '../Game';
 import { GalaxyFactory } from '../model/galaxyFactory';
 
@@ -29,7 +29,7 @@ export class ServerMessageHandler {
                     console.log('gameJoined!!!');
                     let joinedMessage = msg as MessageGameJoined;
                     console.log(JSON.stringify(msg));
-                    let galaxy = GalaxyFactory.create(joinedMessage.factions, joinedMessage.planets);
+                    let galaxy = GalaxyFactory.create(joinedMessage.factions, joinedMessage.planets, joinedMessage.squadrons);
                     this._game.initGalaxy(galaxy);
                     break;
                 case ServerMessageType.PLAYER_JOINED:
@@ -41,15 +41,36 @@ export class ServerMessageHandler {
                     this._onMessageHandlerServerTimeUpdate(gameUpdatedMessage.time);
                     break;
                 case ServerMessageType.FIGHTER_CREATED:
-                    //  console.log('fighter created');
                     let fighterCreatedMessage = msg as MessageFighterCreated;
                     this._game.createFighter(fighterCreatedMessage.planetId, fighterCreatedMessage.squadronId, fighterCreatedMessage.fighterCount);
                     break;
                 case ServerMessageType.SQUADRON_SENT:
-                    let squadronSentEvent = msg as MessageSquadronSent;
-                    this._game.squadronSent(squadronSentEvent.sourcePlanetId, squadronSentEvent.targetPlanetId,
-                        squadronSentEvent.squadronId, squadronSentEvent.fighterCount);
                     console.log('SQUADRON_SENT' + JSON.stringify(msg));
+                    let squadronSentEvent = msg as MessageSquadronSent;
+                    this._game.squadronSent(
+                        squadronSentEvent.factionId,
+                        squadronSentEvent.sourcePlanetId, squadronSentEvent.sourceSquadronId, squadronSentEvent.targetPlanetId,
+                        squadronSentEvent.squadronId, squadronSentEvent.fighterCount);
+                    break;
+                case ServerMessageType.SQUADRON_ATTACKS:
+                    console.log('SQUADRON_ATTACKS' + JSON.stringify(msg));
+                    let sam = msg as MessageSquadronAttacks;
+                    this._game.squadronAttacks(sam.planetId, sam.squadronId);
+                    break;
+                case ServerMessageType.FIGHTER_DESTROYED:
+                    console.log('FIGHTER_DESTROYED' + JSON.stringify(msg));
+                    let fdm = msg as MessageFighterDestroyed;
+                    this._game.fighterDestroyed(fdm.planetId, fdm.squadronId, fdm.fighterCount, fdm.bySquadronId);
+                    break;
+                case ServerMessageType.PLANET_CONQUERED:
+                    console.log('PLANET_CONQUERED' + JSON.stringify(msg));
+                    let pqm = msg as MessagePlanetConquered;
+                    this._game.planetConquered(pqm.factionId, pqm.planetId);
+                    break;
+                case ServerMessageType.SQUADRON_DESTROYED:
+                    let sdm = msg as MessageSquadronDestroyed;
+                    this._game.squadronDestroyed(sdm.planetId, sdm.squadronId);
+                    console.log('SQUADRON_DESTROYED' + JSON.stringify(msg));
                     break;
                 default:
                     console.warn(`Unhandled message found ${JSON.stringify(msg)}`);

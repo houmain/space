@@ -1,6 +1,7 @@
 export class Galaxy {
     planets: Planet[] = [];
     factions: Faction[] = [];
+    squadrons: Squadron[] = [];
 }
 
 export class Planet {

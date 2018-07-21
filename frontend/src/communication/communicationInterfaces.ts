@@ -23,7 +23,11 @@ export enum ServerMessageType {
     PLAYER_JOINED = 'playerJoined',
     GAME_UPDATED = 'gameUpdated',
     FIGHTER_CREATED = 'fighterCreated',
-    SQUADRON_SENT = 'squadronSent'
+    SQUADRON_SENT = 'squadronSent',
+    SQUADRON_ATTACKS = 'squadronAttacks',
+    FIGHTER_DESTROYED = 'fighterDestroyed',
+    PLANET_CONQUERED = 'planetConquered',
+    SQUADRON_DESTROYED = 'squadronDestroyed'
 }
 
 export interface ServerMessage {
@@ -33,6 +37,7 @@ export interface ServerMessage {
 export interface MessageGameJoined extends ServerMessage {
     planets: PlanetInfo[];
     factions: FactionInfo[];
+    squadrons: SquadronInfo[];
 }
 
 export interface PlanetInfo {
@@ -72,10 +77,33 @@ export interface MessageFighterCreated extends ServerMessage {
 }
 
 export interface MessageSquadronSent extends ServerMessage {
+    factionId: number;
     sourcePlanetId: number;
+    sourceSquadronId: number;
     targetPlanetId: number;
     squadronId: number;
-    factionId: number;
     fighterCount: number;
     speed: number;
+}
+
+export interface MessageSquadronAttacks extends ServerMessage {
+    planetId: number;
+    squadronId: number;
+}
+
+export interface MessageFighterDestroyed extends ServerMessage {
+    planetId: number;
+    squadronId: number;
+    fighterCount: number;
+    bySquadronId: number;
+}
+
+export interface MessagePlanetConquered extends ServerMessage {
+    planetId: number;
+    factionId: number;
+}
+
+export interface MessageSquadronDestroyed extends ServerMessage {
+    planetId: number;
+    squadronId: number;
 }

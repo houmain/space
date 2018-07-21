@@ -1,11 +1,11 @@
 //https://gamedevacademy.org/create-a-basic-multiplayer-game-in-phaser-3-with-socket-io-part-2/
 
 import { Galaxy, Planet, Faction, Squadron, Fighter } from './galaxyModels';
-import { FactionInfo, PlanetInfo } from '../communication/communicationInterfaces';
+import { FactionInfo, PlanetInfo, SquadronInfo } from '../communication/communicationInterfaces';
 
 export class GalaxyFactory {
 
-    public static create(factionInfos: FactionInfo[], planetInfos: PlanetInfo[]): Galaxy {
+    public static create(factionInfos: FactionInfo[], planetInfos: PlanetInfo[], squadronInfos: SquadronInfo[]): Galaxy {
 
         let infoMap: { [id: number]: PlanetInfo; } = {};
         let planetMap: { [id: number]: Planet; } = {};
@@ -61,6 +61,13 @@ export class GalaxyFactory {
         planets[0].x = 400;
         planets[0].y = 400;
 
+        let squadrons: Squadron[] = [];
+        squadronInfos.forEach((squadronInfo, index) => {
+            let squadron = new Squadron();
+            squadron.id = squadronInfo.squadronId;
+            squadrons.push(squadron);
+        });
+
         let galaxy = new Galaxy();
 
         factions.forEach(faction => {
@@ -69,6 +76,10 @@ export class GalaxyFactory {
 
         planets.forEach(planet => {
             galaxy.planets.push(planet);
+        });
+
+        squadrons.forEach(squadron => {
+            galaxy.squadrons.push(squadron);
         });
 
         return galaxy;
