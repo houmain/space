@@ -12,7 +12,7 @@ export class Engine {
 }
 
 
-export let DEBUG = true;
+export let DEBUG = false;
 
 export class Assert {
 

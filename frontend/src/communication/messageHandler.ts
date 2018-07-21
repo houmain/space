@@ -1,4 +1,4 @@
-import { ServerMessageType, ServerMessage, MessageGameJoined, MessagePlayerJoined, MessageGameUpdated, MessageFighterCreated, MessageSquadronSent, MessageFighterDestroyed, MessagePlanetConquered, MessageSquadronAttacks, MessageSquadronDestroyed } from './communicationInterfaces';
+import { ServerMessageType, ServerMessage, MessageGameJoined, MessagePlayerJoined, MessageGameUpdated, MessageFighterCreated, MessageSquadronSent, MessageFighterDestroyed, MessagePlanetConquered, MessageSquadronAttacks, MessageSquadronDestroyed, MessageSquadronsMerged } from './communicationInterfaces';
 import { SpaceGame } from '../Game';
 import { GalaxyFactory } from '../model/galaxyFactory';
 
@@ -51,6 +51,11 @@ export class ServerMessageHandler {
                         squadronSentEvent.factionId,
                         squadronSentEvent.sourcePlanetId, squadronSentEvent.sourceSquadronId, squadronSentEvent.targetPlanetId,
                         squadronSentEvent.squadronId, squadronSentEvent.fighterCount);
+                    break;
+                case ServerMessageType.SQUADRONS_MERGED:
+                    console.log('SQUADRONS_MERGED' + JSON.stringify(msg));
+                    let smm = msg as MessageSquadronsMerged;
+                    this._game.squadronsMerged(smm.planetId, smm.squadronId, smm.intoSquadronId, smm.fighterCount);
                     break;
                 case ServerMessageType.SQUADRON_ATTACKS:
                     console.log('SQUADRON_ATTACKS' + JSON.stringify(msg));

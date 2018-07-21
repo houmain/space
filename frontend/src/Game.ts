@@ -123,7 +123,8 @@ export class SpaceGame extends Phaser.Game {
             console.error('Unknown squadron with id ' + squadronId);
         }
 
-        //  Assert.equals(squadron.fighters.length, fighterCount, `Game::createFighter: Incorrect Fighter count client: ${squadron.fighters.length} server: ${fighterCount}`);
+        Assert.equals(squadron.fighters.length, fighterCount, `Game::createFighter: squadron ${squadronId}
+        Incorrect Fighter count client: ${squadron.fighters.length} server: ${fighterCount}`);
     }
 
     public squadronSent(factionId: number, sourcePlanetId: number, sourceSquadronId: number, targetPlanetId: number,
@@ -149,6 +150,18 @@ export class SpaceGame extends Phaser.Game {
         return squadron;
     }
 
+    public squadronsMerged(planetId: number, squadronId: number, intoSquadronId: number, fighterCount: number) {
+        let sourceSquadron = this._galaxyHandler.squadrons[squadronId];
+        let targetSquadron = this._galaxyHandler.squadrons[intoSquadronId];
+
+        let fighters = sourceSquadron.fighters.splice(0, sourceSquadron.fighters.length);
+        targetSquadron.fighters.push(fighters);
+
+        Assert.equals(targetSquadron.fighters.length, fighterCount, `Game::squadronsMerged: Incorrect Fighter count client: ${targetSquadron.fighters.length} server: ${fighterCount}`);
+
+        this.deleteSquadron(planetId, squadronId);
+    }
+
     public squadronAttacks(planetId: number, squadronId: number) {
         let sentSquadron: Squadron = this._galaxyHandler.squadrons[squadronId];
         let planet = this._galaxyHandler.planets[planetId];
@@ -160,7 +173,7 @@ export class SpaceGame extends Phaser.Game {
 
         if (squadron) {
             squadron.fighters.splice(squadron.fighters.length - 2, 1);
-            //      Assert.equals(squadron.fighters.length, remainingFighterCount, `Game::fighterDestroyed: Incorrect Fighter count client: ${squadron.fighters.length} server: ${remainingFighterCount}`);
+            Assert.equals(squadron.fighters.length, remainingFighterCount, `Game::fighterDestroyed: Incorrect Fighter count client: ${squadron.fighters.length} server: ${remainingFighterCount}`);
         } else {
             console.error('Unknown squadron with id ' + squadronId);
         }
@@ -174,6 +187,11 @@ export class SpaceGame extends Phaser.Game {
     }
 
     public squadronDestroyed(planetId: number, squadronId: number) {
+        this.deleteSquadron(planetId, squadronId);
+    }
+
+    private deleteSquadron(planetId: number, squadronId: number) {
+        // TODO update galaxy squadrons
         let planet = this._galaxyHandler.planets[planetId];
         let squadron = this._galaxyHandler.squadrons[squadronId];
 
