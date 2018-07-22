@@ -40,6 +40,7 @@ export interface MessageGameJoined extends ServerMessage {
     planets: PlanetInfo[];
     factions: FactionInfo[];
     squadrons: SquadronInfo[];
+    factionId: number;
 }
 
 export interface PlanetInfo {
@@ -51,6 +52,10 @@ export interface PlanetInfo {
     parent: number;
     faction: number;
     squadrons: SquadronInfo[];
+    maxUpkeep: number;
+    productionRate: number;
+    productionProgress: number;
+    defenseBonus: number;
 }
 
 export interface FactionInfo {

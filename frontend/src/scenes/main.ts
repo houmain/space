@@ -61,7 +61,7 @@ export class Main extends Phaser.Scene {
 
         this._gameInfoHandler.addInfoText('Test');
 
-        this._selectionHandler = new SelectionHandler(this, this.cameras.main, this._galaxy.planets, this._clientMessageSender);
+        this._selectionHandler = new SelectionHandler(this, this.cameras.main, this._game.player, this._galaxy.planets, this._clientMessageSender);
         this._inputHandler.onSelectStart = this._selectionHandler.onStartSelect.bind(this._selectionHandler);
         this._inputHandler.onSelectEnd = this._selectionHandler.onEndSelect.bind(this._selectionHandler);
         this._inputHandler.onSelectedMouseMove = this._selectionHandler.onSelectPosChanged.bind(this._selectionHandler);

@@ -57,6 +57,10 @@ class GalaxyHandler {
     }
 }
 
+export class Player {
+    public factionId: number;
+}
+
 export class SpaceGame extends Phaser.Game {
 
     private _communicationHandler: CommunicationHandler;
@@ -66,6 +70,8 @@ export class SpaceGame extends Phaser.Game {
 
     private _galaxy: Galaxy;
     private _galaxyHandler: GalaxyHandler;
+
+    private _player: Player;
 
     constructor(config: GameConfig) {
         super(config);
@@ -88,8 +94,8 @@ export class SpaceGame extends Phaser.Game {
         this.scene.add(States.GAME, new GameScene(this, this._gameTimeHandler, this._clientMessageSender));
         this.scene.add(States.HUD, new HudScene());
 
+        this._player = new Player();
         this._galaxy = new Galaxy();
-
     }
 
     public get communcationHandler(): CommunicationHandler {
@@ -98,6 +104,15 @@ export class SpaceGame extends Phaser.Game {
 
     public get galaxy(): Galaxy {
         return this._galaxy;
+    }
+
+    public get player(): Player {
+        return this._player;
+    }
+
+    public gameJoined(factionId: number) {
+        this._player = new Player();
+        this._player.factionId = factionId;
     }
 
     public initGalaxy(galaxy: Galaxy) {

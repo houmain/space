@@ -22,18 +22,13 @@ export class ServerMessageHandler {
         this._onMessageHandlerServerTimeUpdate = onMessageHandlerServerTimeUpdate;
     }
 
-    private logMessage(msg: ServerMessage) {
-        if (msg.event !== ServerMessageType.GAME_UPDATED && msg.event !== ServerMessageType.FIGHTER_CREATED) {
-            console.log(JSON.stringify(msg));
-        }
-    }
-
     public handle(msg: ServerMessage) {
         try {
             switch (msg.event) {
                 case ServerMessageType.GAME_JOINED:
                     let joinedMessage = msg as MessageGameJoined;
                     console.log(JSON.stringify(msg));
+                    this._game.gameJoined(joinedMessage.factionId);
                     let galaxy = GalaxyFactory.create(joinedMessage.factions, joinedMessage.planets, joinedMessage.squadrons);
                     this._game.initGalaxy(galaxy);
                     break;

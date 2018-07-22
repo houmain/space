@@ -1,5 +1,6 @@
 import { Planet, Squadron } from '../model/galaxyModels';
 import { ClientMessageSender } from '../communication/communicationHandler';
+import { Player } from '../Game';
 
 export class SelectionArrow {
 
@@ -32,12 +33,11 @@ export class SelectionArrow {
  *
  */
 
-export const PLAYER_FACTION_ID = 1; // TODO remove hardcoded
-
 export class SelectionHandler { // InputHandler
 
     private _scene: Phaser.Scene;
     private _camera: Phaser.Cameras.Scene2D.Camera;
+    private _player: Player;
     private _clientMessageSender: ClientMessageSender;
 
     private _rect: Phaser.Geom.Rectangle;
@@ -51,9 +51,10 @@ export class SelectionHandler { // InputHandler
     private _currentMouseX: number;
     private _currentMouseY: number;
 
-    public constructor(scene: Phaser.Scene, camera: Phaser.Cameras.Scene2D.Camera, planets: Planet[], clientMessageSender: ClientMessageSender) {
+    public constructor(scene: Phaser.Scene, camera: Phaser.Cameras.Scene2D.Camera, player: Player, planets: Planet[], clientMessageSender: ClientMessageSender) {
         this._scene = scene;
         this._camera = camera;
+        this._player = player;
         this._allPlanets = planets;
         this._clientMessageSender = clientMessageSender;
 
@@ -163,7 +164,7 @@ export class SelectionHandler { // InputHandler
                 let sendRate = 0.5;
 
                 this._selectedPlanets.forEach(planet => {
-                    let squadron: Squadron = this.findSquadronByFactionId(planet, PLAYER_FACTION_ID);
+                    let squadron: Squadron = this.findSquadronByFactionId(planet, this._player.factionId);
 
                     let numFighters = Math.floor(squadron.fighters.length * sendRate);
                     if (numFighters > 0) {
@@ -187,7 +188,7 @@ export class SelectionHandler { // InputHandler
             }
 
             this._allPlanets.forEach(planet => {
-                if (this._rect.contains(planet.x, planet.y) && planet.faction && planet.faction.id === PLAYER_FACTION_ID) {
+                if (this._rect.contains(planet.x, planet.y) && planet.faction && planet.faction.id === this._player.factionId) {
                     this._selectedPlanets.push(planet);
                 }
             });

@@ -16,7 +16,9 @@ export class GalaxyFactory {
         factionInfos.forEach((factionInfo, index) => {
             let faction = new Faction();
             faction.id = factionInfo.id;
+            faction.name = factionInfo.name;
             faction.color = factionColors[index];
+            faction.destroyed = false;
             factions.push(faction);
             factionMap[faction.id] = faction;
         });
@@ -32,6 +34,10 @@ export class GalaxyFactory {
             planet.distance = planetInfo.distance;
             planet.initialAngle = planetInfo.initialAngle;
             planet.angularVelocity = planetInfo.angularVelocity;
+            planet.maxUpkeep = planetInfo.maxUpkeep;
+            planet.productionRate = planetInfo.productionRate;
+            planet.productionProgress = planetInfo.productionProgress;
+            planet.defenseBonus = planetInfo.defenseBonus;
 
             if (planetInfo.faction) {
                 planet.faction = factionMap[planetInfo.faction];

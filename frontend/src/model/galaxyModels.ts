@@ -16,12 +16,17 @@ export class Planet {
     angularVelocity: number;
     sprite: Phaser.GameObjects.Sprite;
     squadrons: Squadron[] = [];
+    maxUpkeep: number;
+    productionRate: number;
+    productionProgress: number;
+    defenseBonus: number;
 }
 
 export class Faction {
     id: number;
     color: number;
     destroyed: boolean = false;
+    name: string;
 }
 
 export class Squadron {
