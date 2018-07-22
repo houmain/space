@@ -6,12 +6,11 @@ namespace game {
 
 std::string build_game_joined_message(const std::vector<Faction>& factions,
   const std::vector<Planet>& planets,
-  const std::vector<Squadron>& moving_squadrons);
+  const std::vector<Squadron>& moving_squadrons,
+  const Faction& faction);
 std::string build_game_updated_message(double time_since_start);
-std::string build_player_joined_message(const IClient& client,
-  const Faction& faction);
-std::string build_player_left_message(const IClient& client,
-  const Faction& faction);
+std::string build_player_joined_message(const Faction& faction);
+std::string build_player_left_message(const Faction& faction);
 std::string build_fighter_created_message(const Squadron& squadron);
 std::string build_fighter_destroyed_message(const Squadron& squadron,
   const Squadron& by_squadron);

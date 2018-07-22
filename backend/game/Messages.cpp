@@ -5,7 +5,8 @@ namespace game {
 
 std::string build_game_joined_message(const std::vector<Faction>& factions,
     const std::vector<Planet>& planets,
-    const std::vector<Squadron>& moving_squadrons) {
+    const std::vector<Squadron>& moving_squadrons,
+    const Faction& faction) {
   return json::build_message([&](json::Writer& writer) {
     writer.StartObject();
     writer.Key("event");
@@ -45,6 +46,14 @@ std::string build_game_joined_message(const std::vector<Faction>& factions,
         writer.Key("faction");
         writer.Int(planet.faction->id);
       }
+      writer.Key("maxUpkeep");
+      writer.Int(planet.max_upkeep);
+      writer.Key("productionRate");
+      writer.Double(planet.production_rate);
+      writer.Key("productionProgress");
+      writer.Double(planet.production_progress);
+      writer.Key("defenseBonus");
+      writer.Double(planet.defense_bonus);
       if (!planet.squadrons.empty()) {
         writer.Key("squadrons");
         writer.StartArray();
@@ -88,6 +97,9 @@ std::string build_game_joined_message(const std::vector<Faction>& factions,
     }
     writer.EndArray();
 
+    writer.Key("factionId");
+    writer.Int(faction.id);
+
     writer.EndObject();
   });
 }
@@ -103,8 +115,7 @@ std::string build_game_updated_message(double time_since_start) {
   });
 }
 
-std::string build_player_joined_message([[maybe_unused]] const IClient& client,
-    const Faction& faction) {
+std::string build_player_joined_message(const Faction& faction) {
   return json::build_message([&](json::Writer& writer) {
     writer.StartObject();
     writer.Key("event");
@@ -115,8 +126,7 @@ std::string build_player_joined_message([[maybe_unused]] const IClient& client,
   });
 }
 
-std::string build_player_left_message([[maybe_unused]]const IClient& client,
-    const Faction& faction) {
+std::string build_player_left_message(const Faction& faction) {
   return json::build_message([&](json::Writer& writer) {
     writer.StartObject();
     writer.Key("event");

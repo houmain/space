@@ -21,6 +21,9 @@ struct Faction {
   FactionId id;
   std::string name;
   IClient* client;
+
+  int max_upkeep;
+  int current_upkeep;
 };
 
 struct Squadron {
@@ -42,6 +45,8 @@ struct Planet {
   double distance;
   std::string name;
   double production_rate;
+  int max_upkeep;
+  int defense_bonus;
 
   Faction* faction;
   std::vector<Squadron> squadrons;

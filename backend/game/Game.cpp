@@ -44,6 +44,8 @@ Game::Game()
     planet.initial_angle = i * 6.28 / 5;
     planet.angular_velocity = 6.28 / 50;
     planet.production_rate = (i == 0 ? 0.4 : 0.2);
+    planet.max_upkeep = (i == 1 ? 40 : 30);
+    planet.defense_bonus = (i == 2 ? 10 : 0);
     planet.squadrons.push_back(create_squadron(planet, 5));
 
     for (auto j = 0; j < 2; ++j) {
@@ -54,6 +56,7 @@ Game::Game()
       moon.initial_angle = j * 6.28 / 3;
       moon.angular_velocity = 6.28 / 15;
       moon.production_rate = 0.1;
+      moon.max_upkeep = 15;
       moon.squadrons.push_back(create_squadron(moon, 3));
     }
   }
@@ -62,6 +65,7 @@ Game::Game()
 void Game::on_client_joined(IClient* client) {
   assert(!m_clients.count(client));
 
+  // automatically assign some faction for now
   auto faction = [&]() {
     for (auto& faction : m_factions)
       if (!faction.client)
@@ -73,16 +77,16 @@ void Game::on_client_joined(IClient* client) {
   faction->client = client;
 
   client->send(build_game_joined_message(
-    m_factions, m_planets, m_moving_squadrons));
+    m_factions, m_planets, m_moving_squadrons, *faction));
 
-  broadcast(build_player_joined_message(*client, *faction));
+  broadcast(build_player_joined_message(*faction));
 }
 
 void Game::on_client_left(IClient* client) {
   assert(m_clients.count(client));
 
   auto faction = m_clients[client];
-  broadcast(build_player_left_message(*client, *faction));
+  broadcast(build_player_left_message(*faction));
 
   faction->client = nullptr;
   m_clients.erase(client);
@@ -111,10 +115,28 @@ void Game::update() {
 
   broadcast(build_game_updated_message(time_since_start));
 
+  update_faction_upkeep();
   update_planet_positions(time_since_start);
   update_planet_production(time_elapsed);
   update_moving_squadrons(time_elapsed);
   update_fighters(time_elapsed);
+}
+
+void Game::update_faction_upkeep() {
+  for (auto& faction : m_factions) {
+    faction.max_upkeep = 0;
+    faction.current_upkeep = 0;
+  }
+
+  for (const auto& planet : m_planets) {
+    if (planet.faction)
+      planet.faction->max_upkeep += planet.max_upkeep;
+    for (const auto& squadron : planet.squadrons)
+      if (squadron.faction)
+        squadron.faction->current_upkeep += squadron.fighter_count;
+  }
+  for (const auto& squadron : m_moving_squadrons)
+    squadron.faction->current_upkeep += squadron.fighter_count;
 }
 
 void Game::update_planet_positions(double time_since_start) {
@@ -135,6 +157,12 @@ void Game::update_planet_production(double time_elapsed) {
     if (planet.faction) {
       planet.production_progress += planet.production_rate * time_elapsed;
       if (planet.production_progress >= 1.0) {
+
+        if (planet.faction->current_upkeep >= planet.faction->max_upkeep) {
+          planet.production_progress = 1.0;
+          continue;
+        }
+
         auto& squadron = *find_planet_squadron(planet, planet.faction);
         squadron.fighter_count += 1;
         planet.production_progress = 0.0;
@@ -147,9 +175,8 @@ void Game::update_moving_squadrons(double time_elapsed) {
   for (auto it = m_moving_squadrons.begin(); it != m_moving_squadrons.end(); ) {
     // advance towards target planet
     auto& squadron = *it;
-    auto& planet = *squadron.planet;
-    const auto dx = planet.x - squadron.x;
-    const auto dy = planet.y - squadron.y;
+    const auto dx = squadron.planet->x - squadron.x;
+    const auto dy = squadron.planet->y - squadron.y;
     const auto distance = std::sqrt(dx * dx + dy * dy);
     const auto distance_covered = time_elapsed * squadron.speed;
 
@@ -158,21 +185,25 @@ void Game::update_moving_squadrons(double time_elapsed) {
       squadron.x += dx * f;
       squadron.y += dy * f;
       ++it;
-      continue;
-    }
-
-    // arrived
-    if (auto comrades = find_planet_squadron(planet, squadron.faction)) {
-      // merge with comrades
-      comrades->fighter_count += std::exchange(squadron.fighter_count, 0);
-      broadcast(build_squadrons_merged_message(squadron, *comrades));
     }
     else {
-      // add to list of squadrons conquering planet
-      planet.squadrons.push_back(squadron);
-      broadcast(build_squadron_attacks_message(squadron));
+      on_squadron_arrived(squadron);
+      it = m_moving_squadrons.erase(it);
     }
-    it = m_moving_squadrons.erase(it);
+  }
+}
+
+void Game::on_squadron_arrived(Squadron& squadron) {
+  auto& planet = *squadron.planet;
+  if (auto comrades = find_planet_squadron(planet, squadron.faction)) {
+    // merge with comrades
+    comrades->fighter_count += std::exchange(squadron.fighter_count, 0);
+    broadcast(build_squadrons_merged_message(squadron, *comrades));
+  }
+  else {
+    // add to list of squadrons conquering planet
+    planet.squadrons.push_back(squadron);
+    broadcast(build_squadron_attacks_message(squadron));
   }
 }
 
@@ -205,8 +236,11 @@ void Game::destroy_random_fighter(Planet& planet) {
 
   // select firing squadron
   auto probability = std::vector<int>();
-  for (auto& squadron : planet.squadrons)
-    probability.push_back(squadron.fighter_count);
+  for (const auto& squadron : planet.squadrons) {
+    const auto bonus =
+      (squadron.faction == planet.faction ? planet.defense_bonus : 0);
+    probability.push_back(squadron.fighter_count + bonus);
+  }
   const auto by_squadron_index = std::discrete_distribution<size_t>(
     begin(probability), end(probability))(m_random);
 
@@ -223,25 +257,30 @@ void Game::destroy_random_fighter(Planet& planet) {
 
   squadron.fighter_count -= 1;
   broadcast(build_fighter_destroyed_message(squadron, by_squadron));
-  if (squadron.fighter_count == 0) {
-    // squadron destroyed
 
-    if (squadron.faction == planet.faction) {
-      // defender destroyed, update planet faction
-      planet.faction = by_squadron.faction;
-      broadcast(build_planet_conquered_message(planet));
-    }
+  if (squadron.fighter_count == 0)
+    on_squadron_destroyed(squadron, by_squadron);
+}
 
-    const auto faction = squadron.faction;
-    broadcast(build_squadron_destroyed_message(squadron));
-    planet.squadrons.erase(begin(planet.squadrons) +
-      static_cast<int>(squadron_index));
+void Game::on_squadron_destroyed(Squadron& squadron,
+                                 const Squadron& by_squadron) {
+  auto& planet = *squadron.planet;
 
-    if (faction && !faction_has_squadron(*faction)) {
-      broadcast(build_faction_destroyed_message(*faction));
-      if (auto last_faction = find_last_faction())
-        broadcast(build_faction_won_message(*last_faction));
-    }
+  if (squadron.faction == planet.faction) {
+    // defender destroyed, update planet faction
+    planet.faction = by_squadron.faction;
+    broadcast(build_planet_conquered_message(planet));
+  }
+
+  const auto faction = squadron.faction;
+  broadcast(build_squadron_destroyed_message(squadron));
+  planet.squadrons.erase(begin(planet.squadrons) +
+    std::distance(planet.squadrons.data(), &squadron));
+
+  if (faction && !faction_has_squadron(*faction)) {
+    broadcast(build_faction_destroyed_message(*faction));
+    if (auto last_faction = find_last_faction())
+      broadcast(build_faction_won_message(*last_faction));
   }
 }
 

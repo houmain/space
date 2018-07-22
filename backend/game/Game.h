@@ -25,11 +25,14 @@ private:
     int fighter_count, Faction* faction = nullptr);
   void broadcast(std::string_view message);
   void send_squadron(Faction& faction, const json::Value& value);
+  void update_faction_upkeep();
   void update_planet_positions(double time_since_start);
   void update_planet_production(double time_elapsed);
   void update_moving_squadrons(double time_elapsed);
+  void on_squadron_arrived(Squadron& squadron);
   void update_fighters(double time_elapsed);
   void destroy_random_fighter(Planet& planet);
+  void on_squadron_destroyed(Squadron& squadron, const Squadron& by_squadron);
   bool faction_has_squadron(const Faction& faction) const;
   const Faction* find_last_faction() const;
 
