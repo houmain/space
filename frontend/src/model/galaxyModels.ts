@@ -38,3 +38,7 @@ export class Squadron {
 export class Fighter {
 
 }
+
+export class Player {
+    public factionId: number;
+}

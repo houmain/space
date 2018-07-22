@@ -1,6 +1,5 @@
-import { Planet, Squadron } from '../model/galaxyModels';
+import { Planet, Squadron, Player } from '../model/galaxyModels';
 import { ClientMessageSender } from '../communication/communicationHandler';
-import { Player } from '../Game';
 
 export class SelectionArrow {
 

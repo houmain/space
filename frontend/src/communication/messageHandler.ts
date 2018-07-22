@@ -6,9 +6,19 @@ export interface MessageHandlerServerTimeUpdate {
     (timeSinceStart: number): void;
 }
 
+export interface ServerMessageHandlerino<T extends ServerMessage> {
+    (msg: T): void;
+}
+
 export class ServerMessageHandler {
 
     private _game: SpaceGame;
+
+    private _handlers: { [eventKey: string]: ServerMessageHandlerino<ServerMessage>[]; } = {};
+
+    private handleMessageGameJoined(msg: MessageGameJoined) {
+        console.log('XXXXXXXXXXXXXXX' + JSON.stringify(msg));
+    }
 
     private _onMessageHandlerServerTimeUpdate: MessageHandlerServerTimeUpdate = (timeSinceStart: number) => {
         console.log('update');
@@ -16,6 +26,9 @@ export class ServerMessageHandler {
 
     public constructor(game: SpaceGame) {
         this._game = game;
+
+        this._handlers[ServerMessageType.GAME_JOINED] = [];
+        this._handlers[ServerMessageType.GAME_JOINED].push(this.handleMessageGameJoined);
     }
 
     public set onMessageHandlerServerTimeUpdate(onMessageHandlerServerTimeUpdate: MessageHandlerServerTimeUpdate) {
@@ -31,6 +44,12 @@ export class ServerMessageHandler {
                     this._game.gameJoined(joinedMessage.factionId);
                     let galaxy = GalaxyFactory.create(joinedMessage.factions, joinedMessage.planets, joinedMessage.squadrons);
                     this._game.initGalaxy(galaxy);
+
+                    let handlerinos = this._handlers[ServerMessageType.GAME_JOINED];
+                    handlerinos.forEach(handlerino => {
+                        handlerino(msg);
+                    });
+
                     break;
                 case ServerMessageType.PLAYER_JOINED:
                     let playerJoinedMessage = msg as MessagePlayerJoined;

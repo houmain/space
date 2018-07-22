@@ -7,58 +7,16 @@ import { Engine, Assert } from './model/utils';
 import { GameTimeHandler } from './model/gameTimeHandler';
 import { CommunicationHandler, ClientMessageSender, SpaceGameConfig } from './communication/communicationHandler';
 import { ServerMessageHandler } from './communication/messageHandler';
-import { Galaxy, Planet, Faction, Squadron, Fighter } from './model/galaxyModels';
+import { Galaxy, Planet, Faction, Squadron, Fighter, Player } from './model/galaxyModels';
 import { GameScene } from './scenes/game';
 import { HudScene } from './scenes/hud';
+import { GalaxyHandler } from './model/galaxyHandler';
 
 export enum States {
     PRELOADER = 'preloader',
     MAIN = 'main',
     GAME = 'game',
     HUD = 'hud'
-}
-
-class GalaxyHandler {
-    private _factions: { [id: number]: Faction; } = {};
-    private _planets: { [id: number]: Planet; } = {};
-    private _squadrons: { [id: number]: Squadron; } = {};
-
-    public init(galaxy: Galaxy) {
-
-        galaxy.factions.forEach(faction => {
-            this._factions[faction.id] = faction;
-        });
-
-        galaxy.planets.forEach(planet => {
-            this._planets[planet.id] = planet;
-
-            let squadrons = planet.squadrons;
-
-            squadrons.forEach(squadron => {
-                this._squadrons[squadron.id] = squadron;
-            });
-        });
-
-        galaxy.squadrons.forEach(squadron => {
-            this._squadrons[squadron.id] = squadron;
-        });
-    }
-
-    public get factions(): { [id: number]: Faction; } {
-        return this._factions;
-    }
-
-    public get planets(): { [id: number]: Planet; } {
-        return this._planets;
-    }
-
-    public get squadrons(): { [id: number]: Squadron; } {
-        return this._squadrons;
-    }
-}
-
-export class Player {
-    public factionId: number;
 }
 
 export class SpaceGame extends Phaser.Game {
