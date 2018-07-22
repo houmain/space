@@ -16,9 +16,9 @@ export class SelectionArrow {
     public update(x: number, y: number) {
 
         this._shaft.setTopLeft(this._planet.x - 10, this._planet.y - 10);
-        this._shaft.setTopRight(this._planet.x + 10, this._planet.y + 10);
+        this._shaft.setTopRight(this._planet.x + 10, this._planet.y - 10);
 
-        this._shaft.setBottomLeft(x - 10, y - 10);
+        this._shaft.setBottomLeft(x - 10, y + 10);
         this._shaft.setBottomRight(x + 10, y + 10);
     }
 
@@ -45,6 +45,11 @@ export class SelectionHandler { // InputHandler
 
     private _allPlanets: Planet[];
     private _selectedPlanets: Planet[] = [];
+
+    private _selectionArrows: SelectionArrow[] = [];
+
+    private _currentMouseX: number;
+    private _currentMouseY: number;
 
     public constructor(scene: Phaser.Scene, camera: Phaser.Cameras.Scene2D.Camera, planets: Planet[], clientMessageSender: ClientMessageSender) {
         this._scene = scene;
@@ -75,6 +80,14 @@ export class SelectionHandler { // InputHandler
                 });
             });
         }
+
+        if (this._selectionArrows.length > 0) {
+
+            let worldPos = this.getWorldPosition(this._currentMouseX, this._currentMouseY);
+            this._selectionArrows.forEach(arrow => {
+                arrow.update(worldPos.x, worldPos.y);
+            });
+        }
     }
 
     private planetUnderCursor(x: number, y: number): Planet {
@@ -100,15 +113,13 @@ export class SelectionHandler { // InputHandler
             // else draw drag arrow
             this.createSelectionArrows();
         } else {
-            this._selectedPlanets.splice(0); // if no splice seleced
+            this._selectedPlanets.splice(0);
 
             let worldPos = this.getWorldPosition(x, y);
             this._rect.x = worldPos.x;
             this._rect.y = worldPos.y;
         }
     }
-
-    private _selectionArrows: SelectionArrow[] = [];
 
     private createSelectionArrows() {
         this._selectionArrows = [];
@@ -130,21 +141,50 @@ export class SelectionHandler { // InputHandler
         this._selectionArrows = [];
     }
 
+
+    private findSquadronByFactionId(planet: Planet, factionId: number): Squadron {
+        let numSquadrons = planet.squadrons.length;
+
+        for (let s = 0; s < numSquadrons; s++) {
+            if (planet.squadrons[s].faction != null && planet.squadrons[s].faction.id === factionId) {
+                return planet.squadrons[s];
+            }
+        }
+
+        return null;
+    }
+
     public onEndSelect(x: number, y: number) {
 
         if (this._selectionArrows.length > 0) {
 
             let targetPlanet = this.planetUnderCursor(x, y);
             if (targetPlanet !== null) {
-                console.log('send them to planet ' + targetPlanet.id);
-                let sourcePlanet = this._selectedPlanets[0];
-                let squadron: Squadron = sourcePlanet.squadrons[0]; // TODO Player
-                this._clientMessageSender.sendSquadron(sourcePlanet.id, targetPlanet.id, squadron.fighters.length);
+                let sendRate = 0.5;
+
+                this._selectedPlanets.forEach(planet => {
+                    let squadron: Squadron = this.findSquadronByFactionId(planet, PLAYER_FACTION_ID);
+
+                    let numFighters = Math.floor(squadron.fighters.length * sendRate);
+                    if (numFighters > 0) {
+                        this._clientMessageSender.sendSquadron(planet.id, targetPlanet.id, numFighters);
+                    }
+                });
             }
 
             this._selectedPlanets.splice(0);
         } else {
             this._selectedPlanets.splice(0);
+
+            if (this._rect.width < 0) {
+                this._rect.width *= -1;
+                this._rect.x -= this._rect.width;
+            }
+
+            if (this._rect.height < 0) {
+                this._rect.height *= -1;
+                this._rect.y -= this._rect.height;
+            }
 
             this._allPlanets.forEach(planet => {
                 if (this._rect.contains(planet.x, planet.y) && planet.faction && planet.faction.id === PLAYER_FACTION_ID) {
@@ -158,6 +198,9 @@ export class SelectionHandler { // InputHandler
     }
 
     public onSelectPosChanged(x: number, y: number) {
+        this._currentMouseX = x;
+        this._currentMouseY = y;
+
         let worldPos = this.getWorldPosition(x, y);
 
         if (this._selectionArrows.length === 0) {
@@ -167,11 +210,6 @@ export class SelectionHandler { // InputHandler
             this._graphics.clear();
             this._graphics.strokeRectShape(this._rect);
 
-        } else {
-            console.log('update arrows');
-            this._selectionArrows.forEach(arrow => {
-                arrow.update(worldPos.x, worldPos.y);
-            });
         }
     }
 }

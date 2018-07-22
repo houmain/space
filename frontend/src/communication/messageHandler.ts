@@ -1,4 +1,4 @@
-import { ServerMessageType, ServerMessage, MessageGameJoined, MessagePlayerJoined, MessageGameUpdated, MessageFighterCreated, MessageSquadronSent, MessageFighterDestroyed, MessagePlanetConquered, MessageSquadronAttacks, MessageSquadronDestroyed, MessageSquadronsMerged } from './communicationInterfaces';
+import { ServerMessageType, ServerMessage, MessageGameJoined, MessagePlayerJoined, MessageGameUpdated, MessageFighterCreated, MessageSquadronSent, MessageFighterDestroyed, MessagePlanetConquered, MessageSquadronAttacks, MessageSquadronDestroyed, MessageSquadronsMerged, MessageFactionDestroyed } from './communicationInterfaces';
 import { SpaceGame } from '../Game';
 import { GalaxyFactory } from '../model/galaxyFactory';
 
@@ -76,6 +76,10 @@ export class ServerMessageHandler {
                     let sdm = msg as MessageSquadronDestroyed;
                     this._game.squadronDestroyed(sdm.planetId, sdm.squadronId);
                     console.log('SQUADRON_DESTROYED' + JSON.stringify(msg));
+                    break;
+                case ServerMessageType.FACTION_DESTROYED:
+                    let fd = msg as MessageFactionDestroyed;
+                    this._game.factionDestroyed(fd.factionId);
                     break;
                 default:
                     console.warn(`Unhandled message found ${JSON.stringify(msg)}`);

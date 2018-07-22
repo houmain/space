@@ -202,6 +202,10 @@ export class SpaceGame extends Phaser.Game {
 
         delete this._galaxyHandler.squadrons[squadronId];
     }
+
+    public factionDestroyed(factionId: number) {
+
+    }
 }
 
 function startGame(): void {
