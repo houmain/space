@@ -73,7 +73,7 @@ export class Main extends Phaser.Scene {
 
     public update(timeSinceStart: number, timeSinceLastFrame: number) {
 
-        this._camera.update();
+        this._camera.update(timeSinceLastFrame);
 
         this._timeHandler.addLocalElapsedTime(timeSinceLastFrame);
         let timeElapsed = this._timeHandler.timeSinceStart;

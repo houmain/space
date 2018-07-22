@@ -21,6 +21,7 @@ export class Planet {
 export class Faction {
     id: number;
     color: number;
+    destroyed: boolean = false;
 }
 
 export class Squadron {

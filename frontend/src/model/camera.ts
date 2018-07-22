@@ -14,7 +14,7 @@ export class Camera {
         this._targetPositionY += y;
     }
 
-    public update() {
+    public update(timeSinceLastFrame: number) {
         this._camera.scrollX = (this._targetPositionX - this._camera.scrollX) * 0.1;
         this._camera.scrollY = (this._targetPositionY - this._camera.scrollY) * 0.1;
     }

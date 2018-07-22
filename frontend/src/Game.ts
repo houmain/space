@@ -204,7 +204,8 @@ export class SpaceGame extends Phaser.Game {
     }
 
     public factionDestroyed(factionId: number) {
-
+        let faction: Faction = this._galaxyHandler.factions[factionId];
+        faction.destroyed = true;
     }
 }
 
