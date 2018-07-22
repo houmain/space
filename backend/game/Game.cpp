@@ -53,7 +53,7 @@ Game::Game()
       moon.distance = 60;
       moon.initial_angle = j * 6.28 / 3;
       moon.angular_velocity = 6.28 / 15;
-      moon.production_rate = 0.02;
+      moon.production_rate = 0.1;
       moon.squadrons.push_back(create_squadron(moon, 3));
     }
   }
@@ -232,13 +232,13 @@ void Game::destroy_random_fighter(Planet& planet) {
       broadcast(build_planet_conquered_message(planet));
     }
 
+    const auto faction = squadron.faction;
     broadcast(build_squadron_destroyed_message(squadron));
-    const auto& faction = *squadron.faction;
     planet.squadrons.erase(begin(planet.squadrons) +
       static_cast<int>(squadron_index));
 
-    if (!faction_has_squadron(faction)) {
-      broadcast(build_faction_destroyed_message(faction));
+    if (faction && !faction_has_squadron(*faction)) {
+      broadcast(build_faction_destroyed_message(*faction));
       if (auto last_faction = find_last_faction())
         broadcast(build_faction_won_message(*last_faction));
     }
