@@ -1,9 +1,10 @@
 import { GalaxyHandler } from './galaxyHandler';
 import { ServerMessageObserver } from '../communication/messageHandler';
-import { MessageGameJoined, ServerMessageType } from '../communication/communicationInterfaces';
+import { MessageGameJoined, ServerMessageType, MessageFighterCreated, MessageSquadronSent, MessageSquadronsMerged, MessageSquadronAttacks, MessageFighterDestroyed, MessagePlanetConquered, MessageSquadronDestroyed } from '../communication/communicationInterfaces';
 import { GalaxyFactory } from './galaxyFactory';
 import { Player, GameState } from '../data/gameData';
-import { Galaxy } from '../data/galaxyModels';
+import { Galaxy, Fighter, Squadron } from '../data/galaxyModels';
+import { Assert } from '../model/utils';
 
 export class GameLogic {
 
@@ -13,26 +14,114 @@ export class GameLogic {
 
 	public constructor(gameState: GameState, serverMessageObserver: ServerMessageObserver) {
 		this._player = gameState.player;
+
 		this._galaxy = gameState.galaxy;
 
 		this._galaxyHandler = new GalaxyHandler();
 
-		/*serverMessageObserver.subscribe<MessageGameJoined>(ServerMessageType.GAME_JOINED, this.onGameJoined);
-        serverMessageObserver.subscribe<MessageFighterCreated>(ServerMessageType.FIGHTER_CREATED, this.onFighterCreated);
-        this._serverMessageObserver.subscribe<MessageSquadronSent>(ServerMessageType.SQUADRON_SENT, this.onSquadronSent);
-        this._serverMessageObserver.subscribe<MessageSquadronsMerged>(ServerMessageType.SQUADRONS_MERGED, this.onSquadronsMerged);
-        this._serverMessageObserver.subscribe<MessageSquadronAttacks>(ServerMessageType.SQUADRON_ATTACKS, this.onSquadronAttacks);
-        this._serverMessageObserver.subscribe<MessageFighterDestroyed>(ServerMessageType.FIGHTER_DESTROYED, this.onFighterDestroyed);
-        this._serverMessageObserver.subscribe<MessagePlanetConquered>(ServerMessageType.PLANET_CONQUERED, this.onPlanetConquered);
-        this._serverMessageObserver.subscribe<MessageSquadronDestroyed>(ServerMessageType.SQUADRON_DESTROYED, this.onSquadronDestroyed);*/
+		serverMessageObserver.subscribe<MessageGameJoined>(ServerMessageType.GAME_JOINED, this.onGameJoined.bind(this));
+		serverMessageObserver.subscribe<MessageFighterCreated>(ServerMessageType.FIGHTER_CREATED, this.onFighterCreated.bind(this));
+		serverMessageObserver.subscribe<MessageSquadronSent>(ServerMessageType.SQUADRON_SENT, this.onSquadronSent.bind(this));
+		serverMessageObserver.subscribe<MessageSquadronsMerged>(ServerMessageType.SQUADRONS_MERGED, this.onSquadronsMerged.bind(this));
+		serverMessageObserver.subscribe<MessageSquadronAttacks>(ServerMessageType.SQUADRON_ATTACKS, this.onSquadronAttacks.bind(this));
+		serverMessageObserver.subscribe<MessageFighterDestroyed>(ServerMessageType.FIGHTER_DESTROYED, this.onFighterDestroyed.bind(this));
+		serverMessageObserver.subscribe<MessagePlanetConquered>(ServerMessageType.PLANET_CONQUERED, this.onPlanetConquered.bind(this));
+		serverMessageObserver.subscribe<MessageSquadronDestroyed>(ServerMessageType.SQUADRON_DESTROYED, this.onSquadronDestroyed.bind(this));
 	}
 
 	private onGameJoined(msg: MessageGameJoined) {
-		console.log('onGameJoined ');
 
 		this._player.factionId = msg.factionId;
 
 		GalaxyFactory.create(this._galaxy, msg.factions, msg.planets, msg.squadrons);
+
 		this._galaxyHandler.init(this._galaxy);
+	}
+
+	private onFighterCreated(msg: MessageFighterCreated) {
+		let squadron = this._galaxyHandler.squadrons[msg.squadronId];
+
+		if (squadron) {
+			squadron.fighters.push(new Fighter());
+		} else {
+			console.error('Unknown squadron with id ' + msg.squadronId);
+		}
+
+		Assert.equals(squadron.fighters.length, msg.fighterCount, `Game::createFighter: squadron ${msg.squadronId}
+        Incorrect Fighter count client: ${squadron.fighters.length} server: ${msg.fighterCount}`);
+	}
+
+	private onSquadronSent(msg: MessageSquadronSent) {
+		let sentSquadron: Squadron = this._galaxyHandler.squadrons[msg.squadronId];
+
+		if (!sentSquadron) {
+			sentSquadron = this.createSquadron(msg.factionId, msg.squadronId);
+		}
+
+		let sourceSquadron = this._galaxyHandler.squadrons[msg.sourceSquadronId];
+		let sentFighters = sourceSquadron.fighters.splice(sourceSquadron.fighters.length - msg.fighterCount, msg.fighterCount);
+		sentSquadron.fighters.push(sentFighters);
+	}
+
+	private createSquadron(factionId: number, squadronId: number): Squadron {
+		// TODO update galaxy squadrons
+		let squadron = new Squadron();
+		squadron.id = squadronId;
+		squadron.faction = this._galaxyHandler.factions[factionId];
+		this._galaxyHandler.squadrons[squadronId] = squadron;
+		return squadron;
+	}
+
+	private onSquadronsMerged(msg: MessageSquadronsMerged) {
+		let sourceSquadron = this._galaxyHandler.squadrons[msg.squadronId];
+		let targetSquadron = this._galaxyHandler.squadrons[msg.intoSquadronId];
+
+		let fighters = sourceSquadron.fighters.splice(0, sourceSquadron.fighters.length);
+		targetSquadron.fighters.push(fighters);
+
+		Assert.equals(targetSquadron.fighters.length, msg.fighterCount, `Game::squadronsMerged: Incorrect Fighter count client: ${targetSquadron.fighters.length} server: ${msg.fighterCount}`);
+
+		this.deleteSquadron(msg.planetId, msg.squadronId);
+	}
+
+	private deleteSquadron(planetId: number, squadronId: number) {
+		// TODO update galaxy squadrons
+		let planet = this._galaxyHandler.planets[planetId];
+		let squadron = this._galaxyHandler.squadrons[squadronId];
+
+		let index = planet.squadrons.indexOf(squadron);
+		if (index !== -1) {
+			planet.squadrons.splice(index, 1);
+		}
+
+		delete this._galaxyHandler.squadrons[squadronId];
+	}
+
+	private onSquadronAttacks(msg: MessageSquadronAttacks) {
+		let sentSquadron: Squadron = this._galaxyHandler.squadrons[msg.squadronId];
+		let planet = this._galaxyHandler.planets[msg.planetId];
+		planet.squadrons.push(sentSquadron);
+	}
+
+	private onFighterDestroyed(msg: MessageFighterDestroyed) {
+		let squadron = this._galaxyHandler.squadrons[msg.squadronId];
+
+		if (squadron) {
+			squadron.fighters.splice(squadron.fighters.length - 2, 1);
+			Assert.equals(squadron.fighters.length, msg.fighterCount, `Game::fighterDestroyed: Incorrect Fighter count client: ${squadron.fighters.length} server: ${msg.fighterCount}`);
+		} else {
+			console.error('Unknown squadron with id ' + msg.squadronId);
+		}
+	}
+
+	private onPlanetConquered(msg: MessagePlanetConquered) {
+		let faction = this._galaxyHandler.factions[msg.factionId];
+		let planet = this._galaxyHandler.planets[msg.planetId];
+
+		planet.faction = faction;
+	}
+
+	private onSquadronDestroyed(msg: MessageSquadronDestroyed) {
+		this.deleteSquadron(msg.planetId, msg.squadronId);
 	}
 }

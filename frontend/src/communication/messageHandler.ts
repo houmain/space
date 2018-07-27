@@ -44,15 +44,20 @@ export class ServerMessageObserver implements ServerMessageHandler2, Observer {
         let subscribers = this._handlers[msg.event];
 
         if (subscribers) {
-            subscribers.forEach(subscribe => {
-                subscribe(msg);
-            });
+            try {
+                subscribers.forEach(handle => {
+                    handle(msg);
+                });
+            } catch (e) {
+                alert(e);
+            }
+
         } else {
-            console.warn(`Unhandled message found ${msg.event}`);
+            //     console.warn(`Unhandled message found ${msg.event}`);
         }
     }
 }
-
+// todo remove
 export class ServerMessageHandler {
 
     private _game: SpaceGame;
