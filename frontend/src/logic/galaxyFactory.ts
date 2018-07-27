@@ -6,7 +6,7 @@ import { FactionInfo, PlanetInfo, SquadronInfo } from '../communication/communic
 export class GalaxyFactory {
 
     public static create(galaxy: Galaxy, factionInfos: FactionInfo[], planetInfos: PlanetInfo[], squadronInfos: SquadronInfo[]): Galaxy {
-        console.log('ttttttttttttt')
+
         let infoMap: { [id: number]: PlanetInfo; } = {};
         let planetMap: { [id: number]: Planet; } = {};
         let factionMap: { [id: number]: Faction; } = {};

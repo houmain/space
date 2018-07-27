@@ -34,14 +34,11 @@ export class InitGameScene extends Phaser.Scene {
 
 		this._clientMessageSender.joinGame(1);
 
-		console.log('joining game');
-
 		let info = this.add.text(10, 100, 'joining game', { font: '32px Arial', fill: '#ffffff' });
 	}
 
 	public update() {
 		if (this.gameInitialized()) {
-			console.log('starting game');
 			this.startGame();
 		}
 	}

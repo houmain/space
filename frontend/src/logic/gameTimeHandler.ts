@@ -1,17 +1,17 @@
-import { MessageGameUpdated } from '../communication/communicationInterfaces';
+import { MessageGameUpdated, ServerMessageType } from '../communication/communicationInterfaces';
+import { ServerMessageObserver } from '../communication/messageHandler';
 
 export class GameTimeHandler {
 
     private _serverTimeSinceStart: number;
     private _timeSinceLastServerTimeUpdate: number;
 
-    //TODO: REMOVE
-    public updateServerTime(serverTimeSinceStart: number) {
-        this._serverTimeSinceStart = serverTimeSinceStart;
-        this._timeSinceLastServerTimeUpdate = 0;
+    public constructor(serverMessageObserver: ServerMessageObserver) {
+        serverMessageObserver.subscribe<MessageGameUpdated>(ServerMessageType.GAME_UPDATED,
+            this.updateServerTime.bind(this));
     }
 
-    public updateServerTime2(msg: MessageGameUpdated) {
+    public updateServerTime(msg: MessageGameUpdated) {
         this._serverTimeSinceStart = msg.time;
         this._timeSinceLastServerTimeUpdate = 0;
     }

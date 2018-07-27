@@ -57,8 +57,6 @@ export class GameScene extends Phaser.Scene {
 			planet.sprite.on('pointerdown', () => {
 				this._selectionHandler.selectPlanet(planet);
 			});
-
-			console.log(this._galaxy.planets.length);
 		});
 
 		this._gameInfoHandler.addInfoText('Test Fighters 10/20');
