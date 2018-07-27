@@ -1,13 +1,15 @@
 import 'phaser';
+
 import { SpaceGame } from '../Game';
-import { Camera } from '../model/camera';
-import { GameTimeHandler } from '../model/gameTimeHandler';
+import { Camera } from '../view/camera';
+import { GameTimeHandler } from '../logic/gameTimeHandler';
 import { SelectionHandler } from '../input/selectionHandler';
-import { GameInfoHandler } from '../model/gameInfo';
-import { Galaxy } from '../model/galaxyModels';
+import { Galaxy } from '../data/galaxyModels';
 import { InputHandler } from '../input/inputHandler';
-import { Background } from '../model/background';
+import { Background } from '../view/background';
 import { ClientMessageSender } from '../communication/communicationHandler';
+import { GameInfoHandler } from '../view/gameInfo';
+import { States } from './states';
 
 export class Main extends Phaser.Scene {
 
@@ -26,7 +28,7 @@ export class Main extends Phaser.Scene {
     private _graphics: Phaser.GameObjects.Graphics;
 
     public constructor(game: SpaceGame, timeHandler: GameTimeHandler, clientMessageSender: ClientMessageSender) {
-        super('main');
+        super(States.MAIN);
         this._game = game;
         this._timeHandler = timeHandler;
         this._clientMessageSender = clientMessageSender;
@@ -44,7 +46,6 @@ export class Main extends Phaser.Scene {
         this.cameras.main.setSize(2048, 2048);
         this._inputHandler.onDrag = this._camera.setDeltaPosition.bind(this._camera);
 
-        //const background = this.add.sprite(this.sys.canvas.width / 2, this.sys.canvas.height / 2, 'background');
         new Background(this).create();
 
         this._galaxy = this._game.galaxy;
@@ -53,13 +54,12 @@ export class Main extends Phaser.Scene {
             planet.sprite = this.add.sprite(0, 0, planet.parent ? 'planet' : 'sun');
             planet.sprite.setScale(planet.parent ? 0.25 : 0.35);
             planet.sprite.setInteractive();
+            planet.sprite.on('pointerdown', () => {
+                this._selectionHandler.selectPlanet(planet);
+            });
         });
-        /*
-                this.input.on('gameobjectdown', (p: any, o: Phaser.GameObjects.GameObject) => {
-                    (o as Phaser.GameObjects.Sprite).setTint(0xff0000);
-                });*/
 
-        this._gameInfoHandler.addInfoText('Test');
+        this._gameInfoHandler.addInfoText('Test Fighters 10/20');
 
         this._selectionHandler = new SelectionHandler(this, this.cameras.main, this._game.player, this._galaxy.planets, this._clientMessageSender);
         this._inputHandler.onSelectStart = this._selectionHandler.onStartSelect.bind(this._selectionHandler);
@@ -67,8 +67,6 @@ export class Main extends Phaser.Scene {
         this._inputHandler.onSelectedMouseMove = this._selectionHandler.onSelectPosChanged.bind(this._selectionHandler);
 
         this._graphics = this.add.graphics({ lineStyle: { width: 2, color: 0xff0000, alpha: 1 } });
-
-
     }
 
     public update(timeSinceStart: number, timeSinceLastFrame: number) {

@@ -10,7 +10,15 @@ module.exports = {
     mode: 'development',
     devtool: 'eval-source-map',
     devServer: {
-        contentBase: './build'
+        contentBase: './build',
+        compress: true,
+        port: 8080,
+        inline: true,
+        watchOptions: {
+            aggregateTimeout: 300,
+            poll: true,
+            ignored: /node_modules/
+        }
     },
     output: {
         path: path.resolve(__dirname, 'build'),
@@ -70,6 +78,9 @@ module.exports = {
         new HtmlWebpackPlugin({
             filename: './index.html',
             template: './index.html'
+        }),
+        new webpack.DefinePlugin({
+            __DEBUG__: JSON.stringify(true)
         })
     ]
 };

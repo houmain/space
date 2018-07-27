@@ -1,5 +1,5 @@
 import { ClientMessage, ClientMessageType, JoinMessage, SendSquadron } from './communicationInterfaces';
-import { ServerMessageHandler } from './messageHandler';
+import { ServerMessageHandler, ServerMessageHandler2 } from './messageHandler';
 
 export class ClientMessageSender {
 
@@ -46,12 +46,14 @@ export class CommunicationHandler {
 
     private _socket: any;
     private _messageHandler: ServerMessageHandler;
+    private _messageHandler2: ServerMessageHandler2;
 
     public onConnectionEstablished: Function;
     public onDisconnected: Function;
 
-    public constructor(messageHandler: ServerMessageHandler) {
+    public constructor(messageHandler: ServerMessageHandler, messageHandler2: ServerMessageHandler2) {
         this._messageHandler = messageHandler;
+        this._messageHandler2 = messageHandler2;
     }
 
     public init(gameConfig: SpaceGameConfig) {
@@ -75,6 +77,7 @@ export class CommunicationHandler {
                 try {
                     let msg = JSON.parse(event.data);
                     this._messageHandler.handle(msg);
+                    //       this._messageHandler2.handle(msg);
                 } catch (e) {
                     console.log(JSON.stringify(event) + ' exception with ' + event.data);
                 }

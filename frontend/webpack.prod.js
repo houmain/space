@@ -20,7 +20,7 @@ const config = {
                 use: 'ts-loader'
             },
             {
-                test: [ /\.vert$/, /\.frag$/ ],
+                test: [/\.vert$/, /\.frag$/],
                 use: 'raw-loader'
             }
         ]
@@ -29,16 +29,16 @@ const config = {
         minimize: true,
         splitChunks: {
             cacheGroups: {
-                commons: { 
-                    test: /[\\/]node_modules[\\/]/, 
-                    name: "vendors", 
-                    chunks: "all" 
+                commons: {
+                    test: /[\\/]node_modules[\\/]/,
+                    name: "vendors",
+                    chunks: "all"
                 }
             }
         }
     },
     resolve: {
-        extensions: [ '.tsx', '.ts', '.js' ]
+        extensions: ['.tsx', '.ts', '.js']
     },
     stats: false,
     plugins: [
@@ -48,18 +48,18 @@ const config = {
             'typeof WEBGL_RENDERER': JSON.stringify(true)
         }),
         new CopyWebpackPlugin(
-        [
-            {
-                from: './assets',
-                to: './assets',
-                force: true
-            },
-            {
-                from: './app.css',
-                to: './app.css',
-                force: true
-            }
-        ]),
+            [
+                {
+                    from: './assets',
+                    to: './assets',
+                    force: true
+                },
+                {
+                    from: './app.css',
+                    to: './app.css',
+                    force: true
+                }
+            ]),
         new HtmlWebpackPlugin({
             filename: 'index.html',
             template: 'index.html'

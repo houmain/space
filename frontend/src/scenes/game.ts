@@ -1,13 +1,22 @@
-import { SpaceGame } from '../Game';
-import { Camera } from '../model/camera';
-import { InputHandler } from '../input/inputHandler';
-import { GameTimeHandler } from '../model/gameTimeHandler';
-import { SelectionHandler } from '../input/selectionHandler';
-import { GameInfoHandler } from '../model/gameInfo';
-import { Planet, Galaxy } from '../model/galaxyModels';
-import { Background } from '../model/background';
-import { ClientMessageSender } from '../communication/communicationHandler';
+import { States } from './states';
 
+export class GameScene extends Phaser.Scene {
+
+	public constructor() {
+		super(States.GAME);
+	}
+
+	public init(data: any) {
+
+		let gameState = data.gameState;
+		let gameLogic = data.gameLogic;
+	}
+
+	public create() {
+
+	}
+}
+/*
 export class GameScene extends Phaser.Scene {
 
 	private _game: SpaceGame;
@@ -84,11 +93,6 @@ export class GameScene extends Phaser.Scene {
 
 
 		this._graphics = this.add.graphics({ lineStyle: { width: 2, color: 0xff0000, alpha: 1 } });
-		/*
-				let color = 0xff0000;
-				let thickness = 20;
-				let alpha = 1;
-				this._graphics.lineStyle(thickness, color, alpha);*/
 
 	}
 
@@ -98,20 +102,6 @@ export class GameScene extends Phaser.Scene {
 
 		this._timeHandler.addLocalElapsedTime(timeSinceLastFrame);
 		let timeElapsed = this._timeHandler.timeSinceStart;
-		/*
-				this._galaxy.planets.forEach(planet => {
-					let angle = planet.initialAngle + planet.angularVelocity * timeElapsed;
-					planet.x = Math.cos(angle) * planet.distance;
-					planet.y = Math.sin(angle) * planet.distance;
-					if (planet.parent) {
-						planet.x += planet.parent.x;
-						planet.y += planet.parent.y;
-					}
-
-					planet.sprite.x = planet.x;
-					planet.sprite.y = planet.y;
-				});
-		*/
 
 		this._graphics.clear();
 
@@ -126,3 +116,4 @@ export class GameScene extends Phaser.Scene {
 		this._selectionHandler.update();
 	}
 }
+*/

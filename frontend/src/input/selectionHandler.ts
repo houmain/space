@@ -1,5 +1,6 @@
-import { Planet, Squadron, Player } from '../model/galaxyModels';
+import { Planet, Squadron } from '../data/galaxyModels';
 import { ClientMessageSender } from '../communication/communicationHandler';
+import { Player } from '../data/gameData';
 
 export class SelectionArrow {
 
@@ -88,6 +89,11 @@ export class SelectionHandler { // InputHandler
                 arrow.update(worldPos.x, worldPos.y);
             });
         }
+    }
+
+    public selectPlanet(planet: Planet) {
+        this._selectedPlanets.splice(0);
+        this._selectedPlanets.push(planet);
     }
 
     private planetUnderCursor(x: number, y: number): Planet {

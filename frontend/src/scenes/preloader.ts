@@ -1,7 +1,7 @@
 
-import { States, SpaceGame } from '../Game';
+import { SpaceGame } from '../Game';
 import { CommunicationHandler, ClientMessageSender, SpaceGameConfig } from '../communication/communicationHandler';
-import { SIGPROF } from 'constants';
+import { States } from './states';
 
 export class Preloader extends Phaser.Scene {
 
