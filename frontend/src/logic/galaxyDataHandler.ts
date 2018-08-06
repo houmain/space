@@ -1,11 +1,53 @@
 import { Faction, Planet, Squadron, Galaxy } from '../data/galaxyModels';
 import { ObservableServerMessageHandler } from '../communication/messageHandler';
 import { MessageFighterCreated, MessageFighterDestroyed, MessagePlanetConquered, ServerMessageType } from '../communication/communicationInterfaces';
+import { Observer } from '../common/commonInterfaces';
 
-export class GalaxyDataHandler {
+export interface HandleFactionChanged {
+	(faction: Faction): void;
+}
+
+class GalaxyDataHandlerObserver implements Observer {
+
+	private _factionChangeSubscribers: { [factionId: number]: HandleFactionChanged[]; } = {};
+
+	public subscribe(factionId: number, callback: HandleFactionChanged) {
+		if (!this._factionChangeSubscribers[factionId]) {
+			this._factionChangeSubscribers[factionId] = [];
+		}
+		this._factionChangeSubscribers[factionId].push(callback);
+	}
+
+	public unsubscribe(factionId: number, callback: HandleFactionChanged) {
+		let index = this._factionChangeSubscribers[factionId].indexOf(callback);
+		if (index !== -1) {
+			this._factionChangeSubscribers[factionId].splice(index, 1);
+		}
+	}
+
+	public onFactionChanged(faction: Faction) {
+
+
+		let subscribers = this._factionChangeSubscribers[faction.id];
+
+		if (subscribers) {
+			try {
+				subscribers.forEach(handle => {
+					handle(faction);
+				});
+			} catch (e) {
+				alert(e);
+			}
+		}
+	}
+}
+
+export class GalaxyDataHandler implements Observer {
 	private _factions: { [id: number]: Faction; } = {};
 	private _planets: { [id: number]: Planet; } = {};
 	private _squadrons: { [id: number]: Squadron; } = {};
+
+	private _observer: GalaxyDataHandlerObserver = new GalaxyDataHandlerObserver();
 
 	public constructor(serverMessageObserver: ObservableServerMessageHandler) {
 
@@ -69,6 +111,8 @@ export class GalaxyDataHandler {
 
 		if (squadron.faction) {
 			squadron.faction.numFighters++;
+
+			this._observer.onFactionChanged(squadron.faction);
 		}
 	}
 
@@ -77,6 +121,8 @@ export class GalaxyDataHandler {
 
 		if (squadron.faction) {
 			squadron.faction.numFighters--;
+
+			this._observer.onFactionChanged(squadron.faction);
 		}
 	}
 
@@ -93,5 +139,19 @@ export class GalaxyDataHandler {
 
 		newFaction.maxUpkeep += planet.maxUpkeep;
 		newFaction.planets.push(planet);
+
+		this._observer.onFactionChanged(newFaction);
+	}
+
+	public subscribe(factionId: number, callback: HandleFactionChanged) {
+
+		this._observer.subscribe(factionId, callback);
+
+		this._observer.onFactionChanged(this._factions[factionId]);
+	}
+
+	public unsubscribe(factionId: number, callback: HandleFactionChanged) {
+		this._observer.unsubscribe(factionId, callback);
 	}
 }
+

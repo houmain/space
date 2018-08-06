@@ -1,4 +1,4 @@
-import { GalaxyDataHandler } from './galaxyHandler';
+import { GalaxyDataHandler } from './galaxyDataHandler';
 import { ObservableServerMessageHandler } from '../communication/messageHandler';
 import { MessageGameJoined, ServerMessageType, MessageFighterCreated, MessageSquadronSent, MessageSquadronsMerged, MessageSquadronAttacks, MessageFighterDestroyed, MessagePlanetConquered, MessageSquadronDestroyed } from '../communication/communicationInterfaces';
 import { GalaxyFactory } from './galaxyFactory';
@@ -12,12 +12,12 @@ export class GameLogic {
 	private _player: Player;
 	private _galaxy: Galaxy;
 
-	public constructor(gameState: GameState, serverMessageObserver: ObservableServerMessageHandler) {
+	public constructor(gameState: GameState, serverMessageObserver: ObservableServerMessageHandler, galaxyDataHandler: GalaxyDataHandler) {
 		this._player = gameState.player;
 
 		this._galaxy = gameState.galaxy;
 
-		this._galaxyDataHandler = new GalaxyDataHandler(serverMessageObserver);
+		this._galaxyDataHandler = galaxyDataHandler;
 
 		serverMessageObserver.subscribe<MessageGameJoined>(ServerMessageType.GAME_JOINED, this.onGameJoined.bind(this));
 		serverMessageObserver.subscribe<MessageFighterCreated>(ServerMessageType.FIGHTER_CREATED, this.onFighterCreated.bind(this));

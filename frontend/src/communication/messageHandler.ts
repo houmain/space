@@ -47,7 +47,7 @@ export class ObservableServerMessageHandler implements ServerMessageHandler, Obs
             }
 
         } else {
-            //     console.warn(`Unhandled message found ${msg.event}`);
+            console.warn(`Unhandled message found ${msg.event}`);
         }
     }
 }

@@ -5,8 +5,9 @@ import { GameTimeHandler } from '../logic/gameTimeHandler';
 import { ClientMessageSender } from '../communication/communicationHandler';
 import { Galaxy, Player } from '../data/galaxyModels';
 import { Camera } from '../view/camera';
-import { GameInfoHandler } from '../view/gameInfo';
+import { GameInfoHandler, FactionInfo } from '../view/gameInfo';
 import { Background } from '../view/background';
+import { GalaxyDataHandler } from '../logic/galaxyDataHandler';
 
 export class GameScene extends Phaser.Scene {
 
@@ -14,6 +15,7 @@ export class GameScene extends Phaser.Scene {
 
 	private _galaxy: Galaxy;
 	private _player: Player;
+	private _galaxyDataHandler: GalaxyDataHandler;
 
 	private _inputHandler: InputHandler;
 	private _selectionHandler: SelectionHandler;
@@ -37,6 +39,7 @@ export class GameScene extends Phaser.Scene {
 
 		this._galaxy = gameState.galaxy;
 		this._player = gameState.player;
+		this._galaxyDataHandler = data.galaxyDataHandler;
 	}
 
 	public create() {
@@ -67,6 +70,10 @@ export class GameScene extends Phaser.Scene {
 		this._inputHandler.onSelectedMouseMove = this._selectionHandler.onSelectPosChanged.bind(this._selectionHandler);
 
 		this._graphics = this.add.graphics({ lineStyle: { width: 2, color: 0xff0000, alpha: 1 } });
+
+		let f = new FactionInfo();
+		f.create(this, this._galaxyDataHandler, this._player);
+
 	}
 
 	public update(timeSinceStart: number, timeSinceLastFrame: number) {

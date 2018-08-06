@@ -11,15 +11,15 @@ export class Planet {
     faction: Faction;
     x: number;
     y: number;
-    distance: number;
-    initialAngle: number;
-    angularVelocity: number;
+    distance: number = 0;
+    initialAngle: number = 0;
+    angularVelocity: number = 0;
     sprite: Phaser.GameObjects.Sprite;
     squadrons: Squadron[] = [];
-    maxUpkeep: number;
-    productionRate: number;
-    productionProgress: number;
-    defenseBonus: number;
+    maxUpkeep: number = 0;
+    productionRate: number = 0;
+    productionProgress: number = 0;
+    defenseBonus: number = 0;
 }
 
 export class Faction {
@@ -28,8 +28,8 @@ export class Faction {
     destroyed: boolean = false;
     name: string;
     planets: Planet[] = [];
-    numFighters: number;
-    maxUpkeep: number;
+    numFighters: number = 0;
+    maxUpkeep: number = 0;
 }
 
 export class Squadron {

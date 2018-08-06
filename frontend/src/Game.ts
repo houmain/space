@@ -9,7 +9,7 @@ import { ObservableServerMessageHandler } from './communication/messageHandler';
 import { Galaxy, Faction, Squadron, Fighter } from './data/galaxyModels';
 import { GameScene } from './scenes/game';
 import { HudScene } from './scenes/hud';
-import { GalaxyDataHandler } from './logic/galaxyHandler';
+import { GalaxyDataHandler } from './logic/galaxyDataHandler';
 import { ServerMessageType, MessageGameJoined, MessageGameUpdated, MessageFighterCreated, MessageSquadronSent, MessageSquadronsMerged, MessageSquadronAttacks, MessageFactionDestroyed, MessageFighterDestroyed, MessagePlanetConquered, MessageSquadronDestroyed } from './communication/communicationInterfaces';
 import { GalaxyFactory } from './logic/galaxyFactory';
 import { InitGameScene } from './scenes/initGame';
