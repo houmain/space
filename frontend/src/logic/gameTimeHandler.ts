@@ -1,12 +1,12 @@
 import { MessageGameUpdated, ServerMessageType } from '../communication/communicationInterfaces';
-import { ServerMessageObserver } from '../communication/messageHandler';
+import { ObservableServerMessageHandler } from '../communication/messageHandler';
 
 export class GameTimeHandler {
 
     private _serverTimeSinceStart: number;
     private _timeSinceLastServerTimeUpdate: number;
 
-    public constructor(serverMessageObserver: ServerMessageObserver) {
+    public constructor(serverMessageObserver: ObservableServerMessageHandler) {
         serverMessageObserver.subscribe<MessageGameUpdated>(ServerMessageType.GAME_UPDATED,
             this.updateServerTime.bind(this));
     }

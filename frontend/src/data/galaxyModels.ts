@@ -27,6 +27,9 @@ export class Faction {
     color: number;
     destroyed: boolean = false;
     name: string;
+    planets: Planet[] = [];
+    numFighters: number;
+    maxUpkeep: number;
 }
 
 export class Squadron {
@@ -39,3 +42,6 @@ export class Fighter {
 
 }
 
+export class Player {
+    public factionId: number;
+}

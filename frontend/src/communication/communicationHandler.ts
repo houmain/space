@@ -1,5 +1,5 @@
 import { ClientMessage, ClientMessageType, JoinMessage, SendSquadron } from './communicationInterfaces';
-import { ServerMessageHandler2 } from './messageHandler';
+import { ServerMessageHandler } from './messageHandler';
 
 export class ClientMessageSender {
 
@@ -45,12 +45,12 @@ export interface SpaceGameConfig {
 export class CommunicationHandler {
 
     private _socket: any;
-    private _messageHandler: ServerMessageHandler2;
+    private _messageHandler: ServerMessageHandler;
 
     private _connectionFailed: boolean = false;
     private _connected: boolean = false;
 
-    public constructor(messageHandler: ServerMessageHandler2) {
+    public constructor(messageHandler: ServerMessageHandler) {
         this._messageHandler = messageHandler;
     }
 

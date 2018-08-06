@@ -3,20 +3,20 @@ import { GameLogic } from '../logic/gameLogic';
 import { Player, GameState } from '../data/gameData';
 import { SpaceGame } from '../Game';
 import { Galaxy } from '../data/galaxyModels';
-import { ServerMessageObserver } from '../communication/messageHandler';
+import { ObservableServerMessageHandler } from '../communication/messageHandler';
 import { ClientMessageSender } from '../communication/communicationHandler';
 
 export class InitGameScene extends Phaser.Scene {
 
 	private _game: SpaceGame;
 
-	private _serverMessageObserver: ServerMessageObserver;
+	private _serverMessageObserver: ObservableServerMessageHandler;
 	private _clientMessageSender: ClientMessageSender;
 
 	private _gameState: GameState;
 	private _gameLogic: GameLogic;
 
-	public constructor(game: SpaceGame, clientMessageSender: ClientMessageSender, serverMessageObserver: ServerMessageObserver) {
+	public constructor(game: SpaceGame, clientMessageSender: ClientMessageSender, serverMessageObserver: ObservableServerMessageHandler) {
 		super(States.INIT_GAME);
 		this._game = game;
 		this._clientMessageSender = clientMessageSender;

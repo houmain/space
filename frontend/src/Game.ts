@@ -5,11 +5,11 @@ import { Preloader } from './scenes/preloader';
 import { Main } from './scenes/main';
 import { GameTimeHandler } from './logic/gameTimeHandler';
 import { CommunicationHandler, ClientMessageSender, SpaceGameConfig } from './communication/communicationHandler';
-import { ServerMessageObserver } from './communication/messageHandler';
+import { ObservableServerMessageHandler } from './communication/messageHandler';
 import { Galaxy, Faction, Squadron, Fighter } from './data/galaxyModels';
 import { GameScene } from './scenes/game';
 import { HudScene } from './scenes/hud';
-import { GalaxyHandler } from './logic/galaxyHandler';
+import { GalaxyDataHandler } from './logic/galaxyHandler';
 import { ServerMessageType, MessageGameJoined, MessageGameUpdated, MessageFighterCreated, MessageSquadronSent, MessageSquadronsMerged, MessageSquadronAttacks, MessageFactionDestroyed, MessageFighterDestroyed, MessagePlanetConquered, MessageSquadronDestroyed } from './communication/communicationInterfaces';
 import { GalaxyFactory } from './logic/galaxyFactory';
 import { InitGameScene } from './scenes/initGame';
@@ -20,12 +20,12 @@ import { Player } from './data/gameData';
 export class SpaceGame extends Phaser.Game {
 
     private _communicationHandler: CommunicationHandler;
-    private _serverMessageObserver: ServerMessageObserver;
+    private _serverMessageObserver: ObservableServerMessageHandler;
     private _gameTimeHandler: GameTimeHandler;
     private _clientMessageSender: ClientMessageSender;
 
     private _galaxy: Galaxy;
-    private _galaxyHandler: GalaxyHandler;
+    private _galaxyHandler: GalaxyDataHandler;
 
     private _player: Player;
 
@@ -34,7 +34,7 @@ export class SpaceGame extends Phaser.Game {
 
         Engine.init(this);
 
-        this._serverMessageObserver = new ServerMessageObserver();
+        this._serverMessageObserver = new ObservableServerMessageHandler();
         this._communicationHandler = new CommunicationHandler(this._serverMessageObserver);
         this._clientMessageSender = new ClientMessageSender(this._communicationHandler);
         this._gameTimeHandler = new GameTimeHandler(this._serverMessageObserver);
@@ -64,7 +64,6 @@ export class SpaceGame extends Phaser.Game {
     public get player(): Player {
         return this._player;
     }
-
 
     public resize(width: number, height: number) {
         console.log(`TODO: should resize to ${width} and ${height}`);

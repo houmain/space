@@ -90,7 +90,6 @@ export class InputHandler {
         if (this._mouseDown) {
             if (this._moveCameraKeyDown) {
                 if (this.onDrag) {
-                    console.log('drag ');
                     this.onDrag(pointer.x - pointer.downX, pointer.y - pointer.downY);
                 }
             } else {

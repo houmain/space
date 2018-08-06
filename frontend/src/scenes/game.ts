@@ -1,12 +1,12 @@
 import { States } from './states';
-import { Camera } from '../model/camera';
 import { InputHandler } from '../input/inputHandler';
-import { Background } from '../model/background';
-import { Galaxy, Player } from '../model/galaxyModels';
 import { SelectionHandler } from '../input/selectionHandler';
-import { GameInfoHandler } from '../model/gameInfo';
 import { GameTimeHandler } from '../logic/gameTimeHandler';
 import { ClientMessageSender } from '../communication/communicationHandler';
+import { Galaxy, Player } from '../data/galaxyModels';
+import { Camera } from '../view/camera';
+import { GameInfoHandler } from '../view/gameInfo';
+import { Background } from '../view/background';
 
 export class GameScene extends Phaser.Scene {
 
