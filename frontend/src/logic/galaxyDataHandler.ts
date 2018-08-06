@@ -27,7 +27,6 @@ class GalaxyDataHandlerObserver implements Observer {
 
 	public onFactionChanged(faction: Faction) {
 
-
 		let subscribers = this._factionChangeSubscribers[faction.id];
 
 		if (subscribers) {
@@ -129,7 +128,7 @@ export class GalaxyDataHandler implements Observer {
 	private onPlanetConquered(msg: MessagePlanetConquered) {
 
 		let planet = this._planets[msg.planetId];
-		let oldFaction = planet.faction;
+		let oldFaction = this._factions[msg.fromFactionId];
 		let newFaction = this._factions[msg.factionId];
 
 		if (oldFaction) {

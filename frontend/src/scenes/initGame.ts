@@ -56,6 +56,8 @@ export class InitGameScene extends Phaser.Scene {
 			gameLogic: this._gameLogic,
 			galaxyDataHandler: this._galaxyDataHandler
 		});
-		this.scene.start(States.HUD);
+		this.scene.start(States.HUD, {
+			test: 1
+		});
 	}
 }

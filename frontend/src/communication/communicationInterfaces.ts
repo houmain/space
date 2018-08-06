@@ -114,6 +114,7 @@ export interface MessageFighterDestroyed extends ServerMessage {
 export interface MessagePlanetConquered extends ServerMessage {
     planetId: number;
     factionId: number;
+    fromFactionId: number;
 }
 
 export interface MessageSquadronDestroyed extends ServerMessage {
