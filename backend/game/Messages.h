@@ -20,7 +20,7 @@ std::string build_squadrons_merged_message(const Squadron& squadron,
   const Squadron& into_squadron);
 std::string build_squadron_attacks_message(const Squadron& squadron);
 std::string build_squadron_destroyed_message(const Squadron& squadron);
-std::string build_planet_conquered_message(const Planet& planet);
+std::string build_planet_conquered_message(const Squadron& squadron);
 std::string build_faction_destroyed_message(const Faction& faction);
 std::string build_faction_won_message(const Faction& faction);
 

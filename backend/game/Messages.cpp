@@ -238,15 +238,19 @@ std::string build_squadron_destroyed_message(const Squadron& squadron) {
   });
 }
 
-std::string build_planet_conquered_message(const Planet& planet) {
+std::string build_planet_conquered_message(const Squadron& squadron) {
   return json::build_message([&](json::Writer& writer) {
     writer.StartObject();
     writer.Key("event");
     writer.String("planetConquered");
     writer.Key("planetId");
-    writer.Int(planet.id);
+    writer.Int(squadron.planet->id);
+    if (auto from_faction = squadron.planet->faction) {
+      writer.Key("fromFactionId");
+      writer.Int(from_faction->id);
+    }
     writer.Key("factionId");
-    writer.Int(planet.faction->id);
+    writer.Int(squadron.faction->id);
     writer.EndObject();
   });
 }

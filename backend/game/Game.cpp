@@ -268,8 +268,8 @@ void Game::on_squadron_destroyed(Squadron& squadron,
 
   if (squadron.faction == planet.faction) {
     // defender destroyed, update planet faction
+    broadcast(build_planet_conquered_message(by_squadron));
     planet.faction = by_squadron.faction;
-    broadcast(build_planet_conquered_message(planet));
   }
 
   const auto faction = squadron.faction;
