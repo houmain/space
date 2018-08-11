@@ -10,7 +10,6 @@ export class SelectionArrow {
     public create(scene: Phaser.Scene, planet: Planet) {
         this._planet = planet;
 
-
         this._shaft = scene.add.quad(planet.x, planet.y, 'pixel');
     }
 

@@ -9,6 +9,7 @@ import { ObservableServerMessageHandler } from './communication/messageHandler';
 import { Galaxy, Faction, Squadron, Fighter } from './data/galaxyModels';
 import { GameScene } from './scenes/game';
 import { HudScene } from './scenes/hud';
+import { ErrorScene } from './scenes/error';
 import { GalaxyDataHandler } from './logic/galaxyDataHandler';
 import { ServerMessageType, MessageGameJoined, MessageGameUpdated, MessageFighterCreated, MessageSquadronSent, MessageSquadronsMerged, MessageSquadronAttacks, MessageFactionDestroyed, MessageFighterDestroyed, MessagePlanetConquered, MessageSquadronDestroyed } from './communication/communicationInterfaces';
 import { GalaxyFactory } from './logic/galaxyFactory';
@@ -51,6 +52,7 @@ export class SpaceGame extends Phaser.Game {
         this.scene.add(States.INIT_GAME, new InitGameScene(this, this._clientMessageSender, this._serverMessageObserver));
         this.scene.add(States.GAME, new GameScene(this._gameTimeHandler, this._clientMessageSender));
         this.scene.add(States.HUD, new HudScene());
+        this.scene.add(States.ERROR, new ErrorScene());
     }
 
     public get communcationHandler(): CommunicationHandler {

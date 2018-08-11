@@ -8,6 +8,7 @@ import { Camera } from '../view/camera';
 import { GameInfoHandler, FactionInfo } from '../view/gameInfo';
 import { Background } from '../view/background';
 import { GalaxyDataHandler } from '../logic/galaxyDataHandler';
+import { ObservableServerMessageHandler } from '../communication/messageHandler';
 
 export class GameScene extends Phaser.Scene {
 
@@ -19,9 +20,10 @@ export class GameScene extends Phaser.Scene {
 
 	private _inputHandler: InputHandler;
 	private _selectionHandler: SelectionHandler;
-	private _gameInfoHandler: GameInfoHandler;
+	//	private _gameInfoHandler: GameInfoHandler;
 	private _timeHandler: GameTimeHandler;
 	private _clientMessageSender: ClientMessageSender;
+	private _serverMessageObserver: ObservableServerMessageHandler;
 
 	private _graphics: Phaser.GameObjects.Graphics;
 
@@ -40,12 +42,12 @@ export class GameScene extends Phaser.Scene {
 		this._galaxy = gameState.galaxy;
 		this._player = gameState.player;
 		this._galaxyDataHandler = data.galaxyDataHandler;
+		//		this._gameInfoHandler = data.gameInfoHandler;
 	}
 
 	public create() {
 
 		this._inputHandler = new InputHandler(this);
-		this._gameInfoHandler = new GameInfoHandler(this);
 
 		this._camera = new Camera(this.cameras.main);
 		this.cameras.main.setSize(2048, 2048);
@@ -62,7 +64,7 @@ export class GameScene extends Phaser.Scene {
 			});
 		});
 
-		this._gameInfoHandler.addInfoText('Test Fighters 10/20');
+		//this._gameInfoHandler.addInfoText('Test');
 
 		this._selectionHandler = new SelectionHandler(this, this.cameras.main, this._player, this._galaxy.planets, this._clientMessageSender);
 		this._inputHandler.onSelectStart = this._selectionHandler.onStartSelect.bind(this._selectionHandler);

@@ -23,7 +23,7 @@ export class Main extends Phaser.Scene {
     private _clientMessageSender: ClientMessageSender;
     private _selectionHandler: SelectionHandler;
 
-    private _gameInfoHandler: GameInfoHandler;
+    //  private _gameInfoHandler: GameInfoHandler;
 
     private _graphics: Phaser.GameObjects.Graphics;
 
@@ -32,7 +32,7 @@ export class Main extends Phaser.Scene {
         this._game = game;
         this._timeHandler = timeHandler;
         this._clientMessageSender = clientMessageSender;
-        this._gameInfoHandler = new GameInfoHandler(this);
+        //this._gameInfoHandler = new GameInfoHandler(this, null, null);
     }
 
     public create() {
@@ -59,7 +59,7 @@ export class Main extends Phaser.Scene {
             });
         });
 
-        this._gameInfoHandler.addInfoText('Test Fighters 10/20');
+        //     this._gameInfoHandler.addInfoText('Test Fighters 10/20');
 
         this._selectionHandler = new SelectionHandler(this, this.cameras.main, this._game.player, this._galaxy.planets, this._clientMessageSender);
         this._inputHandler.onSelectStart = this._selectionHandler.onStartSelect.bind(this._selectionHandler);

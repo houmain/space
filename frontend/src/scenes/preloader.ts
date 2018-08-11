@@ -2,6 +2,7 @@
 import { SpaceGame } from '../Game';
 import { CommunicationHandler, ClientMessageSender, SpaceGameConfig } from '../communication/communicationHandler';
 import { States } from './states';
+import { ClientError } from '../common/error';
 
 export class Preloader extends Phaser.Scene {
 
@@ -86,14 +87,12 @@ export class Preloader extends Phaser.Scene {
         if (this._assetsLoaded) {
             if (this._communicationHandler.connected) {
                 this.scene.start(States.INIT_GAME);
-                this.scene.start(States.HUD);
-
-                //this.scene.start(States.MAIN);
-                //this.scene.start(States.HUD);
             } else if (this._communicationHandler.connectionFailed) {
-                this.scene.start(States.GAME);
-                this.scene.start(States.HUD);
+                this.scene.start(States.ERROR, {
+                    errorCode: ClientError.CONNECTION_FAILED
+                });
             }
+
         }
     }
 }

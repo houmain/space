@@ -3,5 +3,6 @@ export enum States {
 	MAIN = 'main', // -> TODO: MainMenu
 	INIT_GAME = 'initGame',
 	GAME = 'game',
-	HUD = 'hud'
+	HUD = 'hud',
+	ERROR = 'error'
 }

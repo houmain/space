@@ -6,6 +6,7 @@ import { Galaxy } from '../data/galaxyModels';
 import { ObservableServerMessageHandler } from '../communication/messageHandler';
 import { ClientMessageSender } from '../communication/communicationHandler';
 import { GalaxyDataHandler } from '../logic/galaxyDataHandler';
+import { GameInfoHandler } from '../view/gameInfo';
 
 export class InitGameScene extends Phaser.Scene {
 
@@ -17,6 +18,7 @@ export class InitGameScene extends Phaser.Scene {
 	private _gameState: GameState;
 	private _gameLogic: GameLogic;
 	private _galaxyDataHandler: GalaxyDataHandler;
+	private _gameInfoHandler: GameInfoHandler;
 
 	public constructor(game: SpaceGame, clientMessageSender: ClientMessageSender, serverMessageObserver: ObservableServerMessageHandler) {
 		super(States.INIT_GAME);
@@ -34,6 +36,7 @@ export class InitGameScene extends Phaser.Scene {
 
 		this._galaxyDataHandler = new GalaxyDataHandler(this._serverMessageObserver);
 		this._gameLogic = new GameLogic(this._gameState, this._serverMessageObserver, this._galaxyDataHandler);
+		this._gameInfoHandler = new GameInfoHandler(this._galaxyDataHandler, this._serverMessageObserver);
 
 		this._clientMessageSender.joinGame(1);
 
@@ -57,7 +60,7 @@ export class InitGameScene extends Phaser.Scene {
 			galaxyDataHandler: this._galaxyDataHandler
 		});
 		this.scene.start(States.HUD, {
-			test: 1
+			gameInfoHandler: this._gameInfoHandler
 		});
 	}
 }
