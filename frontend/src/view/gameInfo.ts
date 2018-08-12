@@ -3,25 +3,101 @@ import { GalaxyDataHandler } from '../logic/galaxyDataHandler';
 import { Faction } from '../data/galaxyModels';
 import { Player } from '../data/gameData';
 import { ObservableServerMessageHandler } from '../communication/messageHandler';
-import { MessagePlanetConquered, ServerMessageType, MessagePlayerJoined } from '../communication/communicationInterfaces';
+import { MessagePlanetConquered, ServerMessageType, MessagePlayerJoined, MessageFactionDestroyed } from '../communication/communicationInterfaces';
 
-
-export interface GameInfoMessage {
-    text: string;
-    color: number;
+enum GameInfoMessageType {
+    PLAYER_JOINED,
+    PLANET_CONQUERED,
+    FACTION_DESTROYED
 }
 
-export class GameInfo {
-    public text: Phaser.GameObjects.Text;
-    public age: number;
+interface GameInfoMessage {
+    text: string;
+    color: number;
+    type: GameInfoMessageType;
+}
+
+class GameInfo extends Phaser.GameObjects.Container {
+    public lifetime: number;
+}
+
+class GameInfoMessageBuilder {
+
+    private _scene: Phaser.Scene;
+
+    public constructor(scene: Phaser.Scene) {
+        this._scene = scene;
+    }
+
+    public buildGameInfo(msg: GameInfoMessage): GameInfo {
+        let info: GameInfo = null;
+
+        switch (msg.type) {
+            case GameInfoMessageType.PLAYER_JOINED:
+                info = this.buildPlayerJoined(msg);
+                break;
+            case GameInfoMessageType.PLANET_CONQUERED:
+                info = this.buildPlanetConquered(msg);
+                break;
+            case GameInfoMessageType.FACTION_DESTROYED:
+                info = this.buildFactionDestroyed(msg);
+                break;
+        }
+        return info;
+    }
+
+    private buildPlayerJoined(msg: GameInfoMessage): GameInfo {
+        let info = new GameInfo(this._scene, 0, 0);
+
+        this.addBox(info, msg.color);
+        this.addText(info, msg.text);
+
+        return info;
+    }
+
+    private buildPlanetConquered(msg: GameInfoMessage): GameInfo {
+        let info = new GameInfo(this._scene, 0, 0);
+
+        this.addBox(info, msg.color);
+        this.addText(info, msg.text);
+
+        return info;
+    }
+
+    private buildFactionDestroyed(msg: GameInfoMessage): GameInfo {
+        let info = new GameInfo(this._scene, 0, 0);
+
+        this.addBox(info, msg.color);
+        this.addText(info, msg.text);
+
+        return info;
+    }
+
+    private addBox(gameInfo: GameInfo, color: number) {
+        let graphics = this._scene.add.graphics();
+        graphics.fillStyle(color, 0.25);
+        graphics.fillRect(0, 0, 350, 30);
+
+        let thickness = 2;
+        let alpha = 0.8;
+        graphics.lineStyle(thickness, color, alpha);
+        graphics.strokeRect(0, 0, 350, 30);
+
+        gameInfo.add(graphics);
+    }
+
+    private addText(gameInfo: GameInfo, text: string) {
+        let textField = this._scene.add.text(5, 5, text);
+        gameInfo.add(textField);
+    }
 }
 
 export class GameInfoHandler {
 
-    private _scene: Phaser.Scene;
+    private _infoBuilder: GameInfoMessageBuilder;
     private _galaxyDataHandler: GalaxyDataHandler;
-    private _infos: GameInfo[] = [];
-    private _queuedInfoMessage: GameInfoMessage[] = [];
+    private _infoMessages: GameInfo[] = [];
+    private _queuedInfoMessages: GameInfoMessage[] = [];
 
     private _container: Phaser.GameObjects.Container;
 
@@ -31,63 +107,89 @@ export class GameInfoHandler {
 
         serverMessageObserver.subscribe<MessagePlayerJoined>(ServerMessageType.PLAYER_JOINED, this.onPlayerJoined.bind(this));
         serverMessageObserver.subscribe<MessagePlanetConquered>(ServerMessageType.PLANET_CONQUERED, this.onPlanetConquered.bind(this));
+        serverMessageObserver.subscribe<MessageFactionDestroyed>(ServerMessageType.FACTION_DESTROYED, this.onFactionDestroyed.bind(this));
     }
 
     public create(scene: Phaser.Scene) {
-        this._scene = scene;
-        this._container = this._scene.add.container(10, 10);
+        this._infoBuilder = new GameInfoMessageBuilder(scene);
+        this._container = scene.add.container(10, 10);
     }
 
     private onPlayerJoined(msg: MessagePlayerJoined) {
-        console.log('yxyyy');
-        this.addInfoText('Player joined', 0x0000ff);
+        let faction = this._galaxyDataHandler.factions[msg.factionId];
+
+        this.addInfoText({
+            text: `${faction.name} joined`,
+            color: faction.color,
+            type: GameInfoMessageType.PLAYER_JOINED
+        });
     }
 
     private onPlanetConquered(msg: MessagePlanetConquered) {
-        console.log('xxxxx');
-        this.addInfoText('Planet Conquered', 0x0000ff);
+        let faction = this._galaxyDataHandler.factions[msg.factionId];
+        let planet = this._galaxyDataHandler.planets[msg.planetId];
+
+        this.addInfoText({
+            text: `${faction.name} conquered ${planet.name}`,
+            color: faction.color,
+            type: GameInfoMessageType.PLANET_CONQUERED
+        });
     }
 
-    private addInfoText(text: string, color: number) {
-        this._queuedInfoMessage.push(
-            {
-                text: text,
-                color: color
-            }
-        );
+    private onFactionDestroyed(msg: MessageFactionDestroyed) {
+        let faction = this._galaxyDataHandler.factions[msg.factionId];
 
+        this.addInfoText({
+            text: `${faction.name} has been eliminated`,
+            color: faction.color,
+            type: GameInfoMessageType.FACTION_DESTROYED
+        });
+    }
+
+    private addInfoText(msg: GameInfoMessage) {
+        this._queuedInfoMessages.push(msg);
     }
 
     private showInfoText(msg: GameInfoMessage) {
-        let info = new GameInfo();
-        info.text = this._scene.add.text(100, 10, msg.text, { font: '48px Arial', fill: '#ffffff' });
-        // info.text.setScrollFactor(0);
-        info.age = 0;
-        // this._container.add(info.text);
+        let info = this._infoBuilder.buildGameInfo(msg);
+        info.lifetime = 5000;
+        info.y = 40 * this._infoMessages.length;
+        this._container.add(info);
+
+        this._infoMessages.push(info);
     }
 
     public update(timeElapsed: number) {
 
-        if (this._queuedInfoMessage.length > 0) {
-            console.log('showing ' + this._queuedInfoMessage.length + ' quered message');
-            this._queuedInfoMessage.forEach(msg => {
+        if (this._queuedInfoMessages.length > 0) {
+            this._queuedInfoMessages.forEach(msg => {
                 this.showInfoText(msg);
             });
 
-            this._queuedInfoMessage.splice(0, this._queuedInfoMessage.length);
+            this._queuedInfoMessages.splice(0, this._queuedInfoMessages.length);
         }
 
-        this._infos.forEach((info, index) => {
+        let rearrangeInfos = false;
 
-            info.age += timeElapsed;
-            /*if (info.age > 5000) {
-                this._infos.splice(index, 1);
-            }*/
+        this._infoMessages.forEach((info, index) => {
+            info.lifetime -= timeElapsed;
+
+            if (info.lifetime < 0) {
+                this.removeInfo(info);
+                rearrangeInfos = true;
+            }
         });
+
+        if (rearrangeInfos) {
+            this._infoMessages.forEach((info, index) => {
+                info.y = 40 * index;
+            });
+        }
     }
 
     private removeInfo(info: GameInfo) {
-        info.text.destroy();
+        this._infoMessages.splice(this._infoMessages.indexOf(info), 1);
+        this._container.remove(info, true);
     }
 }
 
@@ -102,14 +204,14 @@ export class FactionInfo {
         this._container = scene.add.container(10, 10);
 
         let graphics = scene.add.graphics();
-        graphics.fillStyle(0x0000ff, 0.25);
-        graphics.fillRect(0, 0, 256, 50);
+        graphics.fillStyle(0xffffff, 0.25);
+        graphics.fillRect(0, 0, 256, 40);
 
-        let color = 0x0000cc;
+        let color = 0xffffff;
         let thickness = 2;
         let alpha = 1;
         graphics.lineStyle(thickness, color, alpha);
-        graphics.strokeRect(0, 0, 256, 50);
+        graphics.strokeRect(0, 0, 256, 40);
 
         this._container.add(graphics);
 
@@ -125,6 +227,6 @@ export class FactionInfo {
     }
 
     private onPlayerFactionChanged(faction: Faction) {
-        this._text.setText(`${faction.numFighters}/${faction.maxUpkeep}`);
+        this._text.setText(`Fighters: ${faction.numFighters}/${faction.maxUpkeep}`);
     }
 }

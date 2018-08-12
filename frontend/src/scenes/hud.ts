@@ -16,24 +16,21 @@ export class HudScene extends Phaser.Scene {
 	public init(data: any) {
 
 		let gameState = data.gameState;
-		let gameLogic = data.gameLogic;
 
-		if (gameState) {
-			this._player = gameState.player;
-			this._galaxyDataHandler = data.galaxyDataHandler;
-		}
+		this._player = gameState.player;
+		this._galaxyDataHandler = data.galaxyDataHandler;
 		this._gameInfoHandler = data.gameInfoHandler;
 	}
 
 	public create() {
-
-		//let info = this.add.text(100, 10, 'SPACE', { font: '48px Arial', fill: '#ffffff' });
-		///this.add.text(100, 40, 'SPACE', { font: '48px Arial', fill: '#ffffff' });
 		this._gameInfoHandler.create(this);
+
+		let factioInfo = new FactionInfo();
+		factioInfo.create(this, this._galaxyDataHandler, this._player);
 
 	}
 
-	public update(timeElapsed: number) {
-		this._gameInfoHandler.update(timeElapsed);
+	public update(timeSinceStart: number, timeSinceLastFrame: number) {
+		this._gameInfoHandler.update(timeSinceLastFrame);
 	}
 }

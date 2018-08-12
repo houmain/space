@@ -73,8 +73,8 @@ export class GameScene extends Phaser.Scene {
 
 		this._graphics = this.add.graphics({ lineStyle: { width: 2, color: 0xff0000, alpha: 1 } });
 
-		let f = new FactionInfo();
-		f.create(this, this._galaxyDataHandler, this._player);
+		//let f = new FactionInfo();
+		//f.create(this, this._galaxyDataHandler, this._player);
 
 	}
 

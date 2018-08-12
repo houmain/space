@@ -60,7 +60,9 @@ export class InitGameScene extends Phaser.Scene {
 			galaxyDataHandler: this._galaxyDataHandler
 		});
 		this.scene.start(States.HUD, {
-			gameInfoHandler: this._gameInfoHandler
+			gameState: this._gameState,
+			gameInfoHandler: this._gameInfoHandler,
+			galaxyDataHandler: this._galaxyDataHandler
 		});
 	}
 }

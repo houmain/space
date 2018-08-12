@@ -12,7 +12,6 @@ export class Preloader extends Phaser.Scene {
     private _clientMessageSender: ClientMessageSender;
 
     private _assetsLoaded: boolean = false;
-    //  private _connectionFailed: boolean = false;
 
     public constructor(game: SpaceGame, gameConfig: SpaceGameConfig, communicationHandler: CommunicationHandler, clientMessageSender: ClientMessageSender) {
         super({
@@ -28,16 +27,6 @@ export class Preloader extends Phaser.Scene {
         this._gameConfig = gameConfig;
         this._communicationHandler = communicationHandler;
         this._clientMessageSender = clientMessageSender;
-        /*
-                this._communicationHandler.onConnectionEstablished = () => {
-                    console.log('connection established, joining game ...');
-                    this._clientMessageSender.joinGame(1);
-                };
-
-                this._communicationHandler.onDisconnected = () => {
-                    console.log('connection failed');
-                    this._connectionFailed = true;
-                };*/
     }
 
     public preload() {
@@ -83,7 +72,6 @@ export class Preloader extends Phaser.Scene {
     }
 
     public update() {
-
         if (this._assetsLoaded) {
             if (this._communicationHandler.connected) {
                 this.scene.start(States.INIT_GAME);
@@ -92,7 +80,6 @@ export class Preloader extends Phaser.Scene {
                     errorCode: ClientError.CONNECTION_FAILED
                 });
             }
-
         }
     }
 }
