@@ -40,7 +40,6 @@ export class HudScene extends Phaser.Scene {
 	}
 
 	private resize() {
-		console.log('resize');
 		let cam = this.cameras.main;
 		cam.setViewport(0, 0, window.innerWidth, window.innerHeight);
 		cam.centerToBounds();

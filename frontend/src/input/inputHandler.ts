@@ -1,5 +1,62 @@
-export interface InputHandlerUpdate {
+/*export interface InputHandlerUpdate {
     (x: number, y: number): void;
+}
+
+export class InputHandler2 {
+
+    private DOUBLE_CLICK_TIME = 1000;
+    private _lastDownTime: number = 0;
+
+    private _movingCamera: boolean = false;
+    private _draggingSelectionRect: boolean = false;
+
+    public onMovingCamera: InputHandlerUpdate;
+    public onStartSelection: InputHandlerUpdate;
+    public onDraggingSelectionRect: InputHandlerUpdate;
+    public onEndSelection: InputHandlerUpdate;
+
+    public constructor(scene: Phaser.Scene) {
+        scene.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+            this.onMouseDown(pointer);
+        });
+
+        scene.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
+            this.onMouseUp(pointer);
+        });
+
+        scene.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
+            this.onMouseMove(pointer);
+        });
+    }
+
+    private onMouseDown(pointer: Phaser.Input.Pointer) {
+        if (pointer.downTime - this._lastDownTime < this.DOUBLE_CLICK_TIME) {
+            console.log('double click');
+            this._draggingSelectionRect = true;
+            this.onStartSelection(pointer.x, pointer.y);
+        } else {
+            console.log('nope');
+            this._movingCamera = true;
+        }
+        this._lastDownTime = pointer.downTime;
+    }
+
+    private onMouseMove(pointer: Phaser.Input.Pointer) {
+        if (this._movingCamera) {
+            this.onMovingCamera(pointer.x - pointer.downX, pointer.y - pointer.downY);
+        } else if (this._draggingSelectionRect) {
+            this.onDraggingSelectionRect(pointer.x, pointer.y);
+        }
+    }
+
+    private onMouseUp(pointer: Phaser.Input.Pointer) {
+        if (this._draggingSelectionRect) {
+            this.onEndSelection(pointer.x, pointer.y);
+        }
+
+        this._movingCamera = false;
+        this._draggingSelectionRect = false;
+    }
 }
 
 export class InputHandler {
@@ -16,6 +73,8 @@ export class InputHandler {
 
     private _moveCameraKey = 'Shift';
     private _moveCameraKeyDown = false;
+
+    private _mouseDown: boolean = false;
 
     public constructor(scene: Phaser.Scene) {
 
@@ -62,8 +121,6 @@ export class InputHandler {
         }
     }
 
-    private _mouseDown: boolean = false;
-
     private onMouseDown(pointer: Phaser.Input.Pointer) {
         this._mouseDown = true;
 
@@ -97,4 +154,4 @@ export class InputHandler {
             }
         }
     }
-}
+}*/

@@ -1,6 +1,5 @@
 import { States } from './states';
-import { InputHandler } from '../input/inputHandler';
-import { SelectionHandler } from '../input/selectionHandler';
+import { InputHandler3 } from '../input/selectionHandler';
 import { GameTimeHandler } from '../logic/gameTimeHandler';
 import { ClientMessageSender } from '../communication/communicationHandler';
 import { Galaxy, Player } from '../data/galaxyModels';
@@ -18,8 +17,9 @@ export class GameScene extends Phaser.Scene {
 	private _player: Player;
 	private _galaxyDataHandler: GalaxyDataHandler;
 
-	private _inputHandler: InputHandler;
-	private _selectionHandler: SelectionHandler;
+	//	private _inputHandler: InputHandler;
+	//private _selectionHandler: SelectionHandler;
+	private _inputHandler: InputHandler3;
 	private _timeHandler: GameTimeHandler;
 	private _clientMessageSender: ClientMessageSender;
 	private _serverMessageObserver: ObservableServerMessageHandler;
@@ -45,12 +45,21 @@ export class GameScene extends Phaser.Scene {
 
 	public create() {
 
-		this._inputHandler = new InputHandler(this);
+		//this._inputHandler = new InputHandler(this);
+
+		//	let i = new InputHandler2(this);
+
 
 		this._camera = new Camera(this.cameras.main);
 		this.cameras.main.setSize(2048, 2048);
 		this._camera.setDeltaPosition(-6000, -6000);
-		this._inputHandler.onDrag = this._camera.setDeltaPosition.bind(this._camera);
+		//this._inputHandler.onDrag = this._camera.setDeltaPosition.bind(this._camera);
+
+		/*
+				i.onMovingCamera = (x: number, y: number) => {
+					console.log('moving');
+					this._camera.setDeltaPosition(x, y);
+				};*/
 
 		new Background(this).create();
 
@@ -59,15 +68,27 @@ export class GameScene extends Phaser.Scene {
 			planet.sprite.setScale(planet.parent ? 0.25 : 0.35);
 			planet.sprite.setInteractive();
 			planet.sprite.on('pointerdown', () => {
-				this._selectionHandler.selectPlanet(planet);
+				//	this._selectionHandler.selectPlanet(planet);
 			});
 		});
+		/*
+				this._selectionHandler = new SelectionHandler(this, this.cameras.main, this._player, this._galaxy.planets, this._clientMessageSender);
+				//	this._inputHandler.onSelectStart = this._selectionHandler.onStartSelect.bind(this._selectionHandler);
+				//	this._inputHandler.onSelectEnd = this._selectionHandler.onEndSelect.bind(this._selectionHandler);
+				//	this._inputHandler.onSelectedMouseMove = this._selectionHandler.onSelectPosChanged.bind(this._selectionHandler);
 
-		this._selectionHandler = new SelectionHandler(this, this.cameras.main, this._player, this._galaxy.planets, this._clientMessageSender);
-		this._inputHandler.onSelectStart = this._selectionHandler.onStartSelect.bind(this._selectionHandler);
-		this._inputHandler.onSelectEnd = this._selectionHandler.onEndSelect.bind(this._selectionHandler);
-		this._inputHandler.onSelectedMouseMove = this._selectionHandler.onSelectPosChanged.bind(this._selectionHandler);
+				i.onStartSelection = (x: number, y: number) => {
+					this._selectionHandler.onStartSelect(x, y);
+				};
 
+				i.onDraggingSelectionRect = (x: number, y: number) => {
+					this._selectionHandler.onSelectPosChanged(x, y);
+				};
+				i.onEndSelection = (x: number, y: number) => {
+					this._selectionHandler.onEndSelect(x, y);
+				};
+		*/
+		this._inputHandler = new InputHandler3(this, this._camera, this._player, this._galaxy.planets, this._clientMessageSender);
 		this._graphics = this.add.graphics({ lineStyle: { width: 2, color: 0xff0000, alpha: 1 } });
 
 		this.sys.game.events.on('resize', this.resize, this);
@@ -118,7 +139,8 @@ export class GameScene extends Phaser.Scene {
 			}
 		});
 
-		this._selectionHandler.update();
+		//	this._selectionHandler.update();
+		this._inputHandler.update();
 	}
 
 	public shutdown() {

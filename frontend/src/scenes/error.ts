@@ -1,5 +1,6 @@
 import { States } from './states';
 import { ClientError } from '../common/error';
+import { Engine } from '../common/utils';
 
 export class ErrorScene extends Phaser.Scene {
 
@@ -24,7 +25,9 @@ export class ErrorScene extends Phaser.Scene {
 				errorText = 'Error occured';
 		}
 
-		let container = this.add.container(500, 100);
+		let x = Engine.instance.config.width as number / 2;
+		let y = Engine.instance.config.height as number / 2;
+		let container = this.add.container(x, y);
 
 		let width = 700;
 		let height = 60;
@@ -33,13 +36,13 @@ export class ErrorScene extends Phaser.Scene {
 		graphics.fillStyle(0x000000, 0.25);
 		graphics.fillRect(-width / 2, -height / 2, width, height);
 
-		let thickness = 4;
+		let thickness = 8;
 		let alpha = 0.8;
 		graphics.lineStyle(thickness, 0xff0000, alpha);
 		graphics.strokeRect(-width / 2, -height / 2, width, height);
 		container.add(graphics);
 
-		let text = this.add.text(0, 0, errorText, { font: '32px Arial', fill: '#ff0000', align: 'center' });
+		let text = this.add.text(0, 0, errorText, { font: '24px Arial', fill: '#ff0000', align: 'center' });
 		text.setOrigin(0.5, 0.5);
 		container.add(text);
 	}
