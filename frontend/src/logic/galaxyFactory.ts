@@ -64,9 +64,6 @@ export class GalaxyFactory {
             planetMap[planet.id] = planet;
         });
 
-        planets[0].x = 400;
-        planets[0].y = 400;
-
         let squadrons: Squadron[] = [];
         squadronInfos.forEach((squadronInfo, index) => {
             let squadron = new Squadron();

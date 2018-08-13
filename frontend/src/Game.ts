@@ -66,10 +66,6 @@ export class SpaceGame extends Phaser.Game {
     public get player(): Player {
         return this._player;
     }
-
-    public resize(width: number, height: number) {
-        console.log(`TODO: should resize to ${width} and ${height}`);
-    }
 }
 
 function startGame(): void {
@@ -88,7 +84,8 @@ function startGame(): void {
     const game = new SpaceGame(config);
 
     window.addEventListener('resize', function (event) {
-        game.resize(window.innerWidth, window.innerHeight);
+        game.renderer.resize(window.innerWidth, window.innerHeight);
+        game.events.emit('resize');
     }, false);
 }
 window.onload = () => {

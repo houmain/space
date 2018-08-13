@@ -2,7 +2,7 @@ import { Planet, Squadron } from '../data/galaxyModels';
 import { ClientMessageSender } from '../communication/communicationHandler';
 import { Player } from '../data/gameData';
 
-export class SelectionArrow {
+class SelectionArrow {
 
     private _planet: Planet;
     private _shaft: Phaser.GameObjects.Quad;
@@ -15,11 +15,19 @@ export class SelectionArrow {
 
     public update(x: number, y: number) {
 
-        this._shaft.setTopLeft(this._planet.x - 10, this._planet.y - 10);
-        this._shaft.setTopRight(this._planet.x + 10, this._planet.y - 10);
+        let lineStrength = 10;
 
-        this._shaft.setBottomLeft(x - 10, y + 10);
-        this._shaft.setBottomRight(x + 10, y + 10);
+        let start: Phaser.Math.Vector2 = new Phaser.Math.Vector2(this._planet.x, this._planet.y);
+        let end: Phaser.Math.Vector2 = new Phaser.Math.Vector2(x, y);
+        let line = end.subtract(start).normalize();
+        let normal1 = new Phaser.Math.Vector2(line.x * lineStrength, -line.y * lineStrength);
+        let normal2 = new Phaser.Math.Vector2(-line.x * lineStrength, line.y * lineStrength);
+
+        this._shaft.setTopLeft(this._planet.x + normal1.x, this._planet.y + normal1.y);
+        this._shaft.setTopRight(this._planet.x + normal2.x, this._planet.y + normal2.y);
+
+        this._shaft.setBottomLeft(x + normal1.x, y + normal1.y);
+        this._shaft.setBottomRight(x + normal2.x, y + normal2.y);
     }
 
     public destroy() {

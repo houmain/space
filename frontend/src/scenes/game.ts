@@ -5,7 +5,7 @@ import { GameTimeHandler } from '../logic/gameTimeHandler';
 import { ClientMessageSender } from '../communication/communicationHandler';
 import { Galaxy, Player } from '../data/galaxyModels';
 import { Camera } from '../view/camera';
-import { GameInfoHandler, FactionInfo } from '../view/gameInfo';
+import { GameInfoHandler } from '../view/gameInfo';
 import { Background } from '../view/background';
 import { GalaxyDataHandler } from '../logic/galaxyDataHandler';
 import { ObservableServerMessageHandler } from '../communication/messageHandler';
@@ -20,7 +20,6 @@ export class GameScene extends Phaser.Scene {
 
 	private _inputHandler: InputHandler;
 	private _selectionHandler: SelectionHandler;
-	//	private _gameInfoHandler: GameInfoHandler;
 	private _timeHandler: GameTimeHandler;
 	private _clientMessageSender: ClientMessageSender;
 	private _serverMessageObserver: ObservableServerMessageHandler;
@@ -42,7 +41,6 @@ export class GameScene extends Phaser.Scene {
 		this._galaxy = gameState.galaxy;
 		this._player = gameState.player;
 		this._galaxyDataHandler = data.galaxyDataHandler;
-		//		this._gameInfoHandler = data.gameInfoHandler;
 	}
 
 	public create() {
@@ -51,6 +49,7 @@ export class GameScene extends Phaser.Scene {
 
 		this._camera = new Camera(this.cameras.main);
 		this.cameras.main.setSize(2048, 2048);
+		this._camera.setDeltaPosition(-6000, -6000);
 		this._inputHandler.onDrag = this._camera.setDeltaPosition.bind(this._camera);
 
 		new Background(this).create();
@@ -64,8 +63,6 @@ export class GameScene extends Phaser.Scene {
 			});
 		});
 
-		//this._gameInfoHandler.addInfoText('Test');
-
 		this._selectionHandler = new SelectionHandler(this, this.cameras.main, this._player, this._galaxy.planets, this._clientMessageSender);
 		this._inputHandler.onSelectStart = this._selectionHandler.onStartSelect.bind(this._selectionHandler);
 		this._inputHandler.onSelectEnd = this._selectionHandler.onEndSelect.bind(this._selectionHandler);
@@ -73,9 +70,18 @@ export class GameScene extends Phaser.Scene {
 
 		this._graphics = this.add.graphics({ lineStyle: { width: 2, color: 0xff0000, alpha: 1 } });
 
-		//let f = new FactionInfo();
-		//f.create(this, this._galaxyDataHandler, this._player);
+		this.sys.game.events.on('resize', this.resize, this);
+		this.resize();
 
+		this.cameras.main.fadeIn(1000);
+	}
+
+	private resize() {
+		let cam = this.cameras.main;
+		cam.setViewport(0, 0, window.innerWidth, window.innerHeight);
+		cam.centerToBounds();
+
+		cam.zoom = Math.min(window.innerWidth / 1024, window.innerHeight / 768);
 	}
 
 	public update(timeSinceStart: number, timeSinceLastFrame: number) {
@@ -113,5 +119,9 @@ export class GameScene extends Phaser.Scene {
 		});
 
 		this._selectionHandler.update();
+	}
+
+	public shutdown() {
+		this.sys.game.events.off('resize', this.resize, this, true);
 	}
 }
