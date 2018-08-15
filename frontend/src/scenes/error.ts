@@ -5,6 +5,10 @@ import { Engine } from '../common/utils';
 export class ErrorScene extends Phaser.Scene {
 
 	private _errorCode: ClientError;
+	private _timedEvent: Phaser.Time.TimerEvent;
+
+	private _retryText: Phaser.GameObjects.Text;
+	private _retryInSeconds = 5;
 
 	public constructor() {
 		super(States.ERROR);
@@ -17,6 +21,7 @@ export class ErrorScene extends Phaser.Scene {
 	public create() {
 
 		let errorText = '';
+
 		switch (this._errorCode) {
 			case ClientError.CONNECTION_FAILED:
 				errorText = 'Connection failed';
@@ -45,5 +50,19 @@ export class ErrorScene extends Phaser.Scene {
 		let text = this.add.text(0, 0, errorText, { font: '24px Arial', fill: '#ff0000', align: 'center' });
 		text.setOrigin(0.5, 0.5);
 		container.add(text);
+
+		this._retryText = this.add.text(0, 100, '', { font: '24px Arial', fill: '#ff0000', align: 'center' });
+		this._retryText.setOrigin(0.5, 0.5);
+		container.add(this._retryText);
+
+		this._timedEvent = this.time.delayedCall(this._retryInSeconds * 1000, this.onTimerEvent, [], this);
+	}
+
+	public update() {
+		this._retryText.setText(`Retrying in ${this._retryInSeconds - Math.floor(this._timedEvent.getElapsedSeconds())} seconds ...`);
+	}
+
+	private onTimerEvent() {
+		this.scene.start(States.PRELOADER);
 	}
 }
