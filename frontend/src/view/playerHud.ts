@@ -28,7 +28,7 @@ export class PlayerHud {
 		this._text = scene.add.text(10, 10, 'hallo');
 		this._container.add(this._text);
 
-		this._container.setPosition(10, 200);
+		this._container.setPosition(10, 10);
 		//this._container.setScrollFactor(0, 0);
 
 		galaxyDataHandler.subscribe(player.factionId, (faction: Faction) => {

@@ -1,7 +1,7 @@
 import { GameInfoHandler } from '../view/gameInfo';
 import { Player } from '../data/gameData';
 import { GalaxyDataHandler } from '../logic/galaxyDataHandler';
-import { States } from './states';
+import { Scenes } from './scenes';
 import { PlayerHud } from '../view/playerHud';
 
 export class HudScene extends Phaser.Scene {
@@ -13,7 +13,7 @@ export class HudScene extends Phaser.Scene {
 	private _playerHud: PlayerHud;
 
 	public constructor() {
-		super(States.HUD);
+		super(Scenes.HUD);
 	}
 
 	public init(data: any) {

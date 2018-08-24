@@ -11,7 +11,6 @@ export class Engine {
     }
 }
 
-
 export let DEBUG = false;
 
 export class Assert {

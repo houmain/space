@@ -1,21 +1,14 @@
 
 import { SpaceGame } from '../Game';
-import { CommunicationHandler, ClientMessageSender, SpaceGameConfig } from '../communication/communicationHandler';
-import { States } from './states';
-import { ClientError } from '../common/error';
+import { Scenes } from './scenes';
 
 export class Preloader extends Phaser.Scene {
 
-    private _game: SpaceGame;
-    private _gameConfig: SpaceGameConfig;
-    private _communicationHandler: CommunicationHandler;
-    private _clientMessageSender: ClientMessageSender;
-
     private _assetsLoaded: boolean = false;
 
-    public constructor(game: SpaceGame, gameConfig: SpaceGameConfig, communicationHandler: CommunicationHandler, clientMessageSender: ClientMessageSender) {
+    public constructor(game: SpaceGame) {
         super({
-            key: States.PRELOADER,
+            key: Scenes.PRELOADER,
             pack: {
                 files: [
                     { type: 'image', key: 'bar', url: './assets/images/loadBar.png' },
@@ -23,10 +16,6 @@ export class Preloader extends Phaser.Scene {
                 ]
             }
         });
-        this._game = game;
-        this._gameConfig = gameConfig;
-        this._communicationHandler = communicationHandler;
-        this._clientMessageSender = clientMessageSender;
     }
 
     public preload() {
@@ -34,8 +23,6 @@ export class Preloader extends Phaser.Scene {
         this.showProgressBar();
 
         this.loadTextures();
-
-        this._communicationHandler.init(this._gameConfig);
     }
 
     private showProgressBar() {
@@ -58,13 +45,9 @@ export class Preloader extends Phaser.Scene {
     }
 
     private loadTextures() {
-
         this.load.setPath('./assets/');
-
-        this.load.image('background', './images/background.png');
-        this.load.image('planet', './images/planet_1.png');
-        this.load.image('sun', './images/planet_13.png');
-        this.load.image('pixel', './images/pixel.png');
+        // Main Menu
+        this.load.image('mainMenu', './images/mainMenu.jpg');
     }
 
     public create() {
@@ -73,13 +56,7 @@ export class Preloader extends Phaser.Scene {
 
     public update() {
         if (this._assetsLoaded) {
-            if (this._communicationHandler.connected) {
-                this.scene.start(States.INIT_GAME);
-            } else if (this._communicationHandler.connectionFailed) {
-                this.scene.start(States.ERROR, {
-                    errorCode: ClientError.CONNECTION_FAILED
-                });
-            }
+            this.scene.start(Scenes.MAIN_MENU);
         }
     }
 }

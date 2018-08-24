@@ -1,12 +1,5 @@
-import {
-    ServerMessageType, ServerMessage, MessageGameJoined, MessagePlayerJoined, MessageGameUpdated, MessageFighterCreated,
-    MessageSquadronSent, MessageFighterDestroyed, MessagePlanetConquered, MessageSquadronAttacks, MessageSquadronDestroyed,
-    MessageSquadronsMerged, MessageFactionDestroyed
-} from './communicationInterfaces';
-import { SpaceGame } from '../Game';
-import { GalaxyFactory } from '../logic/galaxyFactory';
+import { ServerMessage } from './communicationInterfaces';
 import { Observer } from '../common/commonInterfaces';
-import { Galaxy } from '../data/galaxyModels';
 
 export interface HandleServerMessage<T extends ServerMessage> {
     (msg: T): void;

@@ -1,12 +1,10 @@
-import { States } from './states';
-import { InputHandler3 } from '../input/selectionHandler';
+import { Scenes } from './scenes';
+import { InputHandler } from '../input/selectionHandler';
 import { GameTimeHandler } from '../logic/gameTimeHandler';
 import { ClientMessageSender } from '../communication/communicationHandler';
 import { Galaxy, Player } from '../data/galaxyModels';
 import { Camera } from '../view/camera';
-import { GameInfoHandler } from '../view/gameInfo';
 import { Background } from '../view/background';
-import { GalaxyDataHandler } from '../logic/galaxyDataHandler';
 import { ObservableServerMessageHandler } from '../communication/messageHandler';
 
 export class GameScene extends Phaser.Scene {
@@ -15,51 +13,35 @@ export class GameScene extends Phaser.Scene {
 
 	private _galaxy: Galaxy;
 	private _player: Player;
-	private _galaxyDataHandler: GalaxyDataHandler;
 
-	//	private _inputHandler: InputHandler;
-	//private _selectionHandler: SelectionHandler;
-	private _inputHandler: InputHandler3;
+	private _inputHandler: InputHandler;
 	private _timeHandler: GameTimeHandler;
 	private _clientMessageSender: ClientMessageSender;
 	private _serverMessageObserver: ObservableServerMessageHandler;
 
 	private _graphics: Phaser.GameObjects.Graphics;
 
-	public constructor(timeHandler: GameTimeHandler, clientMessageSender: ClientMessageSender) {
-		super(States.GAME);
-
-		this._timeHandler = timeHandler;
-		this._clientMessageSender = clientMessageSender;
+	public constructor() {
+		super(Scenes.GAME);
 	}
 
 	public init(data: any) {
 
+		this._clientMessageSender = data.clientMessageSender;
+		this._serverMessageObserver = data.serverMessageObserver;
+
 		let gameState = data.gameState;
-		let gameLogic = data.gameLogic;
 
 		this._galaxy = gameState.galaxy;
 		this._player = gameState.player;
-		this._galaxyDataHandler = data.galaxyDataHandler;
 	}
 
 	public create() {
-
-		//this._inputHandler = new InputHandler(this);
-
-		//	let i = new InputHandler2(this);
-
+		this._timeHandler = new GameTimeHandler(this._serverMessageObserver);
 
 		this._camera = new Camera(this.cameras.main);
 		this.cameras.main.setSize(2048, 2048);
 		this._camera.setDeltaPosition(-6000, -6000);
-		//this._inputHandler.onDrag = this._camera.setDeltaPosition.bind(this._camera);
-
-		/*
-				i.onMovingCamera = (x: number, y: number) => {
-					console.log('moving');
-					this._camera.setDeltaPosition(x, y);
-				};*/
 
 		new Background(this).create();
 
@@ -71,24 +53,8 @@ export class GameScene extends Phaser.Scene {
 				//	this._selectionHandler.selectPlanet(planet);
 			});
 		});
-		/*
-				this._selectionHandler = new SelectionHandler(this, this.cameras.main, this._player, this._galaxy.planets, this._clientMessageSender);
-				//	this._inputHandler.onSelectStart = this._selectionHandler.onStartSelect.bind(this._selectionHandler);
-				//	this._inputHandler.onSelectEnd = this._selectionHandler.onEndSelect.bind(this._selectionHandler);
-				//	this._inputHandler.onSelectedMouseMove = this._selectionHandler.onSelectPosChanged.bind(this._selectionHandler);
 
-				i.onStartSelection = (x: number, y: number) => {
-					this._selectionHandler.onStartSelect(x, y);
-				};
-
-				i.onDraggingSelectionRect = (x: number, y: number) => {
-					this._selectionHandler.onSelectPosChanged(x, y);
-				};
-				i.onEndSelection = (x: number, y: number) => {
-					this._selectionHandler.onEndSelect(x, y);
-				};
-		*/
-		this._inputHandler = new InputHandler3(this, this._camera, this._player, this._galaxy.planets, this._clientMessageSender);
+		this._inputHandler = new InputHandler(this, this._camera, this._player, this._galaxy.planets, this._clientMessageSender);
 		this._graphics = this.add.graphics({ lineStyle: { width: 2, color: 0xff0000, alpha: 1 } });
 
 		this.sys.game.events.on('resize', this.resize, this);
@@ -139,7 +105,6 @@ export class GameScene extends Phaser.Scene {
 			}
 		});
 
-		//	this._selectionHandler.update();
 		this._inputHandler.update();
 	}
 

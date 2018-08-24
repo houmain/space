@@ -40,6 +40,7 @@ export class ClientMessageSender {
 
 export interface SpaceGameConfig {
     url: string;
+    gameId: number;
 }
 
 export class CommunicationHandler {
@@ -62,6 +63,8 @@ export class CommunicationHandler {
         return this._connectionFailed;
     }
 
+    public onConnected: Function;
+
     public init(gameConfig: SpaceGameConfig) {
         try {
             let url = gameConfig.url;
@@ -69,6 +72,7 @@ export class CommunicationHandler {
 
             this._socket.onopen = () => {
                 this._connected = true;
+                this.onConnected();
             };
             this._socket.onclose = () => {
                 console.log('Disonnected from server');

@@ -1,4 +1,4 @@
-import { States } from './states';
+import { Scenes } from './scenes';
 import { ClientError } from '../common/error';
 import { Engine } from '../common/utils';
 
@@ -11,7 +11,7 @@ export class ErrorScene extends Phaser.Scene {
 	private _retryInSeconds = 5;
 
 	public constructor() {
-		super(States.ERROR);
+		super(Scenes.ERROR);
 	}
 
 	public init(data: any) {
@@ -63,6 +63,6 @@ export class ErrorScene extends Phaser.Scene {
 	}
 
 	private onTimerEvent() {
-		this.scene.start(States.PRELOADER);
+		this.scene.start(Scenes.PRELOADER);
 	}
 }

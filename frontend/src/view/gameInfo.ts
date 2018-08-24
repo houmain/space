@@ -153,7 +153,8 @@ export class GameInfoHandler {
     private showInfoText(msg: GameInfoMessage) {
         let info = this._infoBuilder.buildGameInfo(msg);
         info.lifetime = 5000;
-        info.y = 40 * this._infoMessages.length;
+        info.x = window.innerWidth - 400;
+        info.y = 30 * this._infoMessages.length;
         this._container.add(info);
 
         this._infoMessages.push(info);
