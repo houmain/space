@@ -1,26 +1,37 @@
 import { Button, GuiConfig, ButtonStyleConfig } from './guiInterfaces';
 
-export class TextButton implements Button {
 
-	private _container: Phaser.GameObjects.Container;
+export abstract class BaseButton implements Button {
 
-	public constructor(scene: Phaser.Scene, text: string, config: GuiConfig, styleConfig: ButtonStyleConfig) {
-		this._container = scene.add.container(config.x, config.y);
+	protected _container: Phaser.GameObjects.Container;
 
-		let graphics = scene.add.graphics();
-		graphics.fillStyle(styleConfig.color, styleConfig.alpha);
-		graphics.fillRect(1, 1, config.width - 1, config.height - 1);
+	public constructor(container: Phaser.GameObjects.Container) {
+		this._container = container;
+	}
 
-		graphics.lineStyle(styleConfig.borderThickness, styleConfig.borderColor, styleConfig.borderAlpha);
-		graphics.strokeRect(0, 0, config.width, config.height);
-
-		let label = scene.add.text(10, 10, text, {
-			wordWrap: {
-				width: config.width - 10
-			}
+	public onMouseDown(func: Function) {
+		this._container.on('pointerdown', () => {
+			func();
 		});
+	}
+}
 
-		this._container.add(graphics);
-		this._container.add(label);
+export class TextButton extends BaseButton {
+	private _text: Phaser.GameObjects.Text;
+
+	public constructor(container: Phaser.GameObjects.Container, text: Phaser.GameObjects.Text) {
+		super(container);
+		this._text = text;
+	}
+
+	public set label(label: string) {
+		this._text.setText(label);
+	}
+}
+
+export class ImageButton extends BaseButton {
+
+	public constructor(container: Phaser.GameObjects.Container) {
+		super(container);
 	}
 }

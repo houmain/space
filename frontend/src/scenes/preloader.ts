@@ -1,6 +1,7 @@
 
 import { SpaceGame } from '../Game';
 import { Scenes } from './scenes';
+import { Assets } from '../view/assets';
 
 export class Preloader extends Phaser.Scene {
 
@@ -22,7 +23,7 @@ export class Preloader extends Phaser.Scene {
 
         this.showProgressBar();
 
-        this.loadTextures();
+        this.loadMainMenuAssets();
     }
 
     private showProgressBar() {
@@ -44,10 +45,12 @@ export class Preloader extends Phaser.Scene {
         });
     }
 
-    private loadTextures() {
+    private loadMainMenuAssets() {
         this.load.setPath('./assets/');
+
         // Main Menu
         this.load.image('mainMenu', './images/mainMenu.jpg');
+        this.load.atlas(Assets.ATLAS.MAIN_MENU, './spritesheets/gui.png', './spritesheets/gui.json');
     }
 
     public create() {

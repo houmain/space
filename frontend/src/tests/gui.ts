@@ -1,3 +1,5 @@
+import { GuiFactory } from "../view/gui/guiFactory";
+
 let container = this.add.container(200, 200);
 
 let windowColor = 0x303030;

@@ -51,8 +51,13 @@ function startGame(): void {
         type: Phaser.AUTO,
         parent: 'canvas',
         width: window.innerWidth,
-        height: window.innerHeight
+        height: window.innerHeight,
+        plugins: {
+            global: [
+            ]
+        },
     };
+
 
     const game = new SpaceGame(config);
 

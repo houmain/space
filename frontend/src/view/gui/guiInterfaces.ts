@@ -1,5 +1,5 @@
 export interface Button {
-
+	onMouseDown(func: Function);
 }
 
 
