@@ -10,7 +10,7 @@ export class MainMenuScene extends Phaser.Scene {
 
 	public create() {
 
-		let fastRedirect = false;
+		let fastRedirect = true;
 
 		if (fastRedirect) {
 			this.startGame();
@@ -22,7 +22,7 @@ export class MainMenuScene extends Phaser.Scene {
 
 			let guiFactory: GuiFactory = new GuiFactory(this);
 
-			let textButton = guiFactory.buildTextButton('START',
+			let textButton = guiFactory.buildTextButton('QUIT',
 				{
 					x: 400,
 					y: 500,
@@ -36,7 +36,7 @@ export class MainMenuScene extends Phaser.Scene {
 					borderThickness: 4
 				});
 			textButton.onMouseDown(() => {
-				this.startGame();
+				this.quitGame();
 			});
 
 			let imageButton1 = guiFactory.buildImageButton('atlasGui', 'player.png', {
@@ -52,6 +52,9 @@ export class MainMenuScene extends Phaser.Scene {
 					borderThickness: 4
 				}
 			);
+			imageButton1.onMouseDown(() => {
+				this.startGame();
+			});
 
 			let imageButton2 = guiFactory.buildImageButton('atlasGui', 'ai.png', {
 				x: 360,
@@ -66,9 +69,12 @@ export class MainMenuScene extends Phaser.Scene {
 					borderThickness: 4
 				}
 			);
+			imageButton2.onMouseDown(() => {
+				this.startGame();
+			});
 
 			let windowColor = 0x303030;
-			let borderColor = 0x3ca6ff; //0xffffff;//907748;
+			let borderColor = 0x3ca6ff;
 			let borderAlpha = 1;
 			let borderThickness = 3;
 			let windowAlpha = 0.8;
@@ -104,6 +110,10 @@ export class MainMenuScene extends Phaser.Scene {
 		this.scene.start(Scenes.INIT_GAME, {
 			gameConfig: gameConfig
 		});
+	}
+
+	private quitGame() {
+		self.close();
 	}
 }
 
