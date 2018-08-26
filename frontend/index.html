@@ -5,10 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <title>Bug? Galore! Space Game</title>
     <link rel="stylesheet" href="./app.css" type="text/css" />
+
+
+
 </head>
 
 <body class="body" style="background-color:black;">
-    <div id="canvas"></div>
+    <style>
+        #div-text {
+            background-color: #00baba;
+            position: absolute;
+            margin-top: 50%;
+            margin-left: 50%;
+            z-index: 999;
+        }
+    </style>
+    <div id="div-text" style="visibility:hidden;">
+        greatTexts
+
+    </div>
+
+    <div id="container" style="position: relative; width: 100%; height: 100%;z-index:990;">
+        <div id="canvas" />
+    </div>
+
     <!-- Script swill be injected here -->
 </body>
 

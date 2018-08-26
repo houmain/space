@@ -10,7 +10,7 @@ export class MainMenuScene extends Phaser.Scene {
 
 	public create() {
 
-		let fastRedirect = true;
+		let fastRedirect = false;
 
 		if (fastRedirect) {
 			this.startGame();
@@ -70,7 +70,7 @@ export class MainMenuScene extends Phaser.Scene {
 				}
 			);
 			imageButton2.onMouseDown(() => {
-				this.startGame();
+				this.startAiMenu();
 			});
 
 			let windowColor = 0x303030;
@@ -110,6 +110,10 @@ export class MainMenuScene extends Phaser.Scene {
 		this.scene.start(Scenes.INIT_GAME, {
 			gameConfig: gameConfig
 		});
+	}
+
+	private startAiMenu() {
+		this.scene.start(Scenes.AI_MENU);
 	}
 
 	private quitGame() {

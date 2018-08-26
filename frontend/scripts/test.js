@@ -1,14 +1,11 @@
 console.log('ccccccccccccccccccccc');
 
+//import { BaseAIController } from './test2';
 
-class Car {
+class AIController {
 
-	getName() {
-		return 'Test';
+	startTest() {
+		console.log('start Test');
 	}
 }
 
-
-function test() {
-	return 2;
-}
