@@ -43,7 +43,7 @@ class SelectionArrow {
 
 export class InputHandler {
 
-    private DOUBLE_CLICK_TIME = 1000;
+    private DOUBLE_CLICK_TIME = 400;
     private _lastDownTime: number = 0;
 
     private _movingCamera: boolean = false;
@@ -93,16 +93,22 @@ export class InputHandler {
         if (pointer.downTime - this._lastDownTime < this.DOUBLE_CLICK_TIME) {
             doubleClick = true;
         }
-
-        this._lastDownTime = pointer.downTime;
+        else {
+            this._lastDownTime = pointer.downTime;
+        }
 
         if (doubleClick) {
-            this._draggingSelectionRect = true;
             this.startSelectionRect(pointer.x, pointer.y);
         } else {
-            if (this.planetUnderCursor(pointer.x, pointer.y)) {
-                this._showingSelectionArrows = true;
-                this.createSelectionArrows();
+            let planet = this.planetUnderCursor(pointer.x, pointer.y);
+            if (planet) {
+                if (this.isOwnPlanet(planet)) {
+                    this.selectPlanet(planet);
+                    this.startSelectionArrows();
+                }
+                else {
+                    this.selectPlanet(planet);
+                }
             } else {
                 this._movingCamera = true;
             }
@@ -115,6 +121,8 @@ export class InputHandler {
 
         if (this._movingCamera) {
             this.moveCamera(pointer.x - pointer.downX, pointer.y - pointer.downY);
+        } else if (this._showingSelectionArrows) {
+            this.createSelectionArrows();
         } else if (this._draggingSelectionRect) {
             this.updateSelectionRect(pointer.x, pointer.y);
         }
@@ -128,19 +136,41 @@ export class InputHandler {
         }
 
         this._movingCamera = false;
-        this._draggingSelectionRect = false;
-        this._showingSelectionArrows = false;
     }
 
     private _rect: Phaser.Geom.Rectangle;
     private _selectedPlanets: Planet[] = [];
 
-    private startSelectionRect(x: number, y: number) {
+    private isOwnPlanet(planet) {
+        return (planet.faction && planet.faction.id === this._player.factionId);
+    }
+
+    private isPlanetSelected(planet) {
+        return (this._selectedPlanets.indexOf(planet) >= 0);
+    }
+
+    private clearSelection() {
         this._selectedPlanets.splice(0);
+        this._graphics.clear();
+    }
+
+    private selectPlanet(planet, clearSelection: boolean = true) {
+        if (this.isPlanetSelected(planet))
+            return;
+        if (clearSelection)
+            this.clearSelection();
+        this._selectedPlanets.push(planet);
+    }
+
+    private startSelectionRect(x: number, y: number) {
+        this._draggingSelectionRect = true;
+        this.clearSelection();
 
         let worldPos = this.getWorldPosition(x, y);
         this._rect.x = worldPos.x;
         this._rect.y = worldPos.y;
+        this._rect.width = 0;
+        this._rect.height = 0;
     }
 
     private getWorldPosition(x: number, y: number): Vector2Like {
@@ -164,24 +194,18 @@ export class InputHandler {
         return null;
     }
 
-    private createSelectionArrows() {
-        this._selectionArrows = [];
-
-        this._selectedPlanets.forEach(planet => {
-            let arrow = new SelectionArrow();
-            arrow.create(this._scene, planet);
-            this._selectionArrows.push(arrow);
-
-            console.log('pushed arrow');
-        });
+    private startSelectionArrows() {
+        this._showingSelectionArrows = true;
     }
 
-    private destroySelectionArrows() {
-        this._selectionArrows.forEach(arrow => {
-            arrow.destroy();
-        });
-
-        this._selectionArrows = [];
+    private createSelectionArrows() {
+        if (this._selectionArrows.length == 0) {
+            this._selectedPlanets.forEach(planet => {
+                let arrow = new SelectionArrow();
+                arrow.create(this._scene, planet);
+                this._selectionArrows.push(arrow);
+            });
+        }
     }
 
     private moveCamera(x: number, y: number) {
@@ -200,29 +224,34 @@ export class InputHandler {
     }
 
     private endSelectionArrows(x: number, y: number) {
+
         let targetPlanet = this.planetUnderCursor(x, y);
         if (targetPlanet !== null) {
-            let sendRate = 0.5;
-
-            this._selectedPlanets.forEach(planet => {
-                let squadron: Squadron = this.findSquadronByFactionId(planet, this._player.factionId);
-
-                let numFighters = Math.floor(squadron.fighters.length * sendRate);
-                if (numFighters > 0) {
-                    this._clientMessageSender.sendSquadron(planet.id, targetPlanet.id, numFighters);
-                }
-            });
+            if (this.isPlanetSelected(targetPlanet)) {
+                this.clearSelection();
+                this.selectPlanet(targetPlanet);
+            }
+            else {
+                let sendRate = 0.5;
+                this._selectedPlanets.forEach(planet => {
+                    let squadron: Squadron = this.findSquadronByFactionId(planet, this._player.factionId);
+                    if (squadron) {
+                        let numFighters = Math.floor(squadron.fighters.length * sendRate);
+                        if (numFighters > 0) {
+                            this._clientMessageSender.sendSquadron(planet.id, targetPlanet.id, numFighters);
+                        }
+                    }
+                });
+            }
         }
 
-        this._selectedPlanets.splice(0);
-
         this._graphics.clear();
-        this.destroySelectionArrows();
+        this._selectionArrows.forEach(arrow => { arrow.destroy(); });
+        this._selectionArrows = [];
+        this._showingSelectionArrows = false;
     }
 
     private endSelectionRect() {
-        this._selectedPlanets.splice(0);
-
         if (this._rect.width < 0) {
             this._rect.width *= -1;
             this._rect.x -= this._rect.width;
@@ -233,13 +262,15 @@ export class InputHandler {
             this._rect.y -= this._rect.height;
         }
 
+        this.clearSelection();
         this._allPlanets.forEach(planet => {
-            if (this._rect.contains(planet.x, planet.y) && planet.faction && planet.faction.id === this._player.factionId) {
-                this._selectedPlanets.push(planet);
-            }
+            if (this._rect.contains(planet.x, planet.y))
+                if (this.isOwnPlanet(planet))
+                    this.selectPlanet(planet, false);
         });
 
         this._graphics.clear();
+        this._draggingSelectionRect = false;
     }
 
     private findSquadronByFactionId(planet: Planet, factionId: number): Squadron {
