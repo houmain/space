@@ -3,13 +3,12 @@ import { InputHandler } from '../input/selectionHandler';
 import { GameTimeHandler } from '../logic/gameTimeHandler';
 import { ClientMessageSender } from '../communication/communicationHandler';
 import { Galaxy, Player } from '../data/galaxyModels';
-import { Camera } from '../view/camera';
 import { Background } from '../view/background';
 import { ObservableServerMessageHandler } from '../communication/messageHandler';
 
 export class GameScene extends Phaser.Scene {
 
-	private _camera: Camera;
+	private _camera: Phaser.Cameras.Scene2D.Camera;
 
 	private _galaxy: Galaxy;
 	private _player: Player;
@@ -39,9 +38,9 @@ export class GameScene extends Phaser.Scene {
 	public create() {
 		this._timeHandler = new GameTimeHandler(this._serverMessageObserver);
 
-		this._camera = new Camera(this.cameras.main);
-		this.cameras.main.setSize(2048, 2048);
-		this._camera.setDeltaPosition(-6000, -6000);
+		this._camera = this.cameras.main;
+		this._camera.setBounds(-1024, -1024, 2048, 2048);
+		this._camera.centerToBounds();
 
 		new Background(this).create();
 
@@ -54,27 +53,22 @@ export class GameScene extends Phaser.Scene {
 			});
 		});
 
-		this._inputHandler = new InputHandler(this, this._camera, this._player, this._galaxy.planets, this._clientMessageSender);
+		this._inputHandler = new InputHandler(this, this._player, this._galaxy.planets, this._clientMessageSender);
 		this._graphics = this.add.graphics({ lineStyle: { width: 2, color: 0xff0000, alpha: 1 } });
 
 		this.sys.game.events.on('resize', this.resize, this);
 		this.resize();
 
-		this.cameras.main.fadeIn(1000);
+		this._camera.fadeIn(1000);
 	}
 
 	private resize() {
-		let cam = this.cameras.main;
-		cam.setViewport(0, 0, window.innerWidth, window.innerHeight);
-		cam.centerToBounds();
-
-		cam.zoom = Math.min(window.innerWidth / 1024, window.innerHeight / 768);
+		this._camera.setViewport(0, 0, window.innerWidth, window.innerHeight);
+		this._camera.zoom = Math.min(window.innerWidth / 1024, window.innerHeight / 768);
+		this._camera.centerToBounds();
 	}
 
 	public update(timeSinceStart: number, timeSinceLastFrame: number) {
-
-		this._camera.update(timeSinceLastFrame);
-
 		this._timeHandler.addLocalElapsedTime(timeSinceLastFrame);
 		let timeElapsed = this._timeHandler.timeSinceStart;
 

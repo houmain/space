@@ -1,7 +1,6 @@
 import { Planet, Squadron } from '../data/galaxyModels';
 import { ClientMessageSender } from '../communication/communicationHandler';
 import { Player } from '../data/gameData';
-import { Camera } from '../view/camera';
 
 class SelectionArrow {
 
@@ -51,7 +50,6 @@ export class InputHandler {
     private _showingSelectionArrows: boolean = false;
 
     private _scene: Phaser.Scene;
-    private _gameCamera: Camera;
     private _camera: Phaser.Cameras.Scene2D.Camera;
     private _allPlanets: Planet[];
     private _player: Player;
@@ -64,9 +62,11 @@ export class InputHandler {
     private _currentMouseX: number;
     private _currentMouseY: number;
 
-    public constructor(scene: Phaser.Scene, gameCamera: Camera, player: Player, planets: Planet[], clientMessageSender: ClientMessageSender) {
+    private _downScrollX: number;
+    private _downScrollY: number;
+
+    public constructor(scene: Phaser.Scene, player: Player, planets: Planet[], clientMessageSender: ClientMessageSender) {
         this._scene = scene;
-        this._gameCamera = gameCamera;
         this._camera = scene.cameras.main;
         this._player = player;
         this._allPlanets = planets;
@@ -88,18 +88,14 @@ export class InputHandler {
         });
     }
     private onMouseDown(pointer: Phaser.Input.Pointer) {
-        let doubleClick = false;
+        this._downScrollX = this._camera.scrollX;
+        this._downScrollY = this._camera.scrollY;
 
         if (pointer.downTime - this._lastDownTime < this.DOUBLE_CLICK_TIME) {
-            doubleClick = true;
+            this.startSelectionRect(pointer.x, pointer.y);
         }
         else {
             this._lastDownTime = pointer.downTime;
-        }
-
-        if (doubleClick) {
-            this.startSelectionRect(pointer.x, pointer.y);
-        } else {
             let planet = this.planetUnderCursor(pointer.x, pointer.y);
             if (planet) {
                 if (this.isOwnPlanet(planet)) {
@@ -208,8 +204,10 @@ export class InputHandler {
         }
     }
 
-    private moveCamera(x: number, y: number) {
-        this._gameCamera.setDeltaPosition(x, y);
+    private moveCamera(dx: number, dy: number) {
+        this._camera.setScroll(
+            this._downScrollX - dx / this._camera.zoom,
+            this._downScrollY - dy / this._camera.zoom);
     }
 
     private updateSelectionRect(x: number, y: number) {
