@@ -1,4 +1,5 @@
 class TextureAtlasList {
+	public readonly PRELOADER: string = 'atlasPreloader';
 	public readonly MAIN_MENU: string = 'atlasGui';
 }
 

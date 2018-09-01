@@ -37,3 +37,31 @@ export class Assert {
         throw message;
     }
 }
+
+export class DOMHelper {
+
+    public createFileInput(parentId: string, id: string): HTMLInputElement {
+
+        let input = document.createElement('input');
+        input.type = 'file';
+        input.id = id;
+
+        document.getElementById(parentId).appendChild(input);
+
+        return input;
+    }
+
+    public deleteElement(parentId: string, elementId: string) {
+        let parent: HTMLElement = document.getElementById(parentId);
+
+        parent.removeChild(document.getElementById(elementId));
+    }
+
+    public showElement(id: string) {
+        document.getElementById(id).style.visibility = 'visible';
+    }
+
+    public hideElement(id: string) {
+        document.getElementById(id).style.visibility = 'hidden';
+    }
+}

@@ -3,50 +3,81 @@ import { SpaceGame } from '../Game';
 import { Scenes } from './scenes';
 import { Assets } from '../view/assets';
 
-export class Preloader extends Phaser.Scene {
 
-    private _assetsLoaded: boolean = false;
+class LoadingBar {
+    private _container: Phaser.GameObjects.Container;
 
-    public constructor(game: SpaceGame) {
-        super({
-            key: Scenes.PRELOADER,
-            pack: {
-                files: [
-                    { type: 'image', key: 'bar', url: './assets/images/loadBar.png' },
-                    { type: 'image', key: 'barBg', url: './assets/images/barBg.png' }
-                ]
-            }
-        });
-    }
+    public constructor(scene: Phaser.Scene) {
+        this._container = scene.add.container(0, 0);
+        let bar;
 
-    public preload() {
+        let progressCounter = scene.add.bitmapText(0, -10, 'progress_counter', '0 %');
+        progressCounter.setOrigin(0.5, 0.5);
 
-        this.showProgressBar();
+        this._container.add(
+            [
+                scene.add.image(0, 0, Assets.ATLAS.PRELOADER, 'circle.png'),
+                progressCounter,
+                scene.add.image(300, -35, Assets.ATLAS.PRELOADER, 'upper_line.png'),
+                scene.add.bitmapText(150, -70, 'font', 'game loading...'),
+                bar = scene.add.image(300, 35, Assets.ATLAS.PRELOADER, 'progress_bar.png'),
+                scene.add.image(300, 35, Assets.ATLAS.PRELOADER, 'lower_line.png')
+            ]);
 
-        this.loadMainMenuAssets();
-    }
-
-    private showProgressBar() {
-        const barBg = this.add.image(this.sys.canvas.width / 2, this.sys.canvas.height / 2, 'barBg');
-        const bar = this.add.sprite(this.sys.canvas.width / 2, this.sys.canvas.height / 2, 'bar');
-
-        const mask = this.make.graphics({
+        const mask = scene.make.graphics({
             x: bar.x - (bar.width / 2),
             y: bar.y - (bar.height / 2),
             add: false
         });
         mask.fillRect(0, 0, 0, bar.height);
 
-        bar.mask = new Phaser.Display.Masks.GeometryMask(this, mask);
+        bar.mask = new Phaser.Display.Masks.GeometryMask(scene, mask);
 
-        this.load.on('progress', (progress: number) => {
+        scene.load.on('progress', (progress: number) => {
             mask.clear();
             mask.fillRect(0, 0, bar.width * progress, bar.height);
+            progressCounter.setText(`${Math.floor(progress * 100)}%`);
         });
+    }
+
+    public setPosition(x: number, y: number) {
+        this._container.setPosition(x, y);
+    }
+
+    public destroy() {
+        this._container.destroy();
+    }
+}
+
+export class Preloader extends Phaser.Scene {
+
+    private _assetsLoaded: boolean = false;
+
+    private _backgroundImage: Phaser.GameObjects.Image;
+
+    private _loadingBar: LoadingBar;
+
+    public constructor() {
+        super(Scenes.PRELOADER);
+    }
+
+    public preload() {
+        this._backgroundImage = this.add.image(this.sys.canvas.width / 2, this.sys.canvas.height / 2, 'menuBackground');
+        this._loadingBar = new LoadingBar(this);
+        this._loadingBar.setPosition(this.sys.canvas.width / 2 - 200, this.sys.canvas.height / 2);
+
+        this.loadMainMenuAssets();
+
+        this.sys.game.events.on('resize', this.resize, this);
+        this.resize();
     }
 
     private loadMainMenuAssets() {
         this.load.setPath('./assets/');
+
+        for (let i = 0; i < 100; i++) {
+            this.load.image('logo' + i, './images/mainMenu.jpg');
+        }
 
         // Main Menu
         this.load.image('mainMenu', './images/mainMenu.jpg');
@@ -57,8 +88,19 @@ export class Preloader extends Phaser.Scene {
         this._assetsLoaded = true;
     }
 
+    private resize() {
+
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+
+        this.cameras.resize(width, height);
+        this._backgroundImage.setDisplaySize(width, height);
+        this._loadingBar.setPosition(width / 2 - 200, height / 2);
+    }
+
     public update() {
         if (this._assetsLoaded) {
+            this._loadingBar.destroy();
             this.scene.start(Scenes.MAIN_MENU);
         }
     }

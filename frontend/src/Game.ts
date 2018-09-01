@@ -1,23 +1,20 @@
 'use strict';
 //https://gamedevacademy.org/how-to-create-a-game-hud-plugin-in-phaser/
 import 'phaser';
+
 import { Preloader } from './scenes/preloader';
-import { Galaxy } from './data/galaxyModels';
 import { GameScene } from './scenes/game';
 import { HudScene } from './scenes/hud';
 import { ErrorScene } from './scenes/error';
-import { GalaxyDataHandler } from './logic/galaxyDataHandler';
 import { InitGameScene } from './scenes/initGame';
 import { Scenes } from './scenes/scenes';
 import { Engine, Assert } from './common/utils';
 import { Player } from './data/gameData';
 import { MainMenuScene } from './scenes/mainMenu';
-import { AIMenuScene } from './scenes/aiMenu';
+import { BotMenuScene } from './scenes/botMenu';
+import { BootScene } from './scenes/boot';
 
 export class SpaceGame extends Phaser.Game {
-
-    private _galaxy: Galaxy;
-    private _galaxyHandler: GalaxyDataHandler;
 
     private _player: Player;
 
@@ -27,19 +24,15 @@ export class SpaceGame extends Phaser.Game {
         Engine.init(this);
 
         this._player = new Player();
-        this._galaxy = new Galaxy();
 
-        this.scene.add(Scenes.PRELOADER, new Preloader(this), true);
+        this.scene.add(Scenes.BOOT, new BootScene(), true);
+        this.scene.add(Scenes.PRELOADER, new Preloader());
         this.scene.add(Scenes.MAIN_MENU, new MainMenuScene());
-        this.scene.add(Scenes.AI_MENU, new AIMenuScene());
+        this.scene.add(Scenes.BOT_MENU, new BotMenuScene());
         this.scene.add(Scenes.INIT_GAME, new InitGameScene(this));
         this.scene.add(Scenes.GAME, new GameScene());
         this.scene.add(Scenes.HUD, new HudScene());
         this.scene.add(Scenes.ERROR, new ErrorScene());
-    }
-
-    public get galaxy(): Galaxy {
-        return this._galaxy;
     }
 
     public get player(): Player {
@@ -55,11 +48,9 @@ function startGame(): void {
         width: window.innerWidth,
         height: window.innerHeight,
         plugins: {
-            global: [
-            ]
+
         },
     };
-
 
     const game = new SpaceGame(config);
 

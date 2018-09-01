@@ -1,28 +1,44 @@
 {"frames": [
 
 {
-	"filename": "barBg.png",
-	"frame": {"x":0,"y":0,"w":863,"h":96},
+	"filename": "circle.png",
+	"frame": {"x":1,"y":51,"w":238,"h":237},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":863,"h":96},
-	"sourceSize": {"w":863,"h":96}
+	"spriteSourceSize": {"x":0,"y":0,"w":238,"h":237},
+	"sourceSize": {"w":238,"h":237}
 },
 {
-	"filename": "loadBar.png",
-	"frame": {"x":0,"y":96,"w":837,"h":68},
+	"filename": "lower_line.png",
+	"frame": {"x":1,"y":43,"w":324,"h":6},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":837,"h":68},
-	"sourceSize": {"w":837,"h":68}
+	"spriteSourceSize": {"x":0,"y":0,"w":324,"h":6},
+	"sourceSize": {"w":324,"h":6}
+},
+{
+	"filename": "progress_bar.png",
+	"frame": {"x":1,"y":23,"w":336,"h":18},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":336,"h":18},
+	"sourceSize": {"w":336,"h":18}
+},
+{
+	"filename": "upper_line.png",
+	"frame": {"x":1,"y":1,"w":361,"h":20},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":361,"h":20},
+	"sourceSize": {"w":361,"h":20}
 }],
 "meta": {
 	"app": "https://www.codeandweb.com/texturepacker",
 	"version": "1.0",
 	"image": "preload.png",
 	"format": "RGBA8888",
-	"size": {"w":863,"h":164},
+	"size": {"w":363,"h":289},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:2300b2f3437abf17598ef55ec3b9f08c:8a738f56037011ef98149ce4a7b06bc8:0790f32caa6e98ceb330f91ea7d22e84$"
+	"smartupdate": "$TexturePacker:SmartUpdate:5f70e5528d3f3c5c60ed299071c66e31:941cd3ff0a18ecc4086e976b8809469e:0790f32caa6e98ceb330f91ea7d22e84$"
 }
 }

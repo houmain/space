@@ -1,8 +1,15 @@
 import { Scenes } from './scenes';
 import { SpaceGameConfig } from '../communication/communicationHandler';
 import { GuiFactory } from '../view/gui/guiFactory';
+import { GuiConfig } from '../view/gui/guiConfigModels';
+
+//https://github.com/goldfire/phaser-webpack-loader/tree/master/src
+//https://github.com/rroylance/phaser-npm-webpack-typescript-starter-project/blob/master/src/app.ts
+//https://snowbillr.github.io/blog//2018-04-09-a-modern-web-development-setup-for-phaser-3/
 
 export class MainMenuScene extends Phaser.Scene {
+
+	private _backgroundImage: Phaser.GameObjects.Image;
 
 	public constructor() {
 		super(Scenes.MAIN_MENU);
@@ -12,13 +19,15 @@ export class MainMenuScene extends Phaser.Scene {
 
 		let fastRedirect = false;
 
+
 		if (fastRedirect) {
 			this.startGame();
 		} else {
-			let background = this.add.tileSprite(0, 0, 2048, 2048, 'mainMenu');
-			background.setTint(0x555555);
+			//let background = this.add.tileSprite(0, 0, 2048, 2048, 'mainMenu');
+			//	background.setTint(0x555555);
+			this._backgroundImage = this.add.image(this.sys.canvas.width / 2, this.sys.canvas.height / 2, 'menuBackground');
 
-			let logoText = this.add.text(100, 100, 'Bug? Galore! \nSPACE', { fontFamily: 'Arial Black', fontSize: 74, color: '#ffffff' });
+			let logoText = this.add.text(100, 100, 'SPACE', { fontFamily: 'Arial Black', fontSize: 64, color: '#ffffff' });
 
 			let guiFactory: GuiFactory = new GuiFactory(this);
 
@@ -28,13 +37,7 @@ export class MainMenuScene extends Phaser.Scene {
 					y: 500,
 					width: 130,
 					height: 50
-				}, {
-					color: 0x99d1f8,
-					alpha: 0.9,
-					borderColor: 0x3ca6ff,
-					borderAlpha: 1,
-					borderThickness: 4
-				});
+				}, GuiConfig.textButton);
 			textButton.onMouseDown(() => {
 				this.quitGame();
 			});
@@ -44,13 +47,7 @@ export class MainMenuScene extends Phaser.Scene {
 				y: 320,
 				width: 100,
 				height: 100
-			}, {
-					color: 0x99d1f8,
-					alpha: 0.9,
-					borderColor: 0x3ca6ff,
-					borderAlpha: 1,
-					borderThickness: 4
-				}
+			}, GuiConfig.imageButton
 			);
 			imageButton1.onMouseDown(() => {
 				this.startGame();
@@ -61,13 +58,7 @@ export class MainMenuScene extends Phaser.Scene {
 				y: 320,
 				width: 100,
 				height: 100
-			}, {
-					color: 0x99d1f8,
-					alpha: 0.9,
-					borderColor: 0x3ca6ff,
-					borderAlpha: 1,
-					borderThickness: 4
-				}
+			}, GuiConfig.imageButton
 			);
 			imageButton2.onMouseDown(() => {
 				this.startAiMenu();
@@ -99,6 +90,18 @@ export class MainMenuScene extends Phaser.Scene {
 			container.add(graphics);
 			container.add(text);
 		}
+
+		this.sys.game.events.on('resize', this.resize, this);
+		this.resize();
+	}
+
+	private resize() {
+
+		let width = window.innerWidth;
+		let height = window.innerHeight;
+
+		this.cameras.resize(width, height);
+		this._backgroundImage.setDisplaySize(width, height);
 	}
 
 	private startGame() {
@@ -113,7 +116,7 @@ export class MainMenuScene extends Phaser.Scene {
 	}
 
 	private startAiMenu() {
-		this.scene.start(Scenes.AI_MENU);
+		this.scene.start(Scenes.BOT_MENU);
 	}
 
 	private quitGame() {

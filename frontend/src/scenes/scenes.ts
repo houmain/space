@@ -1,7 +1,8 @@
 export enum Scenes {
+	BOOT = 'boot',
 	PRELOADER = 'preloader',
 	MAIN_MENU = 'mainMenu',
-	AI_MENU = 'aiMenu',
+	BOT_MENU = 'botMenu',
 	INIT_GAME = 'initGame',
 	GAME = 'game',
 	HUD = 'hud',

@@ -53,7 +53,10 @@ module.exports = {
         }
     },
     resolve: {
-        extensions: ['.tsx', '.ts', '.js']
+        extensions: ['.tsx', '.ts', '.js'],
+        alias: {
+            nineslice: path.join(__dirname, 'node_modules/phaser3-nineslice/dist/nineslice.js'),
+        }
     },
     stats: true,
     plugins: [

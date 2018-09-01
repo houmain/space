@@ -15,7 +15,7 @@ class GuiBuilder {
 		let graphics = this.addGraphics(container);
 
 		this.addFilledRectToGraphics(graphics, 1, 1, config.width - 1, config.height - 1, styleConfig.color, styleConfig.alpha);
-		this.addStrokedRectToGraphics(graphics, 0, 0, config.width, config.height, styleConfig.borderThickness, styleConfig.borderColor, styleConfig.borderAlpha)
+		this.addStrokedRectToGraphics(graphics, 0, 0, config.width, config.height, styleConfig.borderThickness, styleConfig.borderColor, styleConfig.borderAlpha);
 
 		let text = this.addText(container, 10, 10, label, config.width - 10);
 
@@ -24,13 +24,13 @@ class GuiBuilder {
 		this.addEvent(container, 'pointerover', () => {
 			this.clearGraphics(graphics);
 			this.addFilledRectToGraphics(graphics, 1, 1, config.width - 1, config.height - 1, 0xff0000, styleConfig.alpha);
-			this.addStrokedRectToGraphics(graphics, 0, 0, config.width, config.height, styleConfig.borderThickness, styleConfig.borderColor, styleConfig.borderAlpha)
+			this.addStrokedRectToGraphics(graphics, 0, 0, config.width, config.height, styleConfig.borderThickness, styleConfig.borderColor, styleConfig.borderAlpha);
 		});
 
 		this.addEvent(container, 'pointerout', () => {
 			this.clearGraphics(graphics);
 			this.addFilledRectToGraphics(graphics, 1, 1, config.width - 1, config.height - 1, styleConfig.color, styleConfig.alpha);
-			this.addStrokedRectToGraphics(graphics, 0, 0, config.width, config.height, styleConfig.borderThickness, styleConfig.borderColor, styleConfig.borderAlpha)
+			this.addStrokedRectToGraphics(graphics, 0, 0, config.width, config.height, styleConfig.borderThickness, styleConfig.borderColor, styleConfig.borderAlpha);
 		});
 
 		return new TextButton(container, text);
@@ -41,7 +41,7 @@ class GuiBuilder {
 		let graphics = this.addGraphics(container);
 
 		this.addFilledRectToGraphics(graphics, 1, 1, config.width - 1, config.height - 1, styleConfig.color, styleConfig.alpha);
-		this.addStrokedRectToGraphics(graphics, 0, 0, config.width, config.height, styleConfig.borderThickness, styleConfig.borderColor, styleConfig.borderAlpha)
+		this.addStrokedRectToGraphics(graphics, 0, 0, config.width, config.height, styleConfig.borderThickness, styleConfig.borderColor, styleConfig.borderAlpha);
 
 		let image = this.addImage(container, 50, 50, texture, frame);
 		image.setScale(0.5);
@@ -50,7 +50,7 @@ class GuiBuilder {
 		this.addEvent(container, 'pointerover', () => {
 			this.clearGraphics(graphics);
 			this.addFilledRectToGraphics(graphics, 1, 1, config.width - 1, config.height - 1, 0xff00ff, styleConfig.alpha);
-			this.addStrokedRectToGraphics(graphics, 0, 0, config.width, config.height, styleConfig.borderThickness, styleConfig.borderColor, styleConfig.borderAlpha)
+			this.addStrokedRectToGraphics(graphics, 0, 0, config.width, config.height, styleConfig.borderThickness, styleConfig.borderColor, styleConfig.borderAlpha);
 
 			image.setTint(0x000000);
 		});
@@ -58,7 +58,7 @@ class GuiBuilder {
 		this.addEvent(container, 'pointerout', () => {
 			this.clearGraphics(graphics);
 			this.addFilledRectToGraphics(graphics, 1, 1, config.width - 1, config.height - 1, styleConfig.color, styleConfig.alpha);
-			this.addStrokedRectToGraphics(graphics, 0, 0, config.width, config.height, styleConfig.borderThickness, styleConfig.borderColor, styleConfig.borderAlpha)
+			this.addStrokedRectToGraphics(graphics, 0, 0, config.width, config.height, styleConfig.borderThickness, styleConfig.borderColor, styleConfig.borderAlpha);
 
 			image.setTint(0xffffff);
 		});
@@ -121,7 +121,7 @@ class GuiBuilder {
 
 	private addEvent(gameObject: Phaser.GameObjects.GameObject, event: string, func: Function) {
 		gameObject.on(event, func);
-	};
+	}
 }
 
 export class GuiFactory {
