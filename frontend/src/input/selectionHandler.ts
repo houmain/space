@@ -19,15 +19,11 @@ class SelectionArrow {
 
         let start: Phaser.Math.Vector2 = new Phaser.Math.Vector2(this._planet.x, this._planet.y);
         let end: Phaser.Math.Vector2 = new Phaser.Math.Vector2(x, y);
-        let line = end.subtract(start).normalize();
-        let normal1 = new Phaser.Math.Vector2(line.x * lineStrength, -line.y * lineStrength);
-        let normal2 = new Phaser.Math.Vector2(-line.x * lineStrength, line.y * lineStrength);
-
-        this._shaft.setTopLeft(this._planet.x + normal1.x, this._planet.y + normal1.y);
-        this._shaft.setTopRight(this._planet.x + normal2.x, this._planet.y + normal2.y);
-
-        this._shaft.setBottomLeft(x + normal1.x, y + normal1.y);
-        this._shaft.setBottomRight(x + normal2.x, y + normal2.y);
+        let normal = end.clone().subtract(start).normalize().normalizeRightHand().scale(lineStrength);
+        this._shaft.setTopLeft(start.x - normal.x, start.y - normal.y);
+        this._shaft.setTopRight(start.x + normal.x, start.y + normal.y);
+        this._shaft.setBottomLeft(end.x - normal.x, end.y - normal.y);
+        this._shaft.setBottomRight(end.x + normal.x, end.y + normal.y);
     }
 
     public destroy() {
