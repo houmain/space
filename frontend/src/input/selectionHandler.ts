@@ -13,9 +13,9 @@ class SelectionArrow {
         this._shaft = scene.add.quad(planet.x, planet.y, 'pixel');
     }
 
-    public update(x: number, y: number) {
-
+    public update(x: number, y: number, snapped: boolean) {
         let lineStrength = 2;
+        this._shaft.bottomLeftAlpha = this._shaft.bottomRightAlpha = (snapped ? 0.8 : 0.0);
 
         let start: Phaser.Math.Vector2 = new Phaser.Math.Vector2(this._planet.x, this._planet.y);
         let end: Phaser.Math.Vector2 = new Phaser.Math.Vector2(x, y);
@@ -57,6 +57,7 @@ export class InputHandler {
     private _selectionArrows: SelectionArrow[] = [];
     private _selectionRect: Phaser.Geom.Rectangle;
     private _selectedPlanets: Planet[] = [];
+    private _targetPlanet: Planet;
     private _graphics;
 
     public constructor(scene: Phaser.Scene, player: Player, planets: Planet[], clientMessageSender: ClientMessageSender) {
@@ -129,9 +130,8 @@ export class InputHandler {
         this._movingCamera = false;
     }
 
-    private getWorldPosition(x: number, y: number): Vector2Like {
-        let worldPos: Vector2Like = this._camera.getWorldPoint(x, y);
-        return worldPos;
+    private getWorldPosition(x: number, y: number): Phaser.Math.Vector2 {
+        return this._camera.getWorldPoint(x, y);
     }
 
     private planetUnderCursor(x: number, y: number): Planet {
@@ -245,12 +245,28 @@ export class InputHandler {
         }
     }
 
+    private updateSelectionArrows() {
+        let planet = this.planetUnderCursor(this._currentMouseX, this._currentMouseY);
+        let worldPos = this.getWorldPosition(this._currentMouseX, this._currentMouseY);
+
+        let snapped = false;
+        this._targetPlanet = null;
+        if (planet && !this.isPlanetSelected(planet)) {
+            this._targetPlanet = planet;
+            worldPos.set(planet.x, planet.y);
+            snapped = true;
+        }
+
+        this._selectionArrows.forEach(arrow => {
+            arrow.update(worldPos.x, worldPos.y, snapped);
+        });
+    }
+
     private endSelectionArrows(x: number, y: number) {
-        let targetPlanet = this.planetUnderCursor(x, y);
-        if (targetPlanet !== null) {
-            if (this.isPlanetSelected(targetPlanet)) {
+        if (this._targetPlanet !== null) {
+            if (this.isPlanetSelected(this._targetPlanet)) {
                 this.clearSelection();
-                this.selectPlanet(targetPlanet);
+                this.selectPlanet(this._targetPlanet);
             }
             else {
                 let sendRate = 0.5;
@@ -259,7 +275,7 @@ export class InputHandler {
                     if (squadron) {
                         let numFighters = Math.floor(squadron.fighters.length * sendRate);
                         if (numFighters > 0) {
-                            this._clientMessageSender.sendSquadron(planet.id, targetPlanet.id, numFighters);
+                            this._clientMessageSender.sendSquadron(planet.id, this._targetPlanet.id, numFighters);
                         }
                     }
                 });
@@ -286,11 +302,7 @@ export class InputHandler {
             });
         }
 
-        if (this._selectionArrows.length > 0) {
-            let worldPos = this.getWorldPosition(this._currentMouseX, this._currentMouseY);
-            this._selectionArrows.forEach(arrow => {
-                arrow.update(worldPos.x, worldPos.y);
-            });
-        }
+        if (this._showingSelectionArrows)
+            this.updateSelectionArrows();
     }
 }
