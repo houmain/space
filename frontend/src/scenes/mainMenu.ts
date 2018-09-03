@@ -2,6 +2,7 @@ import { Scenes } from './scenes';
 import { SpaceGameConfig } from '../communication/communicationHandler';
 import { GuiFactory } from '../view/gui/guiFactory';
 import { GuiConfig } from '../view/gui/guiConfigModels';
+import { Assets } from '../view/assets';
 
 //https://github.com/goldfire/phaser-webpack-loader/tree/master/src
 //https://github.com/rroylance/phaser-npm-webpack-typescript-starter-project/blob/master/src/app.ts
@@ -16,9 +17,51 @@ export class MainMenuScene extends Phaser.Scene {
 	}
 
 	public create() {
+		this._backgroundImage = this.add.image(this.sys.canvas.width / 2, this.sys.canvas.height / 2, 'menuBackground');
+
+		let container = this.add.container(this.sys.canvas.width / 2, this.sys.canvas.height / 2);
+		let background = this.add.image(0, 0, Assets.ATLAS.MAIN_MENU2, 'button_large.png');
+		container.add(background);
+		container.add(this.add.image(0, 0, Assets.ATLAS.MAIN_MENU2, 'button_large_outer_wheel.png'));
+		container.add(this.add.image(0, -35, Assets.ATLAS.MAIN_MENU2, 'button_large_inner_wheel_active.png'));
+		let hook = this.add.image(0, -170, Assets.ATLAS.MAIN_MENU2, 'button_large_hook.png');
+		hook.setScale(1, -1);
+		container.add(hook);
+		container.add(this.add.image(0, 170, Assets.ATLAS.MAIN_MENU2, 'button_large_hook.png'));
+
+		let ca_top_left = this.add.image(-130, -170, Assets.ATLAS.MAIN_MENU2, 'button_large_corner_active.png');
+		ca_top_left.setScale(1, -1);
+		container.add(ca_top_left);
+
+		let ca_topright = this.add.image(130, -170, Assets.ATLAS.MAIN_MENU2, 'button_large_corner_active.png');
+		ca_topright.setScale(-1, -1);
+		container.add(ca_topright);
+
+		let ca_bottom_left = this.add.image(-130, 170, Assets.ATLAS.MAIN_MENU2, 'button_large_corner_active.png');
+		container.add(ca_bottom_left);
+
+		let ca_bottom_right = this.add.image(130, 170, Assets.ATLAS.MAIN_MENU2, 'button_large_corner_active.png');
+		ca_bottom_right.setScale(-1, 1);
+		container.add(ca_bottom_right);
+
+		background.setInteractive();
+		background.on('pointerdown', () => {
+			this.startGame();
+		});
+
+		let buttonText = this.add.bitmapText(this.sys.canvas.width / 2, this.sys.canvas.height / 2 + 200, 'font_6', 'PLAY');
+		buttonText.setOrigin(0.5, 0.5);
+
+		let currentScene = this.add.bitmapText(20, 0, 'font_8', 'main menu');
+
+
+		this.sys.game.events.on('resize', this.resize, this);
+		this.resize();
+	}
+
+	public createOPld() {
 
 		let fastRedirect = false;
-
 
 		if (fastRedirect) {
 			this.startGame();
