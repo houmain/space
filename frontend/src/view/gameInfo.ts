@@ -4,6 +4,7 @@ import { Faction } from '../data/galaxyModels';
 import { Player } from '../data/gameData';
 import { ObservableServerMessageHandler } from '../communication/messageHandler';
 import { MessagePlanetConquered, ServerMessageType, MessagePlayerJoined, MessageFactionDestroyed } from '../communication/communicationInterfaces';
+import { Assets } from './assets';
 
 enum GameInfoMessageType {
     PLAYER_JOINED,
@@ -34,61 +35,33 @@ class GameInfoMessageBuilder {
 
         switch (msg.type) {
             case GameInfoMessageType.PLAYER_JOINED:
-                info = this.buildPlayerJoined(msg);
-                break;
             case GameInfoMessageType.PLANET_CONQUERED:
-                info = this.buildPlanetConquered(msg);
-                break;
             case GameInfoMessageType.FACTION_DESTROYED:
-                info = this.buildFactionDestroyed(msg);
+                info = this.buildGameInfoMessage(msg);
                 break;
         }
         return info;
     }
 
-    private buildPlayerJoined(msg: GameInfoMessage): GameInfo {
+    private buildGameInfoMessage(msg: GameInfoMessage): GameInfo {
         let info = new GameInfo(this._scene, 0, 0);
 
-        this.addBox(info, msg.color);
-        this.addText(info, msg.text);
+        let infoBox = this._scene.add.sprite(0, 0, Assets.ATLAS.GAME_GUI, 'infoBox.png');
+        infoBox.setOrigin(0, 0);
+        infoBox.setAlpha(0.75);
+
+        info.add(infoBox);
+
+        let infoText = this._scene.add.text(10, infoBox.height / 2, msg.text,
+            {
+                wordWrap: { width: infoBox.width },
+                fontFamily: 'Calibri', fontSize: 18, fill: '#ffffff'
+            });
+        infoText.setOrigin(0, 0.5);
+
+        info.add(infoText);
 
         return info;
-    }
-
-    private buildPlanetConquered(msg: GameInfoMessage): GameInfo {
-        let info = new GameInfo(this._scene, 0, 0);
-
-        this.addBox(info, msg.color);
-        this.addText(info, msg.text);
-
-        return info;
-    }
-
-    private buildFactionDestroyed(msg: GameInfoMessage): GameInfo {
-        let info = new GameInfo(this._scene, 0, 0);
-
-        this.addBox(info, msg.color);
-        this.addText(info, msg.text);
-
-        return info;
-    }
-
-    private addBox(gameInfo: GameInfo, color: number) {
-        let graphics = this._scene.add.graphics();
-        graphics.fillStyle(color, 0.25);
-        graphics.fillRect(0, 0, 350, 30);
-
-        let thickness = 2;
-        let alpha = 0.8;
-        graphics.lineStyle(thickness, color, alpha);
-        graphics.strokeRect(0, 0, 350, 30);
-
-        gameInfo.add(graphics);
-    }
-
-    private addText(gameInfo: GameInfo, text: string) {
-        let textField = this._scene.add.text(5, 5, text);
-        gameInfo.add(textField);
     }
 }
 
@@ -112,7 +85,7 @@ export class GameInfoHandler {
 
     public create(scene: Phaser.Scene) {
         this._infoBuilder = new GameInfoMessageBuilder(scene);
-        this._container = scene.add.container(10, 10);
+        this._container = scene.add.container(20, window.innerHeight - 20);
     }
 
     private onPlayerJoined(msg: MessagePlayerJoined) {
@@ -153,8 +126,9 @@ export class GameInfoHandler {
     private showInfoText(msg: GameInfoMessage) {
         let info = this._infoBuilder.buildGameInfo(msg);
         info.lifetime = 5000;
-        info.x = window.innerWidth - 400;
-        info.y = 30 * this._infoMessages.length;
+        info.x = 0;
+        info.y = -70 - this._infoMessages.length * 50;  //TODO replace with info height
+
         this._container.add(info);
 
         this._infoMessages.push(info);
@@ -183,7 +157,7 @@ export class GameInfoHandler {
 
         if (rearrangeInfos) {
             this._infoMessages.forEach((info, index) => {
-                info.y = 40 * index;
+                info.y = -70 - index * 50; //TODO replace with info height
             });
         }
     }

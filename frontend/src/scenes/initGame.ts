@@ -7,6 +7,7 @@ import { ObservableServerMessageHandler } from '../communication/messageHandler'
 import { ClientMessageSender, CommunicationHandler, SpaceGameConfig } from '../communication/communicationHandler';
 import { GalaxyDataHandler } from '../logic/galaxyDataHandler';
 import { GameInfoHandler } from '../view/gameInfo';
+import { Assets } from '../view/assets';
 
 export class InitGameScene extends Phaser.Scene {
 
@@ -40,10 +41,18 @@ export class InitGameScene extends Phaser.Scene {
 		this.load.setPath('./assets/');
 
 		// Game
-		this.load.image('background', './images/background.png');
+		this.load.image('background', './images/mainMenu.jpg');
+		this.load.image('starfield', './images/starfield.png');
 		this.load.image('planet', './images/planet_1.png');
 		this.load.image('sun', './images/planet_13.png');
 		this.load.image('pixel', './images/pixel.png');
+
+		// Textureatlas
+		this.load.atlas(Assets.ATLAS.GAME_GUI, './spritesheets/game_gui.png', './spritesheets/game_gui.json');
+
+		// fonts
+		this.load.bitmapFont('gameHudCounter', './fonts/font_counter_-export.png', './fonts/font_counter_-export.xml');
+		this.load.bitmapFont('gameHudText', './fonts/font_hud_text-export.png', './fonts/font_hud_text-export.xml');
 	}
 
 	public create() {

@@ -10,11 +10,11 @@ export class Background {
 		let numTiles = 2;
 		let size = 1024;
 
-		for (let x = 0; x < numTiles; x++) {
-			for (let y = 0; y < numTiles; y++) {
-				let s = this._scene.add.sprite(-512 + x * 1024, -512 + y * 1024, 'background');
-				s.setScale(1, 1);
-			}
-		}
+		let background = this._scene.add.tileSprite(-2048, -2048, 4096, 4096, 'background');
+		background.setOrigin(0, 0);
+		background.setTint(0x555555);
+
+		let starfield = this._scene.add.tileSprite(-2048, -2048, 4096, 4096, 'starfield');
+		starfield.setOrigin(0, 0);
 	}
 }

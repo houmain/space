@@ -75,7 +75,7 @@ export class Preloader extends Phaser.Scene {
     private loadMainMenuAssets() {
         this.load.setPath('./assets/');
 
-        for (let i = 0; i < 100; i++) {
+        for (let i = 0; i < 1; i++) {
             this.load.image('logo' + i, './images/mainMenu.jpg');
         }
 

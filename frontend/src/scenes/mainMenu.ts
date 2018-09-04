@@ -54,7 +54,6 @@ export class MainMenuScene extends Phaser.Scene {
 
 		let currentScene = this.add.bitmapText(20, 0, 'font_8', 'main menu');
 
-
 		this.sys.game.events.on('resize', this.resize, this);
 		this.resize();
 	}

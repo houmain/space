@@ -1,0 +1,124 @@
+{"frames": [
+
+{
+	"filename": "active_scene.png",
+	"frame": {"x":0,"y":0,"w":190,"h":212},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":190,"h":212},
+	"sourceSize": {"w":190,"h":212}
+},
+{
+	"filename": "active_scene_underline.png",
+	"frame": {"x":190,"y":0,"w":190,"h":212},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":190,"h":212},
+	"sourceSize": {"w":190,"h":212}
+},
+{
+	"filename": "button_large.png",
+	"frame": {"x":0,"y":212,"w":304,"h":400},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":304,"h":400},
+	"sourceSize": {"w":304,"h":400}
+},
+{
+	"filename": "button_large_corner_active.png",
+	"frame": {"x":304,"y":212,"w":111,"h":117},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":111,"h":117},
+	"sourceSize": {"w":111,"h":117}
+},
+{
+	"filename": "button_large_corner_dots.png",
+	"frame": {"x":415,"y":212,"w":22,"h":21},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":22,"h":21},
+	"sourceSize": {"w":22,"h":21}
+},
+{
+	"filename": "button_large_hook.png",
+	"frame": {"x":0,"y":612,"w":241,"h":50},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":241,"h":50},
+	"sourceSize": {"w":241,"h":50}
+},
+{
+	"filename": "button_large_hook.psd",
+	"frame": {"x":241,"y":612,"w":241,"h":50},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":241,"h":50},
+	"sourceSize": {"w":241,"h":50}
+},
+{
+	"filename": "button_large_inner_wheel_active.png",
+	"frame": {"x":0,"y":662,"w":225,"h":191},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":225,"h":191},
+	"sourceSize": {"w":225,"h":191}
+},
+{
+	"filename": "button_large_outer_wheel.png",
+	"frame": {"x":225,"y":662,"w":257,"h":217},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":257,"h":217},
+	"sourceSize": {"w":257,"h":217}
+},
+{
+	"filename": "button_medium.png",
+	"frame": {"x":0,"y":879,"w":222,"h":299},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":222,"h":299},
+	"sourceSize": {"w":222,"h":299}
+},
+{
+	"filename": "button_round.png",
+	"frame": {"x":222,"y":879,"w":89,"h":101},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":89,"h":101},
+	"sourceSize": {"w":89,"h":101}
+},
+{
+	"filename": "dot.png",
+	"frame": {"x":311,"y":879,"w":25,"h":25},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":25,"h":25},
+	"sourceSize": {"w":25,"h":25}
+},
+{
+	"filename": "dot_active.png",
+	"frame": {"x":336,"y":879,"w":53,"h":53},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":53,"h":53},
+	"sourceSize": {"w":53,"h":53}
+},
+{
+	"filename": "icon_next.png",
+	"frame": {"x":389,"y":879,"w":77,"h":87},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":77,"h":87},
+	"sourceSize": {"w":77,"h":87}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "main_menu.png",
+	"format": "RGBA8888",
+	"size": {"w":482,"h":1178},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:dea72a51fd0957f78b975c845d803f2e:e187e72bd88bac517ac51b50b9cf577a:35cfdf0afc9e53dde8492e385c4afe4e$"
+}
+}
