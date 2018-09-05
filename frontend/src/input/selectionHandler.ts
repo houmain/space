@@ -3,20 +3,17 @@ import { ClientMessageSender } from '../communication/communicationHandler';
 import { Player } from '../data/gameData';
 
 class SendArrow {
-
     private _planet: Planet;
     private _shaft: Phaser.GameObjects.Quad;
 
     public create(scene: Phaser.Scene, planet: Planet) {
         this._planet = planet;
-
         this._shaft = scene.add.quad(planet.x, planet.y, 'pixel');
     }
 
     public update(x: number, y: number, snapped: boolean) {
         let lineStrength = (snapped ? 5 : 2);
         this._shaft.bottomLeftAlpha = this._shaft.bottomRightAlpha = 0.3;
-
         let start: Phaser.Math.Vector2 = new Phaser.Math.Vector2(this._planet.x, this._planet.y);
         let end: Phaser.Math.Vector2 = new Phaser.Math.Vector2(x, y);
         let dir = end.clone().subtract(start).normalize();
@@ -27,7 +24,6 @@ class SendArrow {
         normal.scale(lineStrength);
         this._shaft.setTopLeft(start.x - normal.x, start.y - normal.y);
         this._shaft.setTopRight(start.x + normal.x, start.y + normal.y);
-
     }
 
     public destroy() {
@@ -47,7 +43,6 @@ enum InputState {
     DraggingCamera,
     DraggingSelectionRect,
     DraggingSendArrow,
-    //ClickingToSend,
 }
 
 export class InputHandler {
@@ -221,7 +216,6 @@ export class InputHandler {
 
     private updateSelectionRect(x: number, y: number) {
         let worldPos = this.getWorldPosition(x, y);
-
         this._selectionRect.width = worldPos.x - this._selectionRect.x;
         this._selectionRect.height = worldPos.y - this._selectionRect.y;
 
@@ -309,8 +303,7 @@ export class InputHandler {
             });
         }
 
-        if (this._state == InputState.DraggingSendArrow ||
-            this._state == InputState.ClickingToSend)
+        if (this._state == InputState.DraggingSendArrow)
             this.updateSendArrows();
     }
 }
