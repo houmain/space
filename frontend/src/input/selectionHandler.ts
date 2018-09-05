@@ -2,7 +2,7 @@ import { Planet, Squadron } from '../data/galaxyModels';
 import { ClientMessageSender } from '../communication/communicationHandler';
 import { Player } from '../data/gameData';
 
-class SelectionArrow {
+class SendArrow {
 
     private _planet: Planet;
     private _shaft: Phaser.GameObjects.Quad;
@@ -14,16 +14,20 @@ class SelectionArrow {
     }
 
     public update(x: number, y: number, snapped: boolean) {
-        let lineStrength = 2;
-        this._shaft.bottomLeftAlpha = this._shaft.bottomRightAlpha = (snapped ? 0.8 : 0.0);
+        let lineStrength = (snapped ? 5 : 2);
+        this._shaft.bottomLeftAlpha = this._shaft.bottomRightAlpha = 0.3;
 
         let start: Phaser.Math.Vector2 = new Phaser.Math.Vector2(this._planet.x, this._planet.y);
         let end: Phaser.Math.Vector2 = new Phaser.Math.Vector2(x, y);
-        let normal = end.clone().subtract(start).normalize().normalizeRightHand().scale(lineStrength);
-        this._shaft.setTopLeft(start.x - normal.x, start.y - normal.y);
-        this._shaft.setTopRight(start.x + normal.x, start.y + normal.y);
+        let dir = end.clone().subtract(start).normalize();
+        let normal = dir.clone().normalizeRightHand();
         this._shaft.setBottomLeft(end.x - normal.x, end.y - normal.y);
         this._shaft.setBottomRight(end.x + normal.x, end.y + normal.y);
+        start.add(dir.scale(15));
+        normal.scale(lineStrength);
+        this._shaft.setTopLeft(start.x - normal.x, start.y - normal.y);
+        this._shaft.setTopRight(start.x + normal.x, start.y + normal.y);
+
     }
 
     public destroy() {
@@ -36,6 +40,16 @@ class SelectionArrow {
  *
  */
 
+const DOUBLE_CLICK_TIME = 400;
+
+enum InputState {
+    Idle,
+    DraggingCamera,
+    DraggingSelectionRect,
+    DraggingSendArrow,
+    //ClickingToSend,
+}
+
 export class InputHandler {
     private _scene: Phaser.Scene;
     private _camera: Phaser.Cameras.Scene2D.Camera;
@@ -43,22 +57,17 @@ export class InputHandler {
     private _player: Player;
     private _clientMessageSender: ClientMessageSender;
 
-    private DOUBLE_CLICK_TIME = 400;
-    private _lastDownTime: number = 0;
+    private _lastDownTime: number;
     private _currentMouseX: number;
     private _currentMouseY: number;
     private _downScrollX: number;
     private _downScrollY: number;
-
-    private _movingCamera: boolean = false;
-    private _draggingSelectionRect: boolean = false;
-    private _showingSelectionArrows: boolean = false;
-
-    private _selectionArrows: SelectionArrow[] = [];
+    private _state: InputState;
+    private _sendArrows: SendArrow[] = [];
     private _selectionRect: Phaser.Geom.Rectangle;
     private _selectedPlanets: Planet[] = [];
     private _targetPlanet: Planet;
-    private _graphics;
+    private _graphics; //: Phaser.GameObjects.Graphics;
 
     public constructor(scene: Phaser.Scene, player: Player, planets: Planet[], clientMessageSender: ClientMessageSender) {
         this._scene = scene;
@@ -87,7 +96,8 @@ export class InputHandler {
         this._downScrollX = this._camera.scrollX;
         this._downScrollY = this._camera.scrollY;
 
-        if (pointer.downTime - this._lastDownTime < this.DOUBLE_CLICK_TIME) {
+        if (pointer.downTime - this._lastDownTime < DOUBLE_CLICK_TIME) {
+            this._state = InputState.DraggingSelectionRect;
             this.startSelectionRect(pointer.x, pointer.y);
         }
         else {
@@ -96,13 +106,13 @@ export class InputHandler {
             if (planet) {
                 if (this.isOwnPlanet(planet)) {
                     this.selectPlanet(planet);
-                    this.startSelectionArrows();
+                    this._state = InputState.DraggingSendArrow;
                 }
                 else {
                     this.selectPlanet(planet);
                 }
             } else {
-                this._movingCamera = true;
+                this._state = InputState.DraggingCamera;
             }
         }
     }
@@ -111,23 +121,29 @@ export class InputHandler {
         this._currentMouseX = pointer.x;
         this._currentMouseY = pointer.y;
 
-        if (this._movingCamera) {
-            this.moveCamera(pointer.x - pointer.downX, pointer.y - pointer.downY);
-        } else if (this._showingSelectionArrows) {
-            this.createSelectionArrows();
-        } else if (this._draggingSelectionRect) {
-            this.updateSelectionRect(pointer.x, pointer.y);
+        switch (this._state) {
+            case InputState.DraggingCamera:
+                this.moveCamera(pointer.x - pointer.downX, pointer.y - pointer.downY);
+                break;
+            case InputState.DraggingSendArrow:
+                this.createSendArrows();
+                break;
+            case InputState.DraggingSelectionRect:
+                this.updateSelectionRect(pointer.x, pointer.y);
+                break;
         }
     }
 
     private onMouseUp(pointer: Phaser.Input.Pointer) {
-        if (this._draggingSelectionRect) {
-            this.endSelectionRect();
-        } else if (this._showingSelectionArrows) {
-            this.endSelectionArrows(pointer.x, pointer.y);
+        switch (this._state) {
+            case InputState.DraggingSelectionRect:
+                this.endSelectionRect();
+                break;
+            case InputState.DraggingSendArrow:
+                this.endSendArrows(pointer.x, pointer.y);
+                break;
         }
-
-        this._movingCamera = false;
+        this._state = InputState.Idle;
     }
 
     private getWorldPosition(x: number, y: number): Phaser.Math.Vector2 {
@@ -137,7 +153,8 @@ export class InputHandler {
     private planetUnderCursor(x: number, y: number): Planet {
         let size = 50;
         let worldPos = this.getWorldPosition(x, y);
-        let pickRect = new Phaser.Geom.Rectangle(worldPos.x - size / 2, worldPos.y - size / 2, size, size);
+        let pickRect = new Phaser.Geom.Rectangle(
+            worldPos.x - size / 2, worldPos.y - size / 2, size, size);
         for (let planet of this._allPlanets)
             if (planet.parent && pickRect.contains(planet.x, planet.y))
                 return planet;
@@ -150,7 +167,7 @@ export class InputHandler {
 
     private findOwnSquadron(planet: Planet): Squadron {
         for (let squadron of planet.squadrons)
-            if (squadron.faction && squadron.faction.id == this._player.factionId)
+            if (squadron.faction && squadron.faction.id === this._player.factionId)
                 return squadron;
         return null;
     }
@@ -179,7 +196,6 @@ export class InputHandler {
     }
 
     private startSelectionRect(x: number, y: number) {
-        this._draggingSelectionRect = true;
         this.clearSelection();
 
         let worldPos = this.getWorldPosition(x, y);
@@ -220,26 +236,26 @@ export class InputHandler {
                 if (this.isOwnPlanet(planet))
                     this.selectPlanet(planet, false);
         });
-
         this._graphics.clear();
-        this._draggingSelectionRect = false;
     }
 
-    private startSelectionArrows() {
-        this._showingSelectionArrows = true;
-    }
-
-    private createSelectionArrows() {
-        if (this._selectionArrows.length == 0) {
+    private createSendArrows() {
+        if (this._sendArrows.length == 0) {
             this._selectedPlanets.forEach(planet => {
-                let arrow = new SelectionArrow();
+                let arrow = new SendArrow();
                 arrow.create(this._scene, planet);
-                this._selectionArrows.push(arrow);
+                this._sendArrows.push(arrow);
             });
         }
     }
 
-    private updateSelectionArrows() {
+    private destroySendArrows() {
+        this._graphics.clear();
+        this._sendArrows.forEach(arrow => { arrow.destroy(); });
+        this._sendArrows = [];
+    }
+
+    private updateSendArrows() {
         let planet = this.planetUnderCursor(this._currentMouseX, this._currentMouseY);
         let worldPos = this.getWorldPosition(this._currentMouseX, this._currentMouseY);
 
@@ -251,35 +267,32 @@ export class InputHandler {
             snapped = true;
         }
 
-        this._selectionArrows.forEach(arrow => {
+        this._sendArrows.forEach(arrow => {
             arrow.update(worldPos.x, worldPos.y, snapped);
         });
     }
 
-    private endSelectionArrows(x: number, y: number) {
-        if (this._targetPlanet !== null) {
-            if (this.isPlanetSelected(this._targetPlanet)) {
+    private endSendArrows(x: number, y: number) {
+        if (this._targetPlanet == null) {
+            let planet = this.planetUnderCursor(this._currentMouseX, this._currentMouseY);
+            if (planet) {
                 this.clearSelection();
-                this.selectPlanet(this._targetPlanet);
-            }
-            else {
-                let sendRate = 0.5;
-                this._selectedPlanets.forEach(planet => {
-                    let squadron = this.findOwnSquadron(planet);
-                    if (squadron) {
-                        let numFighters = Math.floor(squadron.fighters.length * sendRate);
-                        if (numFighters > 0) {
-                            this._clientMessageSender.sendSquadron(planet.id, this._targetPlanet.id, numFighters);
-                        }
-                    }
-                });
+                this.selectPlanet(planet);
             }
         }
-
-        this._graphics.clear();
-        this._selectionArrows.forEach(arrow => { arrow.destroy(); });
-        this._selectionArrows = [];
-        this._showingSelectionArrows = false;
+        else {
+            let sendRate = 0.5;
+            this._selectedPlanets.forEach(planet => {
+                let squadron = this.findOwnSquadron(planet);
+                if (squadron) {
+                    let numFighters = Math.floor(squadron.fighters.length * sendRate);
+                    if (numFighters > 0) {
+                        this._clientMessageSender.sendSquadron(planet.id, this._targetPlanet.id, numFighters);
+                    }
+                }
+            });
+        }
+        this.destroySendArrows();
     }
 
     public update() {
@@ -296,7 +309,8 @@ export class InputHandler {
             });
         }
 
-        if (this._showingSelectionArrows)
-            this.updateSelectionArrows();
+        if (this._state == InputState.DraggingSendArrow ||
+            this._state == InputState.ClickingToSend)
+            this.updateSendArrows();
     }
 }

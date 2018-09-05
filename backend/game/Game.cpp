@@ -33,8 +33,6 @@ Game::Game()
   m_planets.reserve(50);
   auto& sun = m_planets.emplace_back();
   sun.id = next_planet_id++;
-  sun.x = 0;
-  sun.y = 0;
   for (auto i = 0; i < 4; ++i) {
     auto& planet = m_planets.emplace_back();
     planet.id = next_planet_id++;
