@@ -16,7 +16,7 @@ export class ImageButton extends Phaser.GameObjects.Container {
 		let hitarea = new Phaser.Geom.Circle(50, 50, 20);
 		button.setInteractive({
 			hitArea: hitarea,
-			hitAreaCallback: Phaser.Geom.Circle.Contains,
+			//	hitAreaCallback: Phaser.Geom.Circle.Contains,
 			cursor: 'pointer'
 		});
 		button.on('pointerover', () => {
