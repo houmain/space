@@ -46,7 +46,7 @@ class GameInfoMessageBuilder {
     private buildGameInfoMessage(msg: GameInfoMessage): GameInfo {
         let info = new GameInfo(this._scene, 0, 0);
 
-        let infoBox = this._scene.add.sprite(0, 0, Assets.ATLAS.GAME_GUI, 'infoBox.png');
+        let infoBox = this._scene.add.sprite(0, 0, Assets.ATLAS.HUD, 'infoBox.png');
         infoBox.setOrigin(0, 0);
         infoBox.setAlpha(0.75);
 

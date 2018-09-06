@@ -3,6 +3,7 @@ import { SpaceGameConfig } from '../communication/communicationHandler';
 import { GuiFactory } from '../view/gui/guiFactory';
 import { GuiConfig } from '../view/gui/guiConfigModels';
 import { Assets } from '../view/assets';
+import { ImageButton } from './hud';
 
 //https://github.com/goldfire/phaser-webpack-loader/tree/master/src
 //https://github.com/rroylance/phaser-npm-webpack-typescript-starter-project/blob/master/src/app.ts
@@ -131,6 +132,10 @@ export class MainMenuScene extends Phaser.Scene {
 			let container = this.add.container(200, 600);
 			container.add(graphics);
 			container.add(text);
+
+
+
+
 		}
 
 		this.sys.game.events.on('resize', this.resize, this);

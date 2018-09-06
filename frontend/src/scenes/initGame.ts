@@ -48,7 +48,7 @@ export class InitGameScene extends Phaser.Scene {
 		this.load.image('pixel', './images/pixel.png');
 
 		// Textureatlas
-		this.load.atlas(Assets.ATLAS.GAME_GUI, './spritesheets/game_gui.png', './spritesheets/game_gui.json');
+		this.load.atlas(Assets.ATLAS.HUD, './spritesheets/game_gui.png', './spritesheets/game_gui.json');
 
 		// fonts
 		this.load.bitmapFont('gameHudCounter', './fonts/font_counter_-export.png', './fonts/font_counter_-export.xml');

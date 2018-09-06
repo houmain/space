@@ -9,8 +9,16 @@
 	"sourceSize": {"w":490,"h":51}
 },
 {
+	"filename": "menu_icon.png",
+	"frame": {"x":0,"y":51,"w":200,"h":200},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":200,"h":200},
+	"sourceSize": {"w":200,"h":200}
+},
+{
 	"filename": "planetInfo.png",
-	"frame": {"x":0,"y":51,"w":222,"h":299},
+	"frame": {"x":200,"y":51,"w":222,"h":299},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":222,"h":299},
@@ -18,7 +26,7 @@
 },
 {
 	"filename": "star_active.png",
-	"frame": {"x":222,"y":51,"w":96,"h":104},
+	"frame": {"x":0,"y":350,"w":96,"h":104},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":96,"h":104},
@@ -26,7 +34,7 @@
 },
 {
 	"filename": "star_inactive.png",
-	"frame": {"x":318,"y":51,"w":96,"h":104},
+	"frame": {"x":96,"y":350,"w":96,"h":104},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":96,"h":104},
@@ -37,8 +45,8 @@
 	"version": "1.0",
 	"image": "game_gui.png",
 	"format": "RGBA8888",
-	"size": {"w":490,"h":350},
+	"size": {"w":490,"h":454},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:a56323165259f8401c91ed215fee6c7e:74f9c3bf05f1a632e0972e6e2d5a9442:06ad7ad6461080b8be623317e8b110b4$"
+	"smartupdate": "$TexturePacker:SmartUpdate:b79ed9d5d10b762eb9ec009a0f40940f:26f57ec9b9e76fca0632a9d964d503d5:06ad7ad6461080b8be623317e8b110b4$"
 }
 }

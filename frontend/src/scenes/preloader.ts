@@ -86,6 +86,8 @@ export class Preloader extends Phaser.Scene {
         this.load.bitmapFont('font', './fonts/neuropol-export.png', './fonts/neuropol-export.xml');
         this.load.bitmapFont('font_6', './fonts/neuropol_6-export.png', './fonts/neuropol_6-export.xml');
         this.load.bitmapFont('font_8', './fonts/neuropol_8-export.png', './fonts/neuropol_8-export.xml');
+
+        this.load.atlas(Assets.ATLAS.HUD, './spritesheets/game_gui.png', './spritesheets/game_gui.json');
     }
 
     public create() {
