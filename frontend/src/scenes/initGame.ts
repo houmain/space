@@ -83,6 +83,7 @@ export class InitGameScene extends Phaser.Scene {
 	}
 
 	public update() {
+		console.log(`${this._assetsLoaded} && ${this.gameInitialized()}`);
 		if (this._assetsLoaded && this.gameInitialized()) {
 			this.startGame();
 		}
@@ -93,6 +94,7 @@ export class InitGameScene extends Phaser.Scene {
 	}
 
 	private startGame() {
+
 		this.scene.start(Scenes.GAME, {
 			gameState: this._gameState,
 			gameLogic: this._gameLogic,

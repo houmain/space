@@ -31,6 +31,8 @@ export class GameLogic {
 
 	private onGameJoined(msg: MessageGameJoined) {
 
+		console.log('handling onGameJoined');
+
 		this._player.factionId = msg.factionId;
 
 		GalaxyFactory.create(this._galaxy, msg.factions, msg.planets, msg.squadrons);

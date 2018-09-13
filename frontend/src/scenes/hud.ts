@@ -4,6 +4,7 @@ import { GalaxyDataHandler } from '../logic/galaxyDataHandler';
 import { Scenes } from './scenes';
 import { PlayerHud } from '../view/playerHud';
 import { Assets } from '../view/assets';
+import { Planet } from '../data/galaxyModels';
 
 export class ImageButton extends Phaser.GameObjects.Container {
 	public onClick: Function = null;
@@ -44,6 +45,7 @@ export class ImageButton extends Phaser.GameObjects.Container {
 
 export class PlanetInfoBox extends Phaser.GameObjects.Container {
 
+	private _planetName: Phaser.GameObjects.BitmapText;
 	private _numFighters: Phaser.GameObjects.BitmapText;
 
 	public constructor(scene: Phaser.Scene) {
@@ -56,8 +58,8 @@ export class PlanetInfoBox extends Phaser.GameObjects.Container {
 		let planet = scene.add.sprite(planetInfoBox.width / 2, 40, 'planet');
 		planet.setScale(0.5);
 
-		let planetName = scene.add.bitmapText(planetInfoBox.width / 2, 80, 'infoText', 'Planet #1');
-		planetName.setOrigin(0.5);
+		this._planetName = scene.add.bitmapText(planetInfoBox.width / 2, 80, 'infoText', 'Planet #1');
+		this._planetName.setOrigin(0.5);
 
 		let fighters = scene.add.bitmapText(planetInfoBox.width / 2, 120, 'infoText', 'fighters', 16);
 		fighters.setOrigin(0.5);
@@ -74,7 +76,7 @@ export class PlanetInfoBox extends Phaser.GameObjects.Container {
 
 		this.add(planetInfoBox);
 		this.add(planet);
-		this.add(planetName);
+		this.add(this._planetName);
 		this.add(this._numFighters);
 		this.add(fighters);
 		this.add(maintainance);
@@ -90,6 +92,19 @@ export class PlanetInfoBox extends Phaser.GameObjects.Container {
 			let star = scene.add.sprite(60 + s * 28, 270, Assets.ATLAS.HUD, s < 2 ? 'star_active.png' : 'star_inactive.png');
 			star.setScale(0.75);
 			this.add(star);
+		}
+	}
+
+	private _selectedPlanets: Planet[];
+
+	public setPlanets(planets: Planet[]) {
+		this._selectedPlanets = planets;
+
+		if (planets.length === 1) {
+			let planet = planets[0];
+			this._planetName.setText(planet.name);
+			let ownerFaction = planet.faction;
+			this._numFighters.setText(planet.squadrons[0].fighters.length + '');
 		}
 	}
 }
@@ -135,6 +150,11 @@ export class HudScene extends Phaser.Scene {
 		b.setScale(1.5);
 
 		this.add.existing(b);
+
+		var gameScene = this.scene.get(Scenes.GAME);
+		gameScene.events.on('planetsSelected', (planets: Planet[]) => {
+			this._planetInfoBox.setPlanets(planets);
+		});
 	}
 
 	public update(timeSinceStart: number, timeSinceLastFrame: number) {

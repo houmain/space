@@ -182,6 +182,8 @@ export class InputHandler {
         if (clearSelection)
             this.clearSelection();
         this._selectedPlanets.push(planet);
+
+        this._scene.events.emit('planetsSelected', this._selectedPlanets);
     }
 
     private moveCamera(dx: number, dy: number) {

@@ -22,6 +22,8 @@ export class GameScene extends Phaser.Scene {
 
 	private _graphics: Phaser.GameObjects.Graphics;
 
+	private _background: Background;
+
 	public constructor() {
 		super(Scenes.GAME);
 	}
@@ -38,13 +40,15 @@ export class GameScene extends Phaser.Scene {
 	}
 
 	public create() {
+
 		this._timeHandler = new GameTimeHandler(this._serverMessageObserver);
 
 		this._camera = this.cameras.main;
 		this._camera.setBounds(-1024, -1024, 2048, 2048);
 		this._camera.centerToBounds();
 
-		new Background(this).create();
+		this._background = new Background(this);
+		this._background.create();
 
 		this._galaxy.planets.forEach(planet => {
 			planet.sprite = this.add.sprite(0, 0, planet.parent ? 'planet' : 'sun');
@@ -62,6 +66,7 @@ export class GameScene extends Phaser.Scene {
 		this.resize();
 
 		this._camera.fadeIn(1000);
+
 	}
 
 	private resize() {
@@ -73,6 +78,8 @@ export class GameScene extends Phaser.Scene {
 	public update(timeSinceStart: number, timeSinceLastFrame: number) {
 		this._timeHandler.addLocalElapsedTime(timeSinceLastFrame);
 		let timeElapsed = this._timeHandler.timeSinceStart;
+
+		this._background.update();
 
 		this._galaxy.planets.forEach(planet => {
 			let angle = planet.initialAngle + planet.angularVelocity * timeElapsed;
