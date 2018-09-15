@@ -139,6 +139,9 @@ export class InputHandler {
                 this.endSendArrows(pointer.x, pointer.y);
                 break;
         }
+
+        this._scene.events.emit(GameSceneEvents.PLANET_SELECTION_CHANGED, this._selectedPlanets);
+
         this._state = InputState.Idle;
     }
 
@@ -162,9 +165,12 @@ export class InputHandler {
     }
 
     private findOwnSquadron(planet: Planet): Squadron {
-        for (let squadron of planet.squadrons)
-            if (squadron.faction && squadron.faction.id === this._player.factionId)
+        for (let squadron of planet.squadrons) {
+            if (squadron.faction && squadron.faction.id === this._player.factionId) {
                 return squadron;
+            }
+        }
+
         return null;
     }
 
@@ -175,16 +181,22 @@ export class InputHandler {
     private clearSelection() {
         this._selectedPlanets.splice(0);
         this._graphics.clear();
+
+        // this._scene.events.emit(GameSceneEvents.PLANET_SELECTION_CHANGED, this._selectedPlanets);
     }
 
     private selectPlanet(planet, clearSelection: boolean = true) {
-        if (this.isPlanetSelected(planet))
+        if (this.isPlanetSelected(planet)) {
             return;
-        if (clearSelection)
+        }
+
+        if (clearSelection) {
             this.clearSelection();
+        }
+
         this._selectedPlanets.push(planet);
 
-        this._scene.events.emit(GameSceneEvents.PLANET_SELECTION_CHANGED, this._selectedPlanets);
+        //this._scene.events.emit(GameSceneEvents.PLANET_SELECTION_CHANGED, this._selectedPlanets);
     }
 
     private moveCamera(dx: number, dy: number) {
@@ -229,9 +241,11 @@ export class InputHandler {
     private endSelectionRect() {
         this.clearSelection();
         this._allPlanets.forEach(planet => {
-            if (this.normalizedRect(this._selectionRect).contains(planet.x, planet.y))
-                if (this.isOwnPlanet(planet))
+            if (this.normalizedRect(this._selectionRect).contains(planet.x, planet.y)) {
+                if (this.isOwnPlanet(planet)) {
                     this.selectPlanet(planet, false);
+                }
+            }
         });
         this._graphics.clear();
     }
@@ -306,7 +320,8 @@ export class InputHandler {
             });
         }
 
-        if (this._state === InputState.DraggingSendArrow)
+        if (this._state === InputState.DraggingSendArrow) {
             this.updateSendArrows();
+        }
     }
 }

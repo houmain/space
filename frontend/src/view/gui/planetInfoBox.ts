@@ -1,7 +1,8 @@
-import { Planet } from '../../data/galaxyModels';
+import { Planet, Squadron } from '../../data/galaxyModels';
 import { Assets } from '../assets';
-import { MessageFighterCreated, ServerMessageType, MessageFighterDestroyed } from '../../communication/communicationInterfaces';
+import { MessageFighterCreated, ServerMessageType, MessageFighterDestroyed, ServerMessage } from '../../communication/communicationInterfaces';
 import { ObservableServerMessageHandler } from '../../communication/messageHandler';
+import { PlanetUtils } from '../../logic/utils';
 
 export class PlanetInfoBox extends Phaser.GameObjects.Container {
 
@@ -12,9 +13,12 @@ export class PlanetInfoBox extends Phaser.GameObjects.Container {
 	private _planetName: Phaser.GameObjects.BitmapText;
 	private _numFighters: Phaser.GameObjects.BitmapText;
 
-	public constructor(scene: Phaser.Scene, serverMessageObserver: ObservableServerMessageHandler) {
+	private _factionId: number;
+
+	public constructor(scene: Phaser.Scene, serverMessageObserver: ObservableServerMessageHandler, factionId: number) {
 		super(scene, 0, 0);
 		this._serverMessageObserver = serverMessageObserver;
+		this._factionId = factionId;
 
 		let planetInfoBox = scene.add.sprite(0, 0, Assets.ATLAS.HUD, 'planetInfo.png');
 		planetInfoBox.setOrigin(0, 0);
@@ -62,24 +66,39 @@ export class PlanetInfoBox extends Phaser.GameObjects.Container {
 
 	public updatePlanetsList(planets: Planet[]) {
 		this._selectedPlanets = planets;
+		this.updateInfoBox();
 	}
 
 	public subscribeEvents() {
-		this._serverMessageObserver.subscribe<MessageFighterCreated>(ServerMessageType.FIGHTER_CREATED, this.updateBox.bind(this));
-		this._serverMessageObserver.subscribe<MessageFighterDestroyed>(ServerMessageType.FIGHTER_DESTROYED, this.updateBox.bind(this));
+		this._serverMessageObserver.subscribe<MessageFighterCreated>(ServerMessageType.FIGHTER_CREATED, this.onServerMessage.bind(this));
+		this._serverMessageObserver.subscribe<MessageFighterDestroyed>(ServerMessageType.FIGHTER_DESTROYED, this.onServerMessage.bind(this));
 	}
 
 	public unsubscribeEvents() {
-		this._serverMessageObserver.unsubscribe<MessageFighterCreated>(ServerMessageType.FIGHTER_CREATED, this.updateBox.bind(this));
-		this._serverMessageObserver.unsubscribe<MessageFighterDestroyed>(ServerMessageType.FIGHTER_DESTROYED, this.updateBox.bind(this));
+		this._serverMessageObserver.unsubscribe<MessageFighterCreated>(ServerMessageType.FIGHTER_CREATED, this.onServerMessage.bind(this));
+		this._serverMessageObserver.unsubscribe<MessageFighterDestroyed>(ServerMessageType.FIGHTER_DESTROYED, this.onServerMessage.bind(this));
 	}
 
-	private updateBox(msg: MessageFighterCreated) {
+	private onServerMessage(msg: ServerMessage) {
+		this.updateInfoBox();
+	}
+
+	private updateInfoBox() {
+		let planetName = '';
+		let numFighters = 0;
+
 		if (this._selectedPlanets.length === 1) {
 			let planet = this._selectedPlanets[0];
-
-			this._planetName.setText(planet.name);
-			this._numFighters.setText(planet.squadrons[0].fighters.length + '');
+			planetName = planet.name;
+			numFighters = PlanetUtils.getNumFightersByFactionId(planet, this._factionId);
+		} else if (this._selectedPlanets.length > 0) {
+			planetName = `${this._selectedPlanets.length} planets`;
+			this._selectedPlanets.forEach(planet => {
+				numFighters += PlanetUtils.getNumFightersByFactionId(planet, this._factionId);
+			});
 		}
+
+		this._planetName.setText(planetName);
+		this._numFighters.setText(numFighters.toString());
 	}
 }

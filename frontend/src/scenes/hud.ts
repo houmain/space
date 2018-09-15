@@ -37,7 +37,8 @@ export class HudScene extends Phaser.Scene {
 		this._playerHud = new PlayerHud();
 		this._playerHud.create(this, this._galaxyDataHandler, this._player);
 
-		this._planetInfoBox = new PlanetInfoBox(this, this._serverMessageObserver);
+		this._planetInfoBox = new PlanetInfoBox(this, this._serverMessageObserver, this._player.factionId);
+		this._planetInfoBox.setVisible(false);
 		this.add.existing(this._planetInfoBox);
 
 		this.sys.game.events.on('resize', this.resize, this);
@@ -45,7 +46,9 @@ export class HudScene extends Phaser.Scene {
 
 		let b = new ImageButton(this, window.innerWidth - 50, 50, Assets.ATLAS.HUD, 'menu_icon.png');
 		b.onClick = () => {
-			console.log('click');
+			this.scene.stop(Scenes.GAME);
+
+			this.scene.start(Scenes.MAIN_MENU);
 		};
 		b.setScale(1.5);
 
@@ -56,6 +59,7 @@ export class HudScene extends Phaser.Scene {
 	}
 
 	private planetSelectionChanged(planets: Planet[]) {
+
 		this._planetInfoBox.updatePlanetsList(planets);
 
 		if (planets.length === 0) {
