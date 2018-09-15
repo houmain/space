@@ -38,6 +38,8 @@ export class GalaxyFactory {
             planet.productionRate = planetInfo.productionRate;
             planet.productionProgress = planetInfo.productionProgress;
             planet.defenseBonus = planetInfo.defenseBonus;
+            planet.x = Math.cos(planet.initialAngle) * planet.distance;
+            planet.y = Math.sin(planet.initialAngle) * planet.distance;
 
             if (planetInfo.faction) {
                 planet.faction = factionMap[planetInfo.faction];
@@ -52,11 +54,15 @@ export class GalaxyFactory {
                     let squadron: Squadron = new Squadron();
                     squadron.id = squadronInfo.squadronId;
                     squadron.faction = factionMap[squadronInfo.factionId];
+                    squadron.planet = planet;
+                    squadron.x = planet.x;
+                    squadron.y = planet.y;
                     let fighterCount = squadronInfo.fighterCount;
                     for (let f = 0; f < fighterCount; f++) {
                         squadron.fighters.push(new Fighter());
                     }
                     planet.squadrons.push(squadron);
+                    galaxy.squadrons.push(squadron);
                 });
             }
 
@@ -68,6 +74,7 @@ export class GalaxyFactory {
         squadronInfos.forEach((squadronInfo, index) => {
             let squadron = new Squadron();
             squadron.id = squadronInfo.squadronId;
+            squadron.planet = null;
             squadrons.push(squadron);
         });
 

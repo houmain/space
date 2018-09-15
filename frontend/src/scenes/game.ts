@@ -2,7 +2,7 @@ import { Scenes } from './scenes';
 import { InputHandler } from '../input/selectionHandler';
 import { GameTimeHandler } from '../logic/gameTimeHandler';
 import { ClientMessageSender } from '../communication/communicationHandler';
-import { Galaxy, Player } from '../data/galaxyModels';
+import { Galaxy, Player, Squadron } from '../data/galaxyModels';
 import { Background } from '../view/background';
 import { ObservableServerMessageHandler } from '../communication/messageHandler';
 
@@ -57,6 +57,14 @@ export class GameScene extends Phaser.Scene {
 			});
 		});
 
+		this._galaxy.squadrons.forEach(squadron => {
+			squadron.sprite = this.add.sprite(0, 0, 'squadron');
+			squadron.sprite.setScale(10);
+			if (squadron.faction) {
+				squadron.sprite.setTint(squadron.faction.color);
+			}
+		});
+
 		this._inputHandler = new InputHandler(this, this._player, this._galaxy.planets, this._clientMessageSender);
 		this._graphics = this.add.graphics({ lineStyle: { width: 2, color: 0xff0000, alpha: 1 } });
 
@@ -90,6 +98,40 @@ export class GameScene extends Phaser.Scene {
 
 			planet.sprite.x = planet.x;
 			planet.sprite.y = planet.y;
+		});
+
+		let squadrons: Squadron[] = this._galaxy.squadrons;
+		let ANGULAR_VELOCITY = 0.025;
+
+		let FIGHTER_VELOCITY = 0.1;
+		squadrons.forEach(squadron => {
+			squadron.orbitingAngle = squadron.orbitingAngle + ANGULAR_VELOCITY * timeSinceLastFrame;
+
+			let planet = squadron.planet;
+			let targetX = planet.x + 100;
+			let targetY = planet.y + 100;
+
+			targetX += Math.cos(squadron.orbitingAngle) * squadron.orbitingDistance;
+			targetY += Math.sin(squadron.orbitingAngle) * squadron.orbitingDistance;
+
+			//console.log(targetX + ' ' + squadron.x);
+
+			//	let newOrbitingAngle = squadron.orbitingAngle + ANGULAR_VELOCITY * timeSinceLastFrame * 5;
+			//	targetX = squadron.planet.y + Math.cos(newOrbitingAngle) * squadron.orbitingDistance;
+			//	targetY = squadron.planet.y + Math.sin(newOrbitingAngle) * squadron.orbitingDistance;
+
+			let range: Phaser.Math.Vector2 = new Phaser.Math.Vector2(targetX - squadron.x, targetY - squadron.y);
+			let speed = FIGHTER_VELOCITY * timeSinceLastFrame + (1 + Math.cos(squadron.orbitingAngle * 3)) / 8;
+
+			if (range.length() > speed) {
+				range.normalize().scale(speed);
+			}
+
+			squadron.x += range.x;
+			squadron.y += range.y;
+
+			squadron.sprite.x = squadron.x;
+			squadron.sprite.y = squadron.y;
 		});
 
 		this._graphics.clear();
