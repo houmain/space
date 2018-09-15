@@ -1,4 +1,4 @@
-import { ButtonStyleConfig } from './guiInterfaces';
+/*import { ButtonStyleConfig } from './guiInterfaces';
 
 //https://www.behance.net/gallery/22647917/Free-Space-Ui-kit
 
@@ -18,4 +18,4 @@ export class GuiConfig {
 		borderAlpha: 1,
 		borderThickness: 4
 	};
-}
+}*/

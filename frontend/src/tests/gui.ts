@@ -1,4 +1,4 @@
-import { GuiFactory } from "../view/gui/guiFactory";
+/*import { GuiFactory } from "../view/gui/guiFactory";
 
 let container = this.add.container(200, 200);
 
@@ -63,4 +63,4 @@ factory.buildTextButton(
 		borderAlpha: 1,
 		borderThickness: 4
 	}
-)
+)*/

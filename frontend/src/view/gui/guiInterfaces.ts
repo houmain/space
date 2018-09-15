@@ -1,4 +1,4 @@
-export interface Button {
+/*export interface Button {
 	onMouseDown(func: Function);
 }
 
@@ -16,4 +16,4 @@ export interface GuiConfig {
 	y: number;
 	width: number;
 	height: number;
-}
+}*/

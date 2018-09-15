@@ -3,7 +3,6 @@ import { SpaceGame } from '../Game';
 import { Scenes } from './scenes';
 import { Assets } from '../view/assets';
 
-
 class LoadingBar {
     private _container: Phaser.GameObjects.Container;
 
@@ -81,7 +80,7 @@ export class Preloader extends Phaser.Scene {
 
         // Main Menu
         this.load.image('mainMenu', './images/mainMenu.jpg');
-        this.load.atlas(Assets.ATLAS.MAIN_MENU, './spritesheets/gui.png', './spritesheets/gui.json');
+        //   this.load.atlas(Assets.ATLAS.MAIN_MENU, './spritesheets/gui.png', './spritesheets/gui.json');
         this.load.atlas(Assets.ATLAS.MAIN_MENU2, './spritesheets/main_menu.png', './spritesheets/main_menu.json');
         this.load.bitmapFont('font', './fonts/neuropol-export.png', './fonts/neuropol-export.xml');
         this.load.bitmapFont('font_6', './fonts/neuropol_6-export.png', './fonts/neuropol_6-export.xml');

@@ -1,6 +1,7 @@
 import { Planet, Squadron } from '../data/galaxyModels';
 import { ClientMessageSender } from '../communication/communicationHandler';
 import { Player } from '../data/gameData';
+import { GameSceneEvents } from '../scenes/scenes';
 
 class SendArrow {
     private _planet: Planet;
@@ -183,7 +184,7 @@ export class InputHandler {
             this.clearSelection();
         this._selectedPlanets.push(planet);
 
-        this._scene.events.emit('planetsSelected', this._selectedPlanets);
+        this._scene.events.emit(GameSceneEvents.PLANET_SELECTION_CHANGED, this._selectedPlanets);
     }
 
     private moveCamera(dx: number, dy: number) {
@@ -236,7 +237,7 @@ export class InputHandler {
     }
 
     private createSendArrows() {
-        if (this._sendArrows.length == 0) {
+        if (this._sendArrows.length === 0) {
             this._selectedPlanets.forEach(planet => {
                 let arrow = new SendArrow();
                 arrow.create(this._scene, planet);
@@ -305,7 +306,7 @@ export class InputHandler {
             });
         }
 
-        if (this._state == InputState.DraggingSendArrow)
+        if (this._state === InputState.DraggingSendArrow)
             this.updateSendArrows();
     }
 }

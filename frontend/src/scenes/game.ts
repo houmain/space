@@ -5,8 +5,6 @@ import { ClientMessageSender } from '../communication/communicationHandler';
 import { Galaxy, Player } from '../data/galaxyModels';
 import { Background } from '../view/background';
 import { ObservableServerMessageHandler } from '../communication/messageHandler';
-import { ImageButton } from './hud';
-import { Assets } from '../view/assets';
 
 export class GameScene extends Phaser.Scene {
 

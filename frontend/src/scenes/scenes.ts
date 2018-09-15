@@ -8,3 +8,7 @@ export enum Scenes {
 	HUD = 'hud',
 	ERROR = 'error'
 }
+
+export enum GameSceneEvents {
+	PLANET_SELECTION_CHANGED = 'planetSelectionChanged'
+}

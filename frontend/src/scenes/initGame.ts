@@ -8,8 +8,10 @@ import { ClientMessageSender, CommunicationHandler, SpaceGameConfig } from '../c
 import { GalaxyDataHandler } from '../logic/galaxyDataHandler';
 import { GameInfoHandler } from '../view/gameInfo';
 import { Assets } from '../view/assets';
+import { GuiScene } from './guiScene';
+import { TextResources, Texts } from '../localization/textResources';
 
-export class InitGameScene extends Phaser.Scene {
+export class InitGameScene extends GuiScene {
 
 	private _game: SpaceGame;
 	private _gameConfig: SpaceGameConfig;
@@ -23,6 +25,8 @@ export class InitGameScene extends Phaser.Scene {
 	private _gameInfoHandler: GameInfoHandler;
 
 	private _assetsLoaded = false;
+
+	private _infoText: Phaser.GameObjects.BitmapText;
 
 	public constructor(game: SpaceGame) {
 		super(Scenes.INIT_GAME);
@@ -57,6 +61,7 @@ export class InitGameScene extends Phaser.Scene {
 	}
 
 	public create() {
+		super.create();
 
 		this._serverMessageObserver = new ObservableServerMessageHandler();
 		this._communicationHandler = new CommunicationHandler(this._serverMessageObserver);
@@ -67,6 +72,7 @@ export class InitGameScene extends Phaser.Scene {
 			console.log('Connected to server');
 			this._clientMessageSender.joinGame(this._gameConfig.gameId);
 		};
+		this._communicationHandler.onDisconnected = this.onConnectionFailed.bind(this);
 
 		this._gameState = {
 			player: this._game.player,
@@ -77,13 +83,33 @@ export class InitGameScene extends Phaser.Scene {
 		this._gameLogic = new GameLogic(this._gameState, this._serverMessageObserver, this._galaxyDataHandler);
 		this._gameInfoHandler = new GameInfoHandler(this._galaxyDataHandler, this._serverMessageObserver);
 
-		let info = this.add.text(10, 100, 'joining game', { font: '32px Arial', fill: '#ffffff' });
+		this._infoText = this.add.bitmapText(this.sys.canvas.width / 2, this.sys.canvas.height / 2, 'font_8', TextResources.getText(Texts.INITGAME_JOINING_GAME));
+		this._infoText.setOrigin(0.5, 0.5);
 
 		this._assetsLoaded = true;
 	}
 
+	private onConnectionFailed() {
+
+		this._infoText.text = TextResources.getText(Texts.ERROR_CONNECTION_FAILED);
+		this._infoText.setTint(0xff0000);
+		this._infoText.setAlpha(0);
+
+		this.tweens.add({
+			targets: this._infoText,
+			alpha: 1,
+			ease: 'Power1',
+			duration: 300,
+			yoyo: true,
+			repeat: 5,
+			onComplete: () => {
+				this.scene.start(Scenes.MAIN_MENU);
+			}
+		});
+	}
+
 	public update() {
-		console.log(`${this._assetsLoaded} && ${this.gameInitialized()}`);
+
 		if (this._assetsLoaded && this.gameInitialized()) {
 			this.startGame();
 		}
@@ -105,7 +131,12 @@ export class InitGameScene extends Phaser.Scene {
 		this.scene.start(Scenes.HUD, {
 			gameState: this._gameState,
 			gameInfoHandler: this._gameInfoHandler,
-			galaxyDataHandler: this._galaxyDataHandler
+			galaxyDataHandler: this._galaxyDataHandler,
+			serverMessageObserver: this._serverMessageObserver
 		});
+	}
+
+	protected resize() {
+		super.resize();
 	}
 }

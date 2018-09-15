@@ -1,6 +1,6 @@
+/*
 import { TextButton, ImageButton } from './guiModels';
 import { Button, ButtonStyleConfig, GuiConfig } from './guiInterfaces';
-
 
 class GuiBuilder {
 	private _scene: Phaser.Scene;
@@ -64,7 +64,7 @@ class GuiBuilder {
 		});
 
 		return new ImageButton(container);
-	}
+	
 
 	private createContainer(config: GuiConfig) {
 		return this._scene.add.container(config.x, config.y);
@@ -142,3 +142,4 @@ export class GuiFactory {
 		return this._guiBuilder.buildImageButton(texture, frame, config, styleConfig);
 	}
 }
+*/

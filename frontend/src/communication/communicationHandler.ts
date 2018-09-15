@@ -55,15 +55,16 @@ export class CommunicationHandler {
         this._messageHandler = messageHandler;
     }
 
-    public get connected() {
+    public get connected(): boolean {
         return this._connected;
     }
 
-    public get connectionFailed() {
+    public get connectionFailed(): boolean {
         return this._connectionFailed;
     }
 
     public onConnected: Function;
+    public onDisconnected: Function;
 
     public init(gameConfig: SpaceGameConfig) {
         try {
@@ -72,11 +73,16 @@ export class CommunicationHandler {
 
             this._socket.onopen = () => {
                 this._connected = true;
-                this.onConnected();
+                if (this.onConnected) {
+                    this.onConnected();
+                }
             };
             this._socket.onclose = () => {
                 console.log('Disonnected from server');
                 this._connectionFailed = true;
+                if (this.onDisconnected) {
+                    this.onDisconnected();
+                }
             };
             this._socket.onmessage = (event: any) => {
                 try {
