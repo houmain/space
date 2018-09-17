@@ -36,19 +36,19 @@ export class Squadron {
     id: number;
     faction: Faction;
     fighters: Fighter[] = [];
-
     planet: Planet;
     x: number = 0;
     y: number = 0;
-
     sprite: Phaser.GameObjects.Sprite;
-
-    // orbitingAngle: number = 0;
-    // orbitingDistance: number = 100;
 }
 
 export class Fighter {
-
+    x: number = 0;
+    y: number = 0;
+    sprite: Phaser.GameObjects.Sprite;
+    orbitingAngle: number = 0;
+    orbitingDistance: number = 100;
+    squadron: Squadron;
 }
 
 export class Player {

@@ -57,9 +57,15 @@ export class GalaxyFactory {
                     squadron.planet = planet;
                     squadron.x = planet.x;
                     squadron.y = planet.y;
+
                     let fighterCount = squadronInfo.fighterCount;
                     for (let f = 0; f < fighterCount; f++) {
-                        squadron.fighters.push(new Fighter());
+                        let fighter = new Fighter();
+                        fighter.x = planet.x;
+                        fighter.y = planet.y;
+                        fighter.orbitingAngle = f * 360 / fighterCount;
+                        fighter.squadron = squadron;
+                        squadron.fighters.push(fighter);
                     }
 
                     planet.squadrons.push(squadron);

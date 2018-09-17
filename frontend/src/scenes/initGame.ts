@@ -51,6 +51,7 @@ export class InitGameScene extends GuiScene {
 		this.load.image('sun', './images/planet_13.png');
 		this.load.image('pixel', './images/pixel.png');
 		this.load.image('squadron', './images/pixel.png');
+		this.load.image('fighter', './images/pixel.png');
 
 		// Textureatlas
 		this.load.atlas(Assets.ATLAS.HUD, './spritesheets/game_gui.png', './spritesheets/game_gui.json');

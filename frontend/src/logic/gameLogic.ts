@@ -61,8 +61,8 @@ export class GameLogic {
 		}
 
 		let sourceSquadron = this._galaxyDataHandler.squadrons[msg.sourceSquadronId];
-		let sentFighters = sourceSquadron.fighters.splice(sourceSquadron.fighters.length - msg.fighterCount, msg.fighterCount);
-		sentSquadron.fighters.push(sentFighters);
+		let sentFighters: Fighter[] = sourceSquadron.fighters.splice(sourceSquadron.fighters.length - msg.fighterCount, msg.fighterCount);
+		sentSquadron.fighters.push(...sentFighters);
 	}
 
 	private createSquadron(factionId: number, squadronId: number): Squadron {
@@ -78,8 +78,8 @@ export class GameLogic {
 		let sourceSquadron = this._galaxyDataHandler.squadrons[msg.squadronId];
 		let targetSquadron = this._galaxyDataHandler.squadrons[msg.intoSquadronId];
 
-		let fighters = sourceSquadron.fighters.splice(0, sourceSquadron.fighters.length);
-		targetSquadron.fighters.push(fighters);
+		let fighters: Fighter[] = sourceSquadron.fighters.splice(0, sourceSquadron.fighters.length);
+		targetSquadron.fighters.push(...fighters);
 
 		Assert.equals(targetSquadron.fighters.length, msg.fighterCount, `Game::squadronsMerged: Incorrect Fighter count client: ${targetSquadron.fighters.length} server: ${msg.fighterCount}`);
 

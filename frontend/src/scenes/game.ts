@@ -2,7 +2,7 @@ import { Scenes } from './scenes';
 import { InputHandler } from '../input/selectionHandler';
 import { GameTimeHandler } from '../logic/gameTimeHandler';
 import { ClientMessageSender } from '../communication/communicationHandler';
-import { Galaxy, Player, Squadron } from '../data/galaxyModels';
+import { Galaxy, Player, Squadron, Fighter } from '../data/galaxyModels';
 import { Background } from '../view/background';
 import { ObservableServerMessageHandler } from '../communication/messageHandler';
 
@@ -55,10 +55,20 @@ export class GameScene extends Phaser.Scene {
 
 		this._galaxy.squadrons.forEach(squadron => {
 			squadron.sprite = this.add.sprite(0, 0, 'squadron');
+			squadron.sprite.setPosition(squadron.x, squadron.y);
 			squadron.sprite.setScale(10);
 			if (squadron.faction) {
 				squadron.sprite.setTint(squadron.faction.color);
 			}
+
+			squadron.fighters.forEach(fighter => {
+				fighter.sprite = this.add.sprite(0, 0, 'fighter');
+				fighter.sprite.setScale(3);
+				fighter.sprite.setPosition(fighter.x, fighter.y);
+				if (squadron.faction) {
+					fighter.sprite.setTint(squadron.faction.color);
+				}
+			});
 		});
 
 		this._inputHandler = new InputHandler(this, this._player, this._galaxy.planets, this._clientMessageSender);
@@ -97,14 +107,13 @@ export class GameScene extends Phaser.Scene {
 		});
 
 		let squadrons: Squadron[] = this._galaxy.squadrons;
-		let ANGULAR_VELOCITY = 0.025;
+		let ANGULAR_VELOCITY = 0.0025;
 
 		let FIGHTER_VELOCITY = 0.1;
 
 		let speed = FIGHTER_VELOCITY * timeSinceLastFrame;
 
 		squadrons.forEach(squadron => {
-			//	squadron.orbitingAngle = squadron.orbitingAngle + ANGULAR_VELOCITY * timeSinceLastFrame;
 
 			let planet = squadron.planet;
 			let targetX = planet.x;
@@ -117,30 +126,15 @@ export class GameScene extends Phaser.Scene {
 
 			range = range.normalize().scale(speed);
 
-			//targetX += Math.cos(squadron.orbitingAngle) * squadron.orbitingDistance;
-			//targetY += Math.sin(squadron.orbitingAngle) * squadron.orbitingDistance;
-
-			//console.log(targetX + ' ' + squadron.x);
-
-			//	let newOrbitingAngle = squadron.orbitingAngle + ANGULAR_VELOCITY * timeSinceLastFrame * 5;
-			//	targetX = squadron.planet.y + Math.cos(newOrbitingAngle) * squadron.orbitingDistance;
-			//	targetY = squadron.planet.y + Math.sin(newOrbitingAngle) * squadron.orbitingDistance;
-
-			//let range: Phaser.Math.Vector2 = new Phaser.Math.Vector2(targetX - squadron.x, targetY - squadron.y);
-			/*let speed = FIGHTER_VELOCITY * timeSinceLastFrame + (1 + Math.cos(squadron.orbitingAngle * 3)) / 8;
-
-			if (range.length() > speed) {
-				range.normalize().scale(speed);
-			}
-
-			
-			*/
-
 			squadron.x += range.x;
 			squadron.y += range.y;
 
 			squadron.sprite.x = squadron.x;
 			squadron.sprite.y = squadron.y;
+
+			squadron.fighters.forEach(fighter => {
+				this.updateFighter(fighter, timeSinceLastFrame);
+			});
 		});
 
 		this._graphics.clear();
@@ -158,6 +152,38 @@ export class GameScene extends Phaser.Scene {
 		});
 
 		this._inputHandler.update();
+	}
+
+	private updateFighter(fighter: Fighter, delta: number) {
+
+		let ANGULAR_VELOCITY = 0.0025;
+		let FIGHTER_VELOCITY = 0.1;
+
+		fighter.orbitingAngle = fighter.orbitingAngle + ANGULAR_VELOCITY * delta;
+
+		let targetX = fighter.squadron.x;
+		let targetY = fighter.squadron.y;
+		targetX += Math.cos(fighter.orbitingAngle) * fighter.orbitingDistance;
+		targetY += Math.sin(fighter.orbitingAngle) * fighter.orbitingDistance;
+
+		let range: Phaser.Math.Vector2 = new Phaser.Math.Vector2(targetX - fighter.x, targetY - fighter.y);
+		let speed = FIGHTER_VELOCITY * delta + (1 + Math.cos(fighter.orbitingAngle * 3)) / 8;
+
+		if (range.length() > speed)
+			range = range.normalize().scale(speed);
+
+		fighter.x += range.x;
+		fighter.y += range.y;
+
+		fighter.sprite.x = fighter.x;
+		fighter.sprite.y = fighter.y;
+
+		let newOrbitingAngle = fighter.orbitingAngle + ANGULAR_VELOCITY * delta * 5;
+		targetX = fighter.squadron.x + Math.cos(newOrbitingAngle) * fighter.orbitingDistance;
+		targetY = fighter.squadron.y + Math.sin(newOrbitingAngle) * fighter.orbitingDistance;
+
+		range = new Phaser.Math.Vector2(targetX - fighter.x, targetY - fighter.y);
+		//	rotation = MathUtils.lerpAngleDeg(rotation, range.angle(), 0.075f);
 	}
 
 	public shutdown() {
