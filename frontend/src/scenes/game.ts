@@ -175,8 +175,11 @@ export class GameScene extends Phaser.Scene {
 		fighter.x += range.x;
 		fighter.y += range.y;
 
-		fighter.sprite.x = fighter.x;
-		fighter.sprite.y = fighter.y;
+		if (fighter.sprite) {
+			fighter.sprite.x = fighter.x;
+			fighter.sprite.y = fighter.y;
+		}
+
 
 		let newOrbitingAngle = fighter.orbitingAngle + ANGULAR_VELOCITY * delta * 5;
 		targetX = fighter.squadron.x + Math.cos(newOrbitingAngle) * fighter.orbitingDistance;

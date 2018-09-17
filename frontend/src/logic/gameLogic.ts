@@ -44,7 +44,12 @@ export class GameLogic {
 		let squadron = this._galaxyDataHandler.squadrons[msg.squadronId];
 
 		if (squadron) {
-			squadron.fighters.push(new Fighter());
+			let fighter = new Fighter();
+			fighter.x = squadron.planet.x;
+			fighter.y = squadron.planet.y;
+			fighter.orbitingAngle = 0;
+			fighter.squadron = squadron;
+			squadron.fighters.push(fighter);
 		} else {
 			console.error('Unknown squadron with id ' + msg.squadronId);
 		}
