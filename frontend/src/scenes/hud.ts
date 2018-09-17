@@ -44,15 +44,15 @@ export class HudScene extends Phaser.Scene {
 		this.sys.game.events.on('resize', this.resize, this);
 		this.resize();
 
-		let b = new ImageButton(this, window.innerWidth - 50, 50, Assets.ATLAS.HUD, 'menu_icon.png');
-		b.onClick = () => {
+		let menuButton = new ImageButton(this, window.innerWidth - 50, 50, Assets.ATLAS.HUD, 'menu_icon.png');
+		menuButton.onClick = () => {
 			this.scene.stop(Scenes.GAME);
 
 			this.scene.start(Scenes.MAIN_MENU);
 		};
-		b.setScale(1.5);
+		menuButton.setScale(1.5);
 
-		this.add.existing(b);
+		this.add.existing(menuButton);
 
 		let gameScene = this.scene.get(Scenes.GAME);
 		gameScene.events.on(GameSceneEvents.PLANET_SELECTION_CHANGED, this.planetSelectionChanged.bind(this));

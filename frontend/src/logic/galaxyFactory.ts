@@ -61,6 +61,7 @@ export class GalaxyFactory {
                     for (let f = 0; f < fighterCount; f++) {
                         squadron.fighters.push(new Fighter());
                     }
+
                     planet.squadrons.push(squadron);
                     galaxy.squadrons.push(squadron);
                 });

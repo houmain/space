@@ -70,16 +70,6 @@ export class GalaxyDataHandler implements Observer {
 				faction.planets.push(planet);
 				faction.maxUpkeep += planet.maxUpkeep;
 			}
-
-			let squadrons = planet.squadrons;
-
-			squadrons.forEach(squadron => {
-				this._squadrons[squadron.id] = squadron;
-
-				if (faction) {
-					faction.numFighters += squadron.fighters.length;
-				}
-			});
 		});
 
 		galaxy.squadrons.forEach(squadron => {

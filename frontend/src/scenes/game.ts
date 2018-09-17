@@ -51,10 +51,6 @@ export class GameScene extends Phaser.Scene {
 		this._galaxy.planets.forEach(planet => {
 			planet.sprite = this.add.sprite(0, 0, planet.parent ? 'planet' : 'sun');
 			planet.sprite.setScale(planet.parent ? 0.25 : 0.35);
-			planet.sprite.setInteractive();
-			planet.sprite.on('pointerdown', () => {
-				//	this._selectionHandler.selectPlanet(planet);
-			});
 		});
 
 		this._galaxy.squadrons.forEach(squadron => {
@@ -104,15 +100,25 @@ export class GameScene extends Phaser.Scene {
 		let ANGULAR_VELOCITY = 0.025;
 
 		let FIGHTER_VELOCITY = 0.1;
+
+		let speed = FIGHTER_VELOCITY * timeSinceLastFrame;
+
 		squadrons.forEach(squadron => {
-			squadron.orbitingAngle = squadron.orbitingAngle + ANGULAR_VELOCITY * timeSinceLastFrame;
+			//	squadron.orbitingAngle = squadron.orbitingAngle + ANGULAR_VELOCITY * timeSinceLastFrame;
 
 			let planet = squadron.planet;
-			let targetX = planet.x + 100;
-			let targetY = planet.y + 100;
+			let targetX = planet.x;
+			let targetY = planet.y;
 
-			targetX += Math.cos(squadron.orbitingAngle) * squadron.orbitingDistance;
-			targetY += Math.sin(squadron.orbitingAngle) * squadron.orbitingDistance;
+			let dirX = squadron.x - planet.x;
+			let dirY = squadron.y - planet.y;
+
+			let range: Phaser.Math.Vector2 = new Phaser.Math.Vector2(targetX - squadron.x, targetY - squadron.y);
+
+			range = range.normalize().scale(speed);
+
+			//targetX += Math.cos(squadron.orbitingAngle) * squadron.orbitingDistance;
+			//targetY += Math.sin(squadron.orbitingAngle) * squadron.orbitingDistance;
 
 			//console.log(targetX + ' ' + squadron.x);
 
@@ -120,12 +126,15 @@ export class GameScene extends Phaser.Scene {
 			//	targetX = squadron.planet.y + Math.cos(newOrbitingAngle) * squadron.orbitingDistance;
 			//	targetY = squadron.planet.y + Math.sin(newOrbitingAngle) * squadron.orbitingDistance;
 
-			let range: Phaser.Math.Vector2 = new Phaser.Math.Vector2(targetX - squadron.x, targetY - squadron.y);
-			let speed = FIGHTER_VELOCITY * timeSinceLastFrame + (1 + Math.cos(squadron.orbitingAngle * 3)) / 8;
+			//let range: Phaser.Math.Vector2 = new Phaser.Math.Vector2(targetX - squadron.x, targetY - squadron.y);
+			/*let speed = FIGHTER_VELOCITY * timeSinceLastFrame + (1 + Math.cos(squadron.orbitingAngle * 3)) / 8;
 
 			if (range.length() > speed) {
 				range.normalize().scale(speed);
 			}
+
+			
+			*/
 
 			squadron.x += range.x;
 			squadron.y += range.y;
