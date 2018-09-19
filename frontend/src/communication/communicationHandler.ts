@@ -1,4 +1,4 @@
-import { ClientMessage, ClientMessageType, JoinMessage, SendSquadron } from './communicationInterfaces';
+import { ClientMessage, ClientMessageType, JoinMessage, SendSquadron, CommunicationHandler } from './communicationInterfaces';
 import { ServerMessageHandler } from './messageHandler';
 
 export class ClientMessageSender {
@@ -43,7 +43,7 @@ export interface SpaceGameConfig {
     gameId: number;
 }
 
-export class CommunicationHandler {
+export class CommunicationHandlerWebSocket implements CommunicationHandler {
 
     private _socket: any;
     private _messageHandler: ServerMessageHandler;

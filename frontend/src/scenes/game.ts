@@ -5,6 +5,7 @@ import { ClientMessageSender } from '../communication/communicationHandler';
 import { Galaxy, Player, Squadron, Fighter } from '../data/galaxyModels';
 import { Background } from '../view/background';
 import { ObservableServerMessageHandler } from '../communication/messageHandler';
+import { MessageFighterCreated, ServerMessageType } from '../communication/communicationInterfaces';
 
 export class GameScene extends Phaser.Scene {
 
@@ -74,11 +75,16 @@ export class GameScene extends Phaser.Scene {
 		this._inputHandler = new InputHandler(this, this._player, this._galaxy.planets, this._clientMessageSender);
 		this._graphics = this.add.graphics({ lineStyle: { width: 2, color: 0xff0000, alpha: 1 } });
 
+		this._serverMessageObserver.subscribe<MessageFighterCreated>(ServerMessageType.FIGHTER_CREATED, this.onFighterCreated.bind(this));
+
 		this.sys.game.events.on('resize', this.resize, this);
 		this.resize();
 
 		this._camera.fadeIn(1000);
+	}
 
+	private onFighterCreated(msg: MessageFighterCreated) {
+		console.log('fighter created');
 	}
 
 	private resize() {

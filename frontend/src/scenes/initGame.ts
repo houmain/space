@@ -4,12 +4,14 @@ import { GameState } from '../data/gameData';
 import { SpaceGame } from '../Game';
 import { Galaxy } from '../data/galaxyModels';
 import { ObservableServerMessageHandler } from '../communication/messageHandler';
-import { ClientMessageSender, CommunicationHandler, SpaceGameConfig } from '../communication/communicationHandler';
+import { ClientMessageSender, SpaceGameConfig, CommunicationHandlerWebSocket } from '../communication/communicationHandler';
 import { GalaxyDataHandler } from '../logic/galaxyDataHandler';
 import { GameInfoHandler } from '../view/gameInfo';
 import { Assets } from '../view/assets';
 import { GuiScene } from './guiScene';
 import { TextResources, Texts } from '../localization/textResources';
+import { CommunicationHandler } from '../communication/communicationInterfaces';
+import { CommunicationHandlerMock } from '../communication/mock/communicationHandlerMock';
 
 export class InitGameScene extends GuiScene {
 
@@ -66,7 +68,16 @@ export class InitGameScene extends GuiScene {
 		super.create();
 
 		this._serverMessageObserver = new ObservableServerMessageHandler();
-		this._communicationHandler = new CommunicationHandler(this._serverMessageObserver);
+		this._galaxyDataHandler = new GalaxyDataHandler(this._serverMessageObserver);
+
+		let mockServer = false;
+		if (mockServer) {
+			console.warn('Launching mock communication handler');
+			this._communicationHandler = new CommunicationHandlerMock(this._serverMessageObserver, this._galaxyDataHandler);
+		} else {
+			this._communicationHandler = new CommunicationHandlerWebSocket(this._serverMessageObserver);
+		}
+
 		this._clientMessageSender = new ClientMessageSender(this._communicationHandler);
 
 		this._communicationHandler.init(this._gameConfig);
@@ -81,12 +92,16 @@ export class InitGameScene extends GuiScene {
 			galaxy: new Galaxy()
 		};
 
-		this._galaxyDataHandler = new GalaxyDataHandler(this._serverMessageObserver);
 		this._gameLogic = new GameLogic(this._gameState, this._serverMessageObserver, this._galaxyDataHandler);
 		this._gameInfoHandler = new GameInfoHandler(this._galaxyDataHandler, this._serverMessageObserver);
 
 		this._infoText = this.add.bitmapText(this.sys.canvas.width / 2, this.sys.canvas.height / 2, 'font_8', TextResources.getText(Texts.INITGAME_JOINING_GAME));
 		this._infoText.setOrigin(0.5, 0.5);
+
+		if (mockServer) {
+			this._infoText.setText('*** DEMO *** \n' + this._infoText.text);
+			this._infoText.setTint(0xffff00);
+		}
 
 		this._assetsLoaded = true;
 	}

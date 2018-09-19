@@ -1,3 +1,15 @@
+import { SpaceGameConfig } from './communicationHandler';
+
+export interface CommunicationHandler {
+
+    onConnected: Function;
+    onDisconnected: Function;
+
+    init(gameConfig: SpaceGameConfig);
+    send(msg: ClientMessage);
+    close();
+}
+
 export enum ClientMessageType {
     JOIN_GAME = 'joinGame',
     SEND_SQUADRON = 'sendSquadron'
