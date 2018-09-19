@@ -5,8 +5,10 @@ import { GalaxyFactory } from './galaxyFactory';
 import { Player, GameState } from '../data/gameData';
 import { Galaxy, Fighter, Squadron, Faction } from '../data/galaxyModels';
 import { Assert } from '../common/utils';
+import { Observer } from '../common/commonInterfaces';
+import { GameEvent, HandleGameEvent } from './eventInterfaces';
 
-export class GameLogic {
+export class GameLogic implements Observer {
 
 	private _galaxyDataHandler: GalaxyDataHandler;
 	private _player: Player;
@@ -27,6 +29,22 @@ export class GameLogic {
 		serverMessageObserver.subscribe<MessageFighterDestroyed>(ServerMessageType.FIGHTER_DESTROYED, this.onFighterDestroyed.bind(this));
 		serverMessageObserver.subscribe<MessagePlanetConquered>(ServerMessageType.PLANET_CONQUERED, this.onPlanetConquered.bind(this));
 		serverMessageObserver.subscribe<MessageSquadronDestroyed>(ServerMessageType.SQUADRON_DESTROYED, this.onSquadronDestroyed.bind(this));
+	}
+
+	private _handlers: { [eventKey: string]: HandleGameEvent<GameEvent>[]; } = {};
+
+	public subscribe<T extends GameEvent>(msgType: string, callback: HandleGameEvent<T>) {
+		if (!this._handlers[msgType]) {
+			this._handlers[msgType] = [];
+		}
+		this._handlers[msgType].push(callback);
+	}
+
+	public unsubscribe<T extends GameEvent>(msgType: string, callback: HandleGameEvent<T>) {
+		let index = this._handlers[msgType].indexOf(callback);
+		if (index !== -1) {
+			this._handlers[msgType].splice(index, 1);
+		}
 	}
 
 	private onGameJoined(msg: MessageGameJoined) {
@@ -53,6 +71,8 @@ export class GameLogic {
 		} else {
 			console.error('Unknown squadron with id ' + msg.squadronId);
 		}
+
+		this._galaxyDataHandler.onFighterCreated(msg);
 
 		Assert.equals(squadron.fighters.length, msg.fighterCount, `Game::createFighter: squadron ${msg.squadronId}
         Incorrect Fighter count client: ${squadron.fighters.length} server: ${msg.fighterCount}`);
@@ -119,6 +139,8 @@ export class GameLogic {
 		} else {
 			console.error('Unknown squadron with id ' + msg.squadronId);
 		}
+
+		this._galaxyDataHandler.onFighterDestroyed(msg);
 	}
 
 	private onPlanetConquered(msg: MessagePlanetConquered) {
@@ -126,6 +148,8 @@ export class GameLogic {
 		let planet = this._galaxyDataHandler.planets[msg.planetId];
 
 		planet.faction = faction;
+
+		this._galaxyDataHandler.onPlanetConquered(msg);
 	}
 
 	private onSquadronDestroyed(msg: MessageSquadronDestroyed) {

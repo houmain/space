@@ -68,7 +68,7 @@ export class InitGameScene extends GuiScene {
 		super.create();
 
 		this._serverMessageObserver = new ObservableServerMessageHandler();
-		this._galaxyDataHandler = new GalaxyDataHandler(this._serverMessageObserver);
+		this._galaxyDataHandler = new GalaxyDataHandler();
 
 		let mockServer = false;
 		if (mockServer) {

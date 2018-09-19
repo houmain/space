@@ -41,18 +41,18 @@ class GalaxyDataHandlerObserver implements Observer {
 	}
 }
 
-export class GalaxyDataHandler implements Observer {
+export class GalaxyDataHandler implements Observer { //TODO Observer entfernen
 	private _factions: { [id: number]: Faction; } = {};
 	private _planets: { [id: number]: Planet; } = {};
 	private _squadrons: { [id: number]: Squadron; } = {};
 
 	private _observer: GalaxyDataHandlerObserver = new GalaxyDataHandlerObserver();
 
-	public constructor(serverMessageObserver: ObservableServerMessageHandler) {
+	public constructor() {
 
-		serverMessageObserver.subscribe<MessageFighterCreated>(ServerMessageType.FIGHTER_CREATED, this.onFighterCreated.bind(this));
-		serverMessageObserver.subscribe<MessageFighterDestroyed>(ServerMessageType.FIGHTER_DESTROYED, this.onFighterDestroyed.bind(this));
-		serverMessageObserver.subscribe<MessagePlanetConquered>(ServerMessageType.PLANET_CONQUERED, this.onPlanetConquered.bind(this));
+		//	serverMessageObserver.subscribe<MessageFighterCreated>(ServerMessageType.FIGHTER_CREATED, this.onFighterCreated.bind(this));
+		//	serverMessageObserver.subscribe<MessageFighterDestroyed>(ServerMessageType.FIGHTER_DESTROYED, this.onFighterDestroyed.bind(this));
+		//	serverMessageObserver.subscribe<MessagePlanetConquered>(ServerMessageType.PLANET_CONQUERED, this.onPlanetConquered.bind(this));
 	}
 
 	public init(galaxy: Galaxy) {
@@ -95,7 +95,7 @@ export class GalaxyDataHandler implements Observer {
 		return this._squadrons;
 	}
 
-	private onFighterCreated(msg: MessageFighterCreated) {
+	public onFighterCreated(msg: MessageFighterCreated) {
 		let squadron = this._squadrons[msg.squadronId];
 
 		if (squadron.faction) {
@@ -105,7 +105,7 @@ export class GalaxyDataHandler implements Observer {
 		}
 	}
 
-	private onFighterDestroyed(msg: MessageFighterDestroyed) {
+	public onFighterDestroyed(msg: MessageFighterDestroyed) {
 		let squadron = this._squadrons[msg.squadronId];
 
 		if (squadron.faction) {
@@ -115,7 +115,7 @@ export class GalaxyDataHandler implements Observer {
 		}
 	}
 
-	private onPlanetConquered(msg: MessagePlanetConquered) {
+	public onPlanetConquered(msg: MessagePlanetConquered) {
 
 		let planet = this._planets[msg.planetId];
 		let oldFaction = this._factions[msg.fromFactionId];
