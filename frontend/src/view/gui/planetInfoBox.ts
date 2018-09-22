@@ -1,12 +1,11 @@
-import { Planet, Squadron } from '../../data/galaxyModels';
+import { Planet } from '../../data/galaxyModels';
 import { Assets } from '../assets';
-import { MessageFighterCreated, ServerMessageType, MessageFighterDestroyed, ServerMessage } from '../../communication/communicationInterfaces';
-import { ObservableServerMessageHandler } from '../../communication/messageHandler';
 import { PlanetUtils } from '../../logic/utils';
+import { EventFighterCreated, EventFighterDestroyed, GameEventType, GameEvent, GameEventObserver } from '../../logic/eventInterfaces';
 
 export class PlanetInfoBox extends Phaser.GameObjects.Container {
 
-	private _serverMessageObserver: ObservableServerMessageHandler;
+	private _gameEventObserver: GameEventObserver;
 
 	private _selectedPlanets: Planet[];
 
@@ -15,9 +14,9 @@ export class PlanetInfoBox extends Phaser.GameObjects.Container {
 
 	private _factionId: number;
 
-	public constructor(scene: Phaser.Scene, serverMessageObserver: ObservableServerMessageHandler, factionId: number) {
+	public constructor(scene: Phaser.Scene, gameEventObserver: GameEventObserver, factionId: number) {
 		super(scene, 0, 0);
-		this._serverMessageObserver = serverMessageObserver;
+		this._gameEventObserver = gameEventObserver;
 		this._factionId = factionId;
 
 		let planetInfoBox = scene.add.sprite(0, 0, Assets.ATLAS.HUD, 'planetInfo.png');
@@ -70,16 +69,16 @@ export class PlanetInfoBox extends Phaser.GameObjects.Container {
 	}
 
 	public subscribeEvents() {
-		this._serverMessageObserver.subscribe<MessageFighterCreated>(ServerMessageType.FIGHTER_CREATED, this.onServerMessage.bind(this));
-		this._serverMessageObserver.subscribe<MessageFighterDestroyed>(ServerMessageType.FIGHTER_DESTROYED, this.onServerMessage.bind(this));
+		this._gameEventObserver.subscribe<EventFighterCreated>(GameEventType.FIGHTER_CREATED, this.onGameEvent.bind(this));
+		this._gameEventObserver.subscribe<EventFighterDestroyed>(GameEventType.FIGHTER_DESTROYED, this.onGameEvent.bind(this));
 	}
 
 	public unsubscribeEvents() {
-		this._serverMessageObserver.unsubscribe<MessageFighterCreated>(ServerMessageType.FIGHTER_CREATED, this.onServerMessage.bind(this));
-		this._serverMessageObserver.unsubscribe<MessageFighterDestroyed>(ServerMessageType.FIGHTER_DESTROYED, this.onServerMessage.bind(this));
+		this._gameEventObserver.unsubscribe<EventFighterCreated>(GameEventType.FIGHTER_CREATED, this.onGameEvent.bind(this));
+		this._gameEventObserver.unsubscribe<EventFighterDestroyed>(GameEventType.FIGHTER_DESTROYED, this.onGameEvent.bind(this));
 	}
 
-	private onServerMessage(msg: ServerMessage) {
+	private onGameEvent(event: GameEvent) {
 		this.updateInfoBox();
 	}
 

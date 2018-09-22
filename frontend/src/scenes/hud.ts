@@ -7,7 +7,7 @@ import { Assets } from '../view/assets';
 import { Planet } from '../data/galaxyModels';
 import { PlanetInfoBox } from '../view/gui/planetInfoBox';
 import { ImageButton } from '../view/gui/guiModels';
-import { ObservableServerMessageHandler } from '../communication/messageHandler';
+import { GameEventObserver } from '../logic/eventInterfaces';
 
 export class HudScene extends Phaser.Scene {
 
@@ -17,7 +17,7 @@ export class HudScene extends Phaser.Scene {
 	private _gameInfoHandler: GameInfoHandler;
 	private _playerHud: PlayerHud;
 	private _planetInfoBox: PlanetInfoBox;
-	private _serverMessageObserver: ObservableServerMessageHandler;
+	private _gameEventObserver: GameEventObserver;
 
 	public constructor() {
 		super(Scenes.HUD);
@@ -27,7 +27,7 @@ export class HudScene extends Phaser.Scene {
 
 		this._galaxyDataHandler = data.galaxyDataHandler;
 		this._gameInfoHandler = data.gameInfoHandler;
-		this._serverMessageObserver = data.serverMessageObserver;
+		this._gameEventObserver = data.gameEventObserver;
 		this._player = data.gameState.player;
 	}
 
@@ -35,9 +35,9 @@ export class HudScene extends Phaser.Scene {
 		this._gameInfoHandler.create(this);
 
 		this._playerHud = new PlayerHud();
-		this._playerHud.create(this, this._galaxyDataHandler, this._player);
+		this._playerHud.create(this, this._gameEventObserver, this._player);
 
-		this._planetInfoBox = new PlanetInfoBox(this, this._serverMessageObserver, this._player.factionId);
+		this._planetInfoBox = new PlanetInfoBox(this, this._gameEventObserver, this._player.faction.id);
 		this._planetInfoBox.setVisible(false);
 		this.add.existing(this._planetInfoBox);
 

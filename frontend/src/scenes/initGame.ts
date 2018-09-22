@@ -1,5 +1,5 @@
 import { Scenes } from './scenes';
-import { GameLogic } from '../logic/gameLogic';
+import { GameLogic, GameEventObserverImpl } from '../logic/gameLogic';
 import { GameState } from '../data/gameData';
 import { SpaceGame } from '../Game';
 import { Galaxy } from '../data/galaxyModels';
@@ -20,6 +20,7 @@ export class InitGameScene extends GuiScene {
 	private _communicationHandler: CommunicationHandler;
 	private _serverMessageObserver: ObservableServerMessageHandler;
 	private _clientMessageSender: ClientMessageSender;
+	private _gameEventObserver: GameEventObserverImpl;
 
 	private _gameState: GameState;
 	private _gameLogic: GameLogic;
@@ -92,8 +93,10 @@ export class InitGameScene extends GuiScene {
 			galaxy: new Galaxy()
 		};
 
-		this._gameLogic = new GameLogic(this._gameState, this._serverMessageObserver, this._galaxyDataHandler);
-		this._gameInfoHandler = new GameInfoHandler(this._galaxyDataHandler, this._serverMessageObserver);
+		this._gameEventObserver = new GameEventObserverImpl();
+
+		this._gameLogic = new GameLogic(this._gameState, this._serverMessageObserver, this._galaxyDataHandler, this._gameEventObserver);
+		this._gameInfoHandler = new GameInfoHandler(this._gameEventObserver);
 
 		this._infoText = this.add.bitmapText(this.sys.canvas.width / 2, this.sys.canvas.height / 2, 'font_8', TextResources.getText(Texts.INITGAME_JOINING_GAME));
 		this._infoText.setOrigin(0.5, 0.5);
@@ -140,16 +143,16 @@ export class InitGameScene extends GuiScene {
 
 		this.scene.start(Scenes.GAME, {
 			gameState: this._gameState,
-			gameLogic: this._gameLogic,
 			galaxyDataHandler: this._galaxyDataHandler,
 			clientMessageSender: this._clientMessageSender,
-			serverMessageObserver: this._serverMessageObserver
+			serverMessageObserver: this._serverMessageObserver,
+			gameEventObserver: this._gameEventObserver
 		});
 		this.scene.start(Scenes.HUD, {
 			gameState: this._gameState,
 			gameInfoHandler: this._gameInfoHandler,
 			galaxyDataHandler: this._galaxyDataHandler,
-			serverMessageObserver: this._serverMessageObserver
+			gameEventObserver: this._gameEventObserver
 		});
 	}
 

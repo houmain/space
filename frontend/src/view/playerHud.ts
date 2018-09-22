@@ -1,7 +1,5 @@
-import { Faction } from '../data/galaxyModels';
-import { Engine } from '../common/utils';
-import { GalaxyDataHandler } from '../logic/galaxyDataHandler';
 import { Player } from '../data/gameData';
+import { GameEventType, GameEventObserver } from '../logic/eventInterfaces';
 
 /* HUD */
 export class PlayerHud {
@@ -9,9 +7,12 @@ export class PlayerHud {
 	private _container: Phaser.GameObjects.Container;
 	private _numFighters: Phaser.GameObjects.BitmapText;
 
-	public create(scene: Phaser.Scene, galaxyDataHandler: GalaxyDataHandler, player: Player) {
+	private _player: Player;
+
+	public create(scene: Phaser.Scene, gameEventObserver: GameEventObserver, player: Player) {
 
 		this._container = scene.add.container(10, 10);
+		this._player = player;
 
 		let textFighters = scene.add.bitmapText(0, 0, 'gameHudText', 'fighters');
 		textFighters.setOrigin(0, 0);
@@ -24,12 +25,13 @@ export class PlayerHud {
 		this._container.add(textFighters);
 		this._container.add(this._numFighters);
 
-		galaxyDataHandler.subscribe(player.factionId, (faction: Faction) => {
-			this.onPlayerFactionChanged(faction);
-		});
+		gameEventObserver.subscribe(GameEventType.FIGHTER_CREATED, this.onPlayerFactionChanged.bind(this));
+		gameEventObserver.subscribe(GameEventType.FIGHTER_DESTROYED, this.onPlayerFactionChanged.bind(this));
 	}
 
-	private onPlayerFactionChanged(faction: Faction) {
+	private onPlayerFactionChanged() {//faction: Faction)
+
+		let faction = this._player.faction;
 		this._numFighters.setText(`${faction.numFighters}/${faction.maxUpkeep}`);
 	}
 }

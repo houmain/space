@@ -2,10 +2,11 @@
 
 import { Galaxy, Planet, Faction, Squadron, Fighter } from '../data/galaxyModels';
 import { FactionInfo, PlanetInfo, SquadronInfo } from '../communication/communicationInterfaces';
+import { GalaxyObjectFactory } from './gameLogic';
 
 export class GalaxyFactory {
 
-    public static create(galaxy: Galaxy, factionInfos: FactionInfo[], planetInfos: PlanetInfo[], squadronInfos: SquadronInfo[]): Galaxy {
+    public static create(galaxyObjectFactory: GalaxyObjectFactory, galaxy: Galaxy, factionInfos: FactionInfo[], planetInfos: PlanetInfo[], squadronInfos: SquadronInfo[]): Galaxy {
 
         let infoMap: { [id: number]: PlanetInfo; } = {};
         let planetMap: { [id: number]: Planet; } = {};
@@ -51,7 +52,7 @@ export class GalaxyFactory {
 
             if (planetInfo.squadrons) {
                 planetInfo.squadrons.forEach(squadronInfo => {
-                    let squadron: Squadron = new Squadron();
+                    let squadron: Squadron = galaxyObjectFactory.buildSquadron();
                     squadron.id = squadronInfo.squadronId;
                     squadron.faction = factionMap[squadronInfo.factionId];
                     squadron.planet = planet;
@@ -60,7 +61,7 @@ export class GalaxyFactory {
 
                     let fighterCount = squadronInfo.fighterCount;
                     for (let f = 0; f < fighterCount; f++) {
-                        let fighter = new Fighter();
+                        let fighter = galaxyObjectFactory.buildFighter();
                         fighter.x = planet.x;
                         fighter.y = planet.y;
                         fighter.orbitingAngle = f * 360 / fighterCount;
@@ -79,7 +80,7 @@ export class GalaxyFactory {
 
         let squadrons: Squadron[] = [];
         squadronInfos.forEach((squadronInfo, index) => {
-            let squadron = new Squadron();
+            let squadron = galaxyObjectFactory.buildSquadron();
             squadron.id = squadronInfo.squadronId;
             squadron.planet = null;
             squadrons.push(squadron);

@@ -1,10 +1,5 @@
-import { Engine } from '../common/utils';
-import { GalaxyDataHandler } from '../logic/galaxyDataHandler';
-import { Faction } from '../data/galaxyModels';
-import { Player } from '../data/gameData';
-import { ObservableServerMessageHandler } from '../communication/messageHandler';
-import { MessagePlanetConquered, ServerMessageType, MessagePlayerJoined, MessageFactionDestroyed } from '../communication/communicationInterfaces';
 import { Assets } from './assets';
+import { EventPlayerJoined, GameEventType, EventPlanetConquered, EventFactionDestroyed, GameEventObserver } from '../logic/eventInterfaces';
 
 enum GameInfoMessageType {
     PLAYER_JOINED,
@@ -68,19 +63,16 @@ class GameInfoMessageBuilder {
 export class GameInfoHandler {
 
     private _infoBuilder: GameInfoMessageBuilder;
-    private _galaxyDataHandler: GalaxyDataHandler;
     private _infoMessages: GameInfo[] = [];
     private _queuedInfoMessages: GameInfoMessage[] = [];
 
     private _container: Phaser.GameObjects.Container;
 
-    public constructor(galaxyDataHandler: GalaxyDataHandler, serverMessageObserver: ObservableServerMessageHandler) {
+    public constructor(gameEventObserver: GameEventObserver) {
 
-        this._galaxyDataHandler = galaxyDataHandler;
-
-        serverMessageObserver.subscribe<MessagePlayerJoined>(ServerMessageType.PLAYER_JOINED, this.onPlayerJoined.bind(this));
-        serverMessageObserver.subscribe<MessagePlanetConquered>(ServerMessageType.PLANET_CONQUERED, this.onPlanetConquered.bind(this));
-        serverMessageObserver.subscribe<MessageFactionDestroyed>(ServerMessageType.FACTION_DESTROYED, this.onFactionDestroyed.bind(this));
+        gameEventObserver.subscribe<EventPlayerJoined>(GameEventType.PLAYER_JOINED, this.onPlayerJoined.bind(this));
+        gameEventObserver.subscribe<EventPlanetConquered>(GameEventType.PLANET_CONQUERED, this.onPlanetConquered.bind(this));
+        gameEventObserver.subscribe<EventFactionDestroyed>(GameEventType.FACTION_DESTROYED, this.onFactionDestroyed.bind(this));
     }
 
     public create(scene: Phaser.Scene) {
@@ -88,8 +80,8 @@ export class GameInfoHandler {
         this._container = scene.add.container(20, window.innerHeight - 20);
     }
 
-    private onPlayerJoined(msg: MessagePlayerJoined) {
-        let faction = this._galaxyDataHandler.factions[msg.factionId];
+    private onPlayerJoined(event: EventPlayerJoined) {
+        let faction = event.faction;
 
         this.addInfoText({
             text: `${faction.name} joined`,
@@ -98,9 +90,9 @@ export class GameInfoHandler {
         });
     }
 
-    private onPlanetConquered(msg: MessagePlanetConquered) {
-        let faction = this._galaxyDataHandler.factions[msg.factionId];
-        let planet = this._galaxyDataHandler.planets[msg.planetId];
+    private onPlanetConquered(event: EventPlanetConquered) {
+        let faction = event.faction;
+        let planet = event.planet;
 
         this.addInfoText({
             text: `${faction.name} conquered ${planet.name}`,
@@ -109,8 +101,8 @@ export class GameInfoHandler {
         });
     }
 
-    private onFactionDestroyed(msg: MessageFactionDestroyed) {
-        let faction = this._galaxyDataHandler.factions[msg.factionId];
+    private onFactionDestroyed(event: EventFactionDestroyed) {
+        let faction = event.faction;
 
         this.addInfoText({
             text: `${faction.name} has been eliminated`,

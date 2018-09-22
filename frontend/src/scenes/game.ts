@@ -2,10 +2,32 @@ import { Scenes } from './scenes';
 import { InputHandler } from '../input/selectionHandler';
 import { GameTimeHandler } from '../logic/gameTimeHandler';
 import { ClientMessageSender } from '../communication/communicationHandler';
-import { Galaxy, Player, Squadron, Fighter } from '../data/galaxyModels';
+import { Galaxy, Squadron, Fighter } from '../data/galaxyModels';
 import { Background } from '../view/background';
 import { ObservableServerMessageHandler } from '../communication/messageHandler';
-import { MessageFighterCreated, ServerMessageType } from '../communication/communicationInterfaces';
+import { EventFighterCreated, GameEventObserver, GameEventType, EventFighterDestroyed, EventSquadronDestroyed, EventSquadronCreated } from '../logic/eventInterfaces';
+import { Player } from '../data/gameData';
+
+export class GalaxySpriteFactory {
+
+	private _spritePool: Phaser.GameObjects.Group;
+
+	public constructor(scene: Phaser.Scene) {
+
+		this._spritePool = scene.add.group({
+
+		});
+	}
+
+	public get(key: string): Phaser.GameObjects.Sprite {
+		return this._spritePool.get(0, 0, key);
+	}
+
+	public release(sprite: Phaser.GameObjects.Sprite) {
+		sprite.setActive(false);
+		sprite.setVisible(false);
+	}
+}
 
 export class GameScene extends Phaser.Scene {
 
@@ -18,10 +40,14 @@ export class GameScene extends Phaser.Scene {
 	private _timeHandler: GameTimeHandler;
 	private _clientMessageSender: ClientMessageSender;
 	private _serverMessageObserver: ObservableServerMessageHandler;
+	private _gameEventObserver: GameEventObserver;
 
 	private _graphics: Phaser.GameObjects.Graphics;
 
 	private _background: Background;
+
+	//private _fighterPool: Phaser.GameObjects.Group;
+	private _spriteFactory: GalaxySpriteFactory;
 
 	public constructor() {
 		super(Scenes.GAME);
@@ -31,6 +57,7 @@ export class GameScene extends Phaser.Scene {
 
 		this._clientMessageSender = data.clientMessageSender;
 		this._serverMessageObserver = data.serverMessageObserver;
+		this._gameEventObserver = data.gameEventObserver;
 
 		let gameState = data.gameState;
 
@@ -39,6 +66,8 @@ export class GameScene extends Phaser.Scene {
 	}
 
 	public create() {
+
+		this._spriteFactory = new GalaxySpriteFactory(this);
 
 		this._timeHandler = new GameTimeHandler(this._serverMessageObserver);
 
@@ -55,27 +84,21 @@ export class GameScene extends Phaser.Scene {
 		});
 
 		this._galaxy.squadrons.forEach(squadron => {
-			squadron.sprite = this.add.sprite(0, 0, 'squadron');
-			squadron.sprite.setPosition(squadron.x, squadron.y);
-			squadron.sprite.setScale(10);
-			if (squadron.faction) {
-				squadron.sprite.setTint(squadron.faction.color);
-			}
+			this.createSquadronSprite(squadron);
 
 			squadron.fighters.forEach(fighter => {
-				fighter.sprite = this.add.sprite(0, 0, 'fighter');
-				fighter.sprite.setScale(3);
-				fighter.sprite.setPosition(fighter.x, fighter.y);
-				if (squadron.faction) {
-					fighter.sprite.setTint(squadron.faction.color);
-				}
+				this.createFighterSprite(fighter);
 			});
 		});
 
 		this._inputHandler = new InputHandler(this, this._player, this._galaxy.planets, this._clientMessageSender);
 		this._graphics = this.add.graphics({ lineStyle: { width: 2, color: 0xff0000, alpha: 1 } });
 
-		this._serverMessageObserver.subscribe<MessageFighterCreated>(ServerMessageType.FIGHTER_CREATED, this.onFighterCreated.bind(this));
+		this._gameEventObserver.subscribe<EventFighterCreated>(GameEventType.FIGHTER_CREATED, this.onFighterCreated.bind(this));
+		this._gameEventObserver.subscribe<EventFighterDestroyed>(GameEventType.FIGHTER_DESTROYED, this.onFighterDestroyed.bind(this));
+
+		this._gameEventObserver.subscribe<EventSquadronCreated>(GameEventType.SQUADRON_CREATED, this.onSquadronCreated.bind(this));
+		this._gameEventObserver.subscribe<EventSquadronDestroyed>(GameEventType.SQUADRON_DESTROYED, this.onSquadronDestroyed.bind(this));
 
 		this.sys.game.events.on('resize', this.resize, this);
 		this.resize();
@@ -83,8 +106,42 @@ export class GameScene extends Phaser.Scene {
 		this._camera.fadeIn(1000);
 	}
 
-	private onFighterCreated(msg: MessageFighterCreated) {
-		console.log('fighter created');
+	private onFighterCreated(event: EventFighterCreated) {
+		this.createFighterSprite(event.fighter);
+	}
+
+	private createFighterSprite(fighter: Fighter) {
+		let squadron = fighter.squadron;
+
+		fighter.sprite = this._spriteFactory.get('fighter');
+		fighter.sprite.setScale(3);
+		fighter.sprite.setPosition(fighter.x, fighter.y);
+		if (squadron.faction) {
+			fighter.sprite.setTint(squadron.faction.color);
+		}
+	}
+
+	private onFighterDestroyed(event: EventFighterDestroyed) {
+		let sprite = event.fighter.sprite;
+		this._spriteFactory.release(sprite);
+	}
+
+	private onSquadronCreated(event: EventSquadronCreated) {
+		this.createSquadronSprite(event.squadron);
+	}
+
+	private createSquadronSprite(squadron: Squadron) {
+		squadron.sprite = this._spriteFactory.get('squadron');
+		squadron.sprite.setPosition(squadron.x, squadron.y);
+		squadron.sprite.setScale(10);
+		if (squadron.faction) {
+			squadron.sprite.setTint(squadron.faction.color);
+		}
+	}
+
+	private onSquadronDestroyed(event: EventSquadronDestroyed) {
+		let sprite = event.squadron.sprite;
+		this._spriteFactory.release(sprite);
 	}
 
 	private resize() {
@@ -124,9 +181,6 @@ export class GameScene extends Phaser.Scene {
 			let planet = squadron.planet;
 			let targetX = planet.x;
 			let targetY = planet.y;
-
-			let dirX = squadron.x - planet.x;
-			let dirY = squadron.y - planet.y;
 
 			let range: Phaser.Math.Vector2 = new Phaser.Math.Vector2(targetX - squadron.x, targetY - squadron.y);
 

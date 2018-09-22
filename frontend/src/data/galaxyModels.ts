@@ -34,23 +34,46 @@ export class Faction {
 
 export class Squadron {
     id: number;
+    x: number = 0;
+    y: number = 0;
     faction: Faction;
     fighters: Fighter[] = [];
     planet: Planet;
-    x: number = 0;
-    y: number = 0;
     sprite: Phaser.GameObjects.Sprite;
+
+    public constructor() {
+        Squadron.reset(this);
+    }
+
+    static reset(squadron: Squadron) {
+        squadron.id = 0;
+        squadron.x = 0;
+        squadron.y = 0;
+        squadron.faction = null;
+        squadron.fighters.splice(0);
+        squadron.planet = null;
+        squadron.sprite = null;
+    }
 }
 
 export class Fighter {
     x: number = 0;
     y: number = 0;
-    sprite: Phaser.GameObjects.Sprite;
+    sprite: Phaser.GameObjects.Sprite = null;
     orbitingAngle: number = 0;
     orbitingDistance: number = 100;
     squadron: Squadron;
-}
 
-export class Player {
-    public factionId: number;
+    public constructor() {
+        Fighter.reset(this);
+    }
+
+    static reset(fighter: Fighter) {
+        fighter.x = 0;
+        fighter.y = 0;
+        fighter.sprite = null;
+        fighter.orbitingAngle = 0;
+        fighter.orbitingDistance = 100;
+        fighter.squadron = null;
+    }
 }

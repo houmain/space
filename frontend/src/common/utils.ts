@@ -65,3 +65,36 @@ export class DOMHelper {
         document.getElementById(id).style.visibility = 'hidden';
     }
 }
+
+
+export class Pool<T> {
+    private _pool: T[];
+    private _resetter: Resettable<T>;
+
+    constructor(Func: Resettable<T>) {
+        this._pool = [];
+        this._resetter = Func;
+    }
+
+    get(): T {
+        if (this._pool.length) {
+            return this._pool.splice(0, 1)[0];
+        }
+        return new this._resetter();
+    }
+
+    release(obj: T): void {
+        if (this._resetter.reset) {
+            this._resetter.reset(obj);
+        }
+        this._pool.push(obj);
+    }
+}
+export interface Resettable<T extends Object> {
+    // constructor
+    new(): T;
+
+    // static
+    reset?(obj: T): void;
+}
+

@@ -161,12 +161,12 @@ export class InputHandler {
     }
 
     private isOwnPlanet(planet) {
-        return (planet.faction && planet.faction.id === this._player.factionId);
+        return (planet.faction && planet.faction.id === this._player.faction.id);
     }
 
     private findOwnSquadron(planet: Planet): Squadron {
         for (let squadron of planet.squadrons) {
-            if (squadron.faction && squadron.faction.id === this._player.factionId) {
+            if (squadron.faction && squadron.faction.id === this._player.faction.id) {
                 return squadron;
             }
         }
@@ -181,8 +181,6 @@ export class InputHandler {
     private clearSelection() {
         this._selectedPlanets.splice(0);
         this._graphics.clear();
-
-        // this._scene.events.emit(GameSceneEvents.PLANET_SELECTION_CHANGED, this._selectedPlanets);
     }
 
     private selectPlanet(planet, clearSelection: boolean = true) {
@@ -195,8 +193,6 @@ export class InputHandler {
         }
 
         this._selectedPlanets.push(planet);
-
-        //this._scene.events.emit(GameSceneEvents.PLANET_SELECTION_CHANGED, this._selectedPlanets);
     }
 
     private moveCamera(dx: number, dy: number) {
