@@ -21,6 +21,12 @@ export class Assert {
         }
     }
 
+    public static isNotNull(object: any, message: string) {
+        if (DEBUG && object === null) {
+            Assert.throwError(message);
+        }
+    }
+
     public static equals(value1: any, value2: any, message: string) {
         if (DEBUG && value1 !== value2) {
             Assert.throwError(message);
@@ -90,6 +96,7 @@ export class Pool<T> {
         this._pool.push(obj);
     }
 }
+
 export interface Resettable<T extends Object> {
     // constructor
     new(): T;
@@ -98,3 +105,8 @@ export interface Resettable<T extends Object> {
     reset?(obj: T): void;
 }
 
+export function printCallstack(e: Error) {
+    let stack = e.stack;
+    console.log('PRINTING CALL STACK');
+    console.log(stack);
+}

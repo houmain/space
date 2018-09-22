@@ -1,5 +1,6 @@
 import { ClientMessage, ClientMessageType, JoinMessage, SendSquadron, CommunicationHandler } from './communicationInterfaces';
 import { ServerMessageHandler } from './messageHandler';
+import { printCallstack } from '../common/utils';
 
 export class ClientMessageSender {
 
@@ -33,6 +34,7 @@ export class ClientMessageSender {
         try {
             this._communicationHandler.send(msg);
         } catch (error) {
+            printCallstack(error);
             alert(error);
         }
     }
@@ -90,10 +92,12 @@ export class CommunicationHandlerWebSocket implements CommunicationHandler {
                     this._messageHandler.handle(msg);
                 } catch (e) {
                     console.log(JSON.stringify(event) + ' exception with ' + event.data);
+                    printCallstack(e);
                 }
             };
             Object.seal(this._socket);
         } catch (e) {
+            printCallstack(e);
             alert(e);
         }
     }
@@ -106,6 +110,7 @@ export class CommunicationHandlerWebSocket implements CommunicationHandler {
             console.log(`Sending ${jsonMessage} to server.`);
             this._socket.send(jsonMessage);
         } catch (e) {
+            printCallstack(e);
             alert(e);
         }
     }
@@ -113,4 +118,6 @@ export class CommunicationHandlerWebSocket implements CommunicationHandler {
     public close() {
         this._socket.close();
     }
+
+
 }

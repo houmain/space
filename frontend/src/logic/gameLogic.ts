@@ -114,7 +114,7 @@ export class GameLogic {
 	}
 
 	private onFighterCreated(msg: MessageFighterCreated) {
-		let squadron = this._galaxyDataHandler.squadrons[msg.squadronId];
+		let squadron = this._galaxyDataHandler.getSquadronById(msg.squadronId);
 
 		if (squadron) {
 			let fighter = this._galaxyObjectfactory.buildFighter();
@@ -205,12 +205,14 @@ export class GameLogic {
 	}
 
 	private onFighterDestroyed(msg: MessageFighterDestroyed) {
-		let squadron = this._galaxyDataHandler.squadrons[msg.squadronId];
+		let squadron = this._galaxyDataHandler.getSquadronById(msg.squadronId);
 
 		if (squadron) {
 			let fighters = squadron.fighters.splice(squadron.fighters.length - 2, 1);
 			let destroyedFighter = fighters[0];
-			squadron.faction.numFighters--;
+			if (squadron.faction) {
+				squadron.faction.numFighters--;
+			}
 
 			this.notify<EventFighterDestroyed>(GameEventType.FIGHTER_DESTROYED, {
 				type: GameEventType.FIGHTER_DESTROYED,

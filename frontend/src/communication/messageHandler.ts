@@ -1,5 +1,6 @@
 import { ServerMessage } from './communicationInterfaces';
 import { Observer } from '../common/commonInterfaces';
+import { printCallstack } from '../common/utils';
 
 export interface HandleServerMessage<T extends ServerMessage> {
     (msg: T): void;
@@ -36,6 +37,7 @@ export class ObservableServerMessageHandler implements ServerMessageHandler, Obs
                     handle(msg);
                 });
             } catch (e) {
+                printCallstack(e);
                 alert(e);
             }
         } else {
