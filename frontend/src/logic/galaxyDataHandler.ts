@@ -45,13 +45,5 @@ export class GalaxyDataHandler {
 	public get squadrons(): { [id: number]: Squadron; } {
 		return this._squadrons;
 	}
-
-	public getSquadronById(id: number): Squadron {
-		let squadron = this._squadrons[id];
-
-		Assert.isNotNull(squadron, `No squadron found with id ${id}`);
-
-		return squadron;
-	}
 }
 

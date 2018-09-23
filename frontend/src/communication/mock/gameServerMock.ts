@@ -64,6 +64,10 @@ export class GameServerMock {
 		};
 	}
 
+	private createMessageSquadronSent() {
+		let jsonMsfg: string = '{"event":"squadronSent","sourcePlanetId":2,"targetPlanetId":4,"sourceSquadronId":1,"squadronId":14,"factionId":1,"fighterCount":15,"speed":50}';
+	}
+
 	private update() {
 		this.doNextAction();
 
@@ -75,4 +79,12 @@ export class GameServerMock {
 	private doNextAction() {
 		this._communicationHandler.receive(this.createMessageFighterCreated());
 	}
+
+	/*
+
+{"event":"squadronAttacks","planetId":7,"squadronId":15}
+{"event":"planetConquered","planetId":7,"factionId":1}
+{"event":"squadronDestroyed","planetId":7,"squadronId":6}
+
+	*/
 }

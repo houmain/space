@@ -8,6 +8,20 @@ import { ObservableServerMessageHandler } from '../communication/messageHandler'
 import { EventFighterCreated, GameEventObserver, GameEventType, EventFighterDestroyed, EventSquadronDestroyed, EventSquadronCreated } from '../logic/eventInterfaces';
 import { Player } from '../data/gameData';
 
+/*
+TODO:
+
+TASKS:
+- added rendering code from GameScene to game renderer
+- remove squadrons from galaxy
+- add optional initial size for pools
+
+BUGS:
+- new squadrons are not rendered
+- sent fighters are not updated until the new squadron arrived
+- squadrons are not in the center of a planet
+*/
+
 export class GalaxySpriteFactory {
 
 	private _spritePool: Phaser.GameObjects.Group;
@@ -15,7 +29,6 @@ export class GalaxySpriteFactory {
 	public constructor(scene: Phaser.Scene) {
 
 		this._spritePool = scene.add.group({
-
 		});
 	}
 
@@ -46,7 +59,6 @@ export class GameScene extends Phaser.Scene {
 
 	private _background: Background;
 
-	//private _fighterPool: Phaser.GameObjects.Group;
 	private _spriteFactory: GalaxySpriteFactory;
 
 	public constructor() {
@@ -151,6 +163,13 @@ export class GameScene extends Phaser.Scene {
 	}
 
 	public update(timeSinceStart: number, timeSinceLastFrame: number) {
+
+		let ANGULAR_VELOCITY = 0.0025;
+
+		let FIGHTER_VELOCITY = 0.1;
+
+		let speed = FIGHTER_VELOCITY * timeSinceLastFrame;
+
 		this._timeHandler.addLocalElapsedTime(timeSinceLastFrame);
 		let timeElapsed = this._timeHandler.timeSinceStart;
 
@@ -167,33 +186,28 @@ export class GameScene extends Phaser.Scene {
 
 			planet.sprite.x = planet.x;
 			planet.sprite.y = planet.y;
-		});
 
-		let squadrons: Squadron[] = this._galaxy.squadrons;
-		let ANGULAR_VELOCITY = 0.0025;
+			let squadrons: Squadron[] = planet.squadrons;
 
-		let FIGHTER_VELOCITY = 0.1;
+			squadrons.forEach(squadron => {
 
-		let speed = FIGHTER_VELOCITY * timeSinceLastFrame;
+				let planet = squadron.planet;
+				let targetX = planet.x;
+				let targetY = planet.y;
 
-		squadrons.forEach(squadron => {
+				let range: Phaser.Math.Vector2 = new Phaser.Math.Vector2(targetX - squadron.x, targetY - squadron.y);
 
-			let planet = squadron.planet;
-			let targetX = planet.x;
-			let targetY = planet.y;
+				range = range.normalize().scale(speed);
 
-			let range: Phaser.Math.Vector2 = new Phaser.Math.Vector2(targetX - squadron.x, targetY - squadron.y);
+				squadron.x += range.x;
+				squadron.y += range.y;
 
-			range = range.normalize().scale(speed);
+				squadron.sprite.x = squadron.x;
+				squadron.sprite.y = squadron.y;
 
-			squadron.x += range.x;
-			squadron.y += range.y;
-
-			squadron.sprite.x = squadron.x;
-			squadron.sprite.y = squadron.y;
-
-			squadron.fighters.forEach(fighter => {
-				this.updateFighter(fighter, timeSinceLastFrame);
+				squadron.fighters.forEach(fighter => {
+					this.updateFighter(fighter, timeSinceLastFrame);
+				});
 			});
 		});
 
@@ -246,7 +260,6 @@ export class GameScene extends Phaser.Scene {
 		targetY = fighter.squadron.y + Math.sin(newOrbitingAngle) * fighter.orbitingDistance;
 
 		range = new Phaser.Math.Vector2(targetX - fighter.x, targetY - fighter.y);
-		//	rotation = MathUtils.lerpAngleDeg(rotation, range.angle(), 0.075f);
 	}
 
 	public shutdown() {
