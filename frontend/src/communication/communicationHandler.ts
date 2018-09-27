@@ -1,6 +1,6 @@
 import { ClientMessage, ClientMessageType, JoinMessage, SendSquadron, CommunicationHandler } from './communicationInterfaces';
 import { ServerMessageHandler } from './messageHandler';
-import { printCallstack } from '../common/utils';
+import { printCallstack } from '../common/error';
 
 export class ClientMessageSender {
 

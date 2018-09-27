@@ -1,7 +1,7 @@
 import { Planet } from '../../data/galaxyModels';
 import { Assets } from '../assets';
-import { PlanetUtils } from '../../logic/utils';
-import { EventFighterCreated, EventFighterDestroyed, GameEventType, GameEvent, GameEventObserver } from '../../logic/eventInterfaces';
+import { PlanetUtils } from '../../logic/utils/utils';
+import { GameEventObserver, EventFighterCreated, GameEventType, EventFighterDestroyed, GameEvent } from '../../logic/event/eventInterfaces';
 
 export class PlanetInfoBox extends Phaser.GameObjects.Container {
 

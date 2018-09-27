@@ -1,5 +1,5 @@
 import { Assets } from './assets';
-import { EventPlayerJoined, GameEventType, EventPlanetConquered, EventFactionDestroyed, GameEventObserver } from '../logic/eventInterfaces';
+import { GameEventObserver, EventPlayerJoined, GameEventType, EventPlanetConquered, EventFactionDestroyed } from '../logic/event/eventInterfaces';
 
 enum GameInfoMessageType {
     PLAYER_JOINED,

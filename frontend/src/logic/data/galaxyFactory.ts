@@ -1,12 +1,12 @@
-//https://gamedevacademy.org/create-a-basic-multiplayer-game-in-phaser-3-with-socket-io-part-2/
-
-import { Galaxy, Planet, Faction, Squadron, Fighter } from '../data/galaxyModels';
-import { FactionInfo, PlanetInfo, SquadronInfo } from '../communication/communicationInterfaces';
-import { GalaxyObjectFactory } from './gameLogic';
+import { Galaxy, Planet, Faction, Squadron, Fighter } from '../../data/galaxyModels';
+import { FactionInfo, PlanetInfo, SquadronInfo } from '../../communication/communicationInterfaces';
+import { GalaxyObjectFactory } from './galaxyObjectFactory';
 
 export class GalaxyFactory {
 
-    public static create(galaxyObjectFactory: GalaxyObjectFactory, galaxy: Galaxy, factionInfos: FactionInfo[], planetInfos: PlanetInfo[], squadronInfos: SquadronInfo[]): Galaxy {
+    public static create(galaxyObjectFactory: GalaxyObjectFactory, factionInfos: FactionInfo[], planetInfos: PlanetInfo[], squadronInfos: SquadronInfo[]): Galaxy {
+
+        let galaxy = new Galaxy();
 
         let infoMap: { [id: number]: PlanetInfo; } = {};
         let planetMap: { [id: number]: Planet; } = {};
@@ -62,8 +62,7 @@ export class GalaxyFactory {
                     let fighterCount = squadronInfo.fighterCount;
                     for (let f = 0; f < fighterCount; f++) {
                         let fighter = galaxyObjectFactory.buildFighter();
-                        fighter.x = planet.x;
-                        fighter.y = planet.y;
+                        fighter.setPositon(planet.x, planet.y);
                         fighter.orbitingAngle = f * 360 / fighterCount;
                         fighter.squadron = squadron;
                         squadron.fighters.push(fighter);

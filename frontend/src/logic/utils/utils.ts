@@ -1,4 +1,4 @@
-import { Planet, Squadron } from '../data/galaxyModels';
+import { Planet, Squadron } from '../../data/galaxyModels';
 
 export class PlanetUtils {
 

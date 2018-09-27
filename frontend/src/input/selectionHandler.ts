@@ -154,9 +154,12 @@ export class InputHandler {
         let worldPos = this.getWorldPosition(x, y);
         let pickRect = new Phaser.Geom.Rectangle(
             worldPos.x - size / 2, worldPos.y - size / 2, size, size);
-        for (let planet of this._allPlanets)
-            if (planet.parent && pickRect.contains(planet.x, planet.y))
+        for (let planet of this._allPlanets) {
+            if (planet.parent && pickRect.contains(planet.x, planet.y)) {
                 return planet;
+            }
+        }
+
         return null;
     }
 

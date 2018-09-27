@@ -1,5 +1,5 @@
 import { Player } from '../data/gameData';
-import { GameEventType, GameEventObserver } from '../logic/eventInterfaces';
+import { GameEventObserver, GameEventType } from '../logic/event/eventInterfaces';
 
 /* HUD */
 export class PlayerHud {
@@ -29,7 +29,7 @@ export class PlayerHud {
 		gameEventObserver.subscribe(GameEventType.FIGHTER_DESTROYED, this.onPlayerFactionChanged.bind(this));
 	}
 
-	private onPlayerFactionChanged() {//faction: Faction)
+	private onPlayerFactionChanged() {
 
 		let faction = this._player.faction;
 		this._numFighters.setText(`${faction.numFighters}/${faction.maxUpkeep}`);

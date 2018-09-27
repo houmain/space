@@ -1,5 +1,5 @@
-import { Fighter, Faction, Planet, Squadron } from '../data/galaxyModels';
-import { Observer } from '../common/commonInterfaces';
+import { Fighter, Faction, Planet, Squadron } from '../../data/galaxyModels';
+import { Observer } from '../../common/commonInterfaces';
 
 export interface GameEventNotifier {
 	notify<T extends GameEvent>(eventId: string, event: T);
@@ -12,7 +12,7 @@ export interface GameEventObserver extends Observer {
 	unsubscribe<T extends GameEvent>(eventId: string, callback: HandleGameEvent<T>);
 }
 
-export enum GameEventType {
+export const enum GameEventType {
 	PLAYER_JOINED = 'playerJoined',
 	FIGHTER_CREATED = 'fighterCreated',
 	FIGHTER_DESTROYED = 'fighterDestroyed',

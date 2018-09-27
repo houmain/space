@@ -1,7 +1,7 @@
 export enum States {
 	BOOT = 'boot',
 	PRELOADER = 'preloader',
-	MAIN = 'main', // -> TODO: MainMenu
+	MAIN_MENU = 'mainMenu',
 	INIT_GAME = 'initGame',
 	GAME = 'game',
 	HUD = 'hud',

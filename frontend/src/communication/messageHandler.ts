@@ -1,6 +1,6 @@
 import { ServerMessage } from './communicationInterfaces';
 import { Observer } from '../common/commonInterfaces';
-import { printCallstack } from '../common/utils';
+import { printCallstack } from '../common/error';
 
 export interface HandleServerMessage<T extends ServerMessage> {
     (msg: T): void;

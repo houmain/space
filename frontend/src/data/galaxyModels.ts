@@ -57,9 +57,9 @@ export class Squadron {
 }
 
 export class Fighter {
-    x: number = 0;
-    y: number = 0;
-    sprite: Phaser.GameObjects.Sprite = null;
+    private _x: number = 0;
+    private _y: number = 0;
+    private _sprite: Phaser.GameObjects.Sprite = null;
     orbitingAngle: number = 0;
     orbitingDistance: number = 100;
     squadron: Squadron;
@@ -68,10 +68,31 @@ export class Fighter {
         Fighter.reset(this);
     }
 
+    public get x() {
+        return this._x;
+    }
+
+    public get y() {
+        return this._y;
+    }
+
+    public setPositon(x: number, y: number) {
+        this._x = x;
+        this._y = y;
+        if (this._sprite) {
+            this._sprite.setPosition(x, y);
+        }
+    }
+
+    public set sprite(sprite: Phaser.GameObjects.Sprite) {
+        this._sprite = sprite;
+        this._sprite.setPosition(this._x, this._y);
+    }
+
     static reset(fighter: Fighter) {
-        fighter.x = 0;
-        fighter.y = 0;
-        fighter.sprite = null;
+        fighter._x = 0;
+        fighter._y = 0;
+        fighter._sprite = null;
         fighter.orbitingAngle = 0;
         fighter.orbitingDistance = 100;
         fighter.squadron = null;

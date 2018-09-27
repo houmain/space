@@ -1,19 +1,16 @@
 import { GameInfoHandler } from '../view/gameInfo';
 import { Player } from '../data/gameData';
-import { GalaxyDataHandler } from '../logic/galaxyDataHandler';
 import { Scenes, GameSceneEvents } from './scenes';
 import { PlayerHud } from '../view/playerHud';
 import { Assets } from '../view/assets';
 import { Planet } from '../data/galaxyModels';
 import { PlanetInfoBox } from '../view/gui/planetInfoBox';
 import { ImageButton } from '../view/gui/guiModels';
-import { GameEventObserver } from '../logic/eventInterfaces';
+import { GameEventObserver } from '../logic/event/eventInterfaces';
 
 export class HudScene extends Phaser.Scene {
 
 	private _player: Player;
-	private _galaxyDataHandler: GalaxyDataHandler;
-
 	private _gameInfoHandler: GameInfoHandler;
 	private _playerHud: PlayerHud;
 	private _planetInfoBox: PlanetInfoBox;
@@ -25,10 +22,9 @@ export class HudScene extends Phaser.Scene {
 
 	public init(data: any) {
 
-		this._galaxyDataHandler = data.galaxyDataHandler;
 		this._gameInfoHandler = data.gameInfoHandler;
 		this._gameEventObserver = data.gameEventObserver;
-		this._player = data.gameState.player;
+		this._player = data.player;
 	}
 
 	public create() {

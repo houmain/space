@@ -1,5 +1,5 @@
 'use strict';
-//https://gamedevacademy.org/how-to-create-a-game-hud-plugin-in-phaser/
+
 import 'phaser';
 
 import { Preloader } from './scenes/preloader';
@@ -8,7 +8,7 @@ import { HudScene } from './scenes/hud';
 import { ErrorScene } from './scenes/error';
 import { InitGameScene } from './scenes/initGame';
 import { Scenes } from './scenes/scenes';
-import { Engine, Assert } from './common/utils';
+import { Engine } from './common/utils';
 import { Player } from './data/gameData';
 import { MainMenuScene } from './scenes/mainMenu';
 import { BotMenuScene } from './scenes/botMenu';

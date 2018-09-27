@@ -1,9 +1,4 @@
-import { Galaxy, Faction } from './galaxyModels';
-
-export interface GameState {
-	player: Player;
-	galaxy: Galaxy;
-}
+import { Faction } from './galaxyModels';
 
 export class Player {
 	public faction: Faction;

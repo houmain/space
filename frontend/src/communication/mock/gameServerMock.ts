@@ -1,5 +1,5 @@
-import { MessageGameJoined, ServerMessageType, MessageFighterCreated, ClientMessage, ClientMessageType, MessagePlayerJoined } from '../communicationInterfaces';
-import { GalaxyDataHandler } from '../../logic/galaxyDataHandler';
+import { MessageGameJoined, ServerMessageType, MessageFighterCreated, ClientMessage, ClientMessageType, MessagePlayerJoined, SendSquadron } from '../communicationInterfaces';
+import { GalaxyDataHandler } from '../../logic/data/galaxyDataHandler';
 import { CommunicationHandlerMock } from './communicationHandlerMock';
 
 const UPDATE_INTERVALL = 10000;
@@ -26,6 +26,9 @@ export class GameServerMock {
 				}, 1000);
 				break;
 			case ClientMessageType.SEND_SQUADRON:
+				setTimeout(() => {
+					this._communicationHandler.receive(this.createMessageSquadronSent(clientMessage as SendSquadron));
+				}, 500);
 				break;
 		}
 	}
@@ -54,7 +57,7 @@ export class GameServerMock {
 
 	private createMessageFighterCreated(): MessageFighterCreated {
 
-		let planet = this._galaxyDataHandler.planets[2];
+		let planet = this._galaxyDataHandler.planets.get(2);
 
 		return {
 			event: ServerMessageType.FIGHTER_CREATED,
@@ -64,8 +67,14 @@ export class GameServerMock {
 		};
 	}
 
-	private createMessageSquadronSent() {
-		let jsonMsfg: string = '{"event":"squadronSent","sourcePlanetId":2,"targetPlanetId":4,"sourceSquadronId":1,"squadronId":14,"factionId":1,"fighterCount":15,"speed":50}';
+	private createMessageSquadronSent(clientMessage: SendSquadron) {
+
+		return {
+			event: ServerMessageType.SQUADRON_SENT,
+			sourcePlanetId: clientMessage.sourcePlanetId,
+			targetPlanetId: clientMessage.targetPlanetId,
+			fighterCount: clientMessage.fighterCount
+		};
 	}
 
 	private update() {

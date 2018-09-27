@@ -1,76 +1,24 @@
-import { GalaxyDataHandler } from './galaxyDataHandler';
-import { ObservableServerMessageHandler } from '../communication/messageHandler';
-import { MessageGameJoined, ServerMessageType, MessageFighterCreated, MessageSquadronSent, MessageSquadronsMerged, MessageSquadronAttacks, MessageFighterDestroyed, MessagePlanetConquered, MessageSquadronDestroyed, MessagePlayerJoined, MessageFactionDestroyed } from '../communication/communicationInterfaces';
-import { GalaxyFactory } from './galaxyFactory';
-import { Player, GameState } from '../data/gameData';
-import { Galaxy, Fighter, Squadron, Faction, Planet } from '../data/galaxyModels';
-import { Assert, Pool } from '../common/utils';
-import { GameEvent, HandleGameEvent, EventFighterCreated, EventFighterDestroyed, GameEventType, EventPlayerJoined, EventPlanetConquered, EventFactionDestroyed, GameEventNotifier, GameEventObserver, EventSquadronCreated, EventSquadronDestroyed } from './eventInterfaces';
+import { GalaxyDataHandler } from '../data/galaxyDataHandler';
+import { ObservableServerMessageHandler } from '../../communication/messageHandler';
+import { MessageGameJoined, ServerMessageType, MessageFighterCreated, MessageSquadronSent, MessageSquadronsMerged, MessageSquadronAttacks, MessageFighterDestroyed, MessagePlanetConquered, MessageSquadronDestroyed, MessagePlayerJoined, MessageFactionDestroyed } from '../../communication/communicationInterfaces';
+import { Player } from '../../data/gameData';
+import { Fighter, Squadron, Faction, Planet } from '../../data/galaxyModels';
+import { Assert } from '../../common/debug';
+import { GameEventNotifier, GameEvent, EventPlayerJoined, GameEventType, EventFighterCreated, EventSquadronCreated, EventSquadronDestroyed, EventFighterDestroyed, EventPlanetConquered, EventFactionDestroyed } from '../event/eventInterfaces';
+import { GalaxyObjectFactory } from '../data/galaxyObjectFactory';
+import { GalaxyFactory } from '../data/galaxyFactory';
 
-export class GalaxyObjectFactory {
-
-	private _fighterPool: Pool<Fighter> = new Pool(Fighter);
-	private _squadronPool: Pool<Squadron> = new Pool(Squadron);
-
-	public buildFighter(): Fighter {
-		return this._fighterPool.get();
-	}
-
-	public releaseFighter(fighter: Fighter) {
-		this._fighterPool.release(fighter);
-	}
-
-	public buildSquadron(): Squadron {
-		return this._squadronPool.get();
-	}
-
-	public releaseSquadron(squadron: Squadron) {
-		this._squadronPool.release(squadron);
-	}
-}
-
-export class GameEventObserverImpl implements GameEventNotifier, GameEventObserver {
-
-	private _handlers: { [eventKey: string]: HandleGameEvent<GameEvent>[]; } = {};
-
-	public subscribe<T extends GameEvent>(eventId: string, callback: HandleGameEvent<T>) {
-		if (!this._handlers[eventId]) {
-			this._handlers[eventId] = [];
-		}
-		this._handlers[eventId].push(callback);
-	}
-
-	public unsubscribe<T extends GameEvent>(eventId: string, callback: HandleGameEvent<T>) {
-		let index = this._handlers[eventId].indexOf(callback);
-		if (index !== -1) {
-			this._handlers[eventId].splice(index, 1);
-		}
-	}
-
-	public notify<T extends GameEvent>(eventId: string, event: T) {
-		let subscribers = this._handlers[eventId];
-		if (subscribers) {
-			subscribers.forEach(notify => {
-				notify(event as T);
-			});
-		}
-	}
-}
-
-export class GameLogic {
+export class GameLogicController {
 
 	private _galaxyDataHandler: GalaxyDataHandler;
 	private _player: Player;
-	private _galaxy: Galaxy;
 
 	private _gameEventNotifier: GameEventNotifier;
 
 	private _galaxyObjectfactory: GalaxyObjectFactory;
 
-	public constructor(gameState: GameState, serverMessageObserver: ObservableServerMessageHandler, galaxyDataHandler: GalaxyDataHandler, gameEventNotifier: GameEventNotifier) {
-		this._player = gameState.player;
-
-		this._galaxy = gameState.galaxy;
+	public constructor(player: Player, serverMessageObserver: ObservableServerMessageHandler, galaxyDataHandler: GalaxyDataHandler, gameEventNotifier: GameEventNotifier) {
+		this._player = player;
 
 		this._galaxyDataHandler = galaxyDataHandler;
 		this._gameEventNotifier = gameEventNotifier;
@@ -97,27 +45,26 @@ export class GameLogic {
 
 		console.log('handling onGameJoined');
 
-		GalaxyFactory.create(this._galaxyObjectfactory, this._galaxy, msg.factions, msg.planets, msg.squadrons);
+		let galaxy = GalaxyFactory.create(this._galaxyObjectfactory, msg.factions, msg.planets, msg.squadrons);
 
-		this._galaxyDataHandler.init(this._galaxy);
+		this._galaxyDataHandler.init(galaxy);
 
-		this._player.faction = this._galaxyDataHandler.factions[msg.factionId];
+		this._player.faction = this._galaxyDataHandler.factions.get(msg.factionId);
 	}
 
 	private onPlayerJoined(msg: MessagePlayerJoined) {
 		this.notify<EventPlayerJoined>(GameEventType.PLAYER_JOINED, {
 			type: GameEventType.PLAYER_JOINED,
-			faction: this._galaxyDataHandler.factions[msg.factionId]
+			faction: this._galaxyDataHandler.factions.get(msg.factionId)
 		} as EventPlayerJoined);
 	}
 
 	private onFighterCreated(msg: MessageFighterCreated) {
-		let squadron = this._galaxyDataHandler.squadrons[msg.squadronId];
+		let squadron = this._galaxyDataHandler.squadrons.get(msg.squadronId);
 
 		if (squadron) {
 			let fighter = this._galaxyObjectfactory.buildFighter();
-			fighter.x = squadron.planet.x;
-			fighter.y = squadron.planet.y;
+			fighter.setPositon(squadron.planet.x, squadron.planet.y);
 			fighter.orbitingAngle = 0;
 			fighter.squadron = squadron;
 			squadron.fighters.push(fighter);
@@ -142,17 +89,17 @@ export class GameLogic {
 	private onSquadronSent(msg: MessageSquadronSent) {
 		console.log(JSON.stringify(msg));
 
-		let sentSquadron: Squadron = this._galaxyDataHandler.squadrons[msg.squadronId];
+		let sentSquadron: Squadron = this._galaxyDataHandler.squadrons.get(msg.squadronId);
 
 		if (!sentSquadron) {
 			console.log('create new squadron');
-			let faction = this._galaxyDataHandler.factions[msg.factionId];
-			let targetPlanet = this._galaxyDataHandler.planets[msg.targetPlanetId];
+			let faction = this._galaxyDataHandler.factions.get(msg.factionId);
+			let targetPlanet = this._galaxyDataHandler.planets.get(msg.targetPlanetId);
 
 			sentSquadron = this.createSquadron(msg.squadronId, faction, targetPlanet);
 		}
 
-		let sourceSquadron = this._galaxyDataHandler.squadrons[msg.sourceSquadronId];
+		let sourceSquadron = this._galaxyDataHandler.squadrons.get(msg.sourceSquadronId);
 		let sentFighters: Fighter[] = sourceSquadron.fighters.splice(sourceSquadron.fighters.length - msg.fighterCount, msg.fighterCount);
 		console.log('handing over ' + sentFighters.length + ' fighters');
 		sentFighters.forEach(figher => {
@@ -162,14 +109,13 @@ export class GameLogic {
 	}
 
 	private createSquadron(squadronId: number, faction: Faction, planet: Planet) {
-		// TODO update galaxy squadrons or remove squadrons from galaxy
 		let squadron = this._galaxyObjectfactory.buildSquadron();
 
 		squadron.id = squadronId;
 		squadron.faction = faction;
 		squadron.planet = planet;
 
-		this._galaxyDataHandler.squadrons[squadronId] = squadron;
+		this._galaxyDataHandler.squadrons.add(squadronId, squadron);
 
 		this._gameEventNotifier.notify<EventSquadronCreated>(GameEventType.SQUADRON_CREATED, {
 			type: GameEventType.SQUADRON_CREATED,
@@ -178,28 +124,13 @@ export class GameLogic {
 
 		return squadron;
 	}
-	/*
-		private createSquadron(factionId: number, squadronId: number): Squadron {
-			// TODO update galaxy squadrons
-			let squadron = new Squadron();
-			squadron.id = squadronId;
-			squadron.faction = this._galaxyDataHandler.factions[factionId];
-			this._galaxyDataHandler.squadrons[squadronId] = squadron;
-
-			this._gameEventNotifier.notify<EventSquadronCreated>(GameEventType.SQUADRON_CREATED, {
-				type: GameEventType.SQUADRON_CREATED,
-				squadron: squadron
-			});
-
-			return squadron;
-		}*/
 
 	private onSquadronsMerged(msg: MessageSquadronsMerged) {
 
 		console.log(JSON.stringify(msg));
 
-		let sourceSquadron = this._galaxyDataHandler.squadrons[msg.squadronId];
-		let targetSquadron = this._galaxyDataHandler.squadrons[msg.intoSquadronId];
+		let sourceSquadron = this._galaxyDataHandler.squadrons.get(msg.squadronId);
+		let targetSquadron = this._galaxyDataHandler.squadrons.get(msg.intoSquadronId);
 
 		let fighters: Fighter[] = sourceSquadron.fighters.splice(0, sourceSquadron.fighters.length);
 		targetSquadron.fighters.push(...fighters);
@@ -210,9 +141,8 @@ export class GameLogic {
 	}
 
 	private deleteSquadron(planetId: number, squadronId: number) {
-		// TODO update galaxy squadrons
-		let planet = this._galaxyDataHandler.planets[planetId];
-		let squadron = this._galaxyDataHandler.squadrons[squadronId];
+		let planet = this._galaxyDataHandler.planets.get(planetId);
+		let squadron = this._galaxyDataHandler.squadrons.get(squadronId);
 
 		let index = planet.squadrons.indexOf(squadron);
 		if (index !== -1) {
@@ -224,7 +154,7 @@ export class GameLogic {
 			squadron: squadron
 		});
 
-		delete this._galaxyDataHandler.squadrons[squadronId];
+		this._galaxyDataHandler.squadrons.delete(squadronId);
 
 		this._galaxyObjectfactory.releaseSquadron(squadron);
 	}
@@ -233,13 +163,13 @@ export class GameLogic {
 
 		console.log(JSON.stringify(msg));
 
-		let sentSquadron: Squadron = this._galaxyDataHandler.squadrons[msg.squadronId];
-		let planet = this._galaxyDataHandler.planets[msg.planetId];
+		let sentSquadron: Squadron = this._galaxyDataHandler.squadrons.get(msg.squadronId);
+		let planet = this._galaxyDataHandler.planets.get(msg.planetId);
 		planet.squadrons.push(sentSquadron);
 	}
 
 	private onFighterDestroyed(msg: MessageFighterDestroyed) {
-		let squadron = this._galaxyDataHandler.squadrons[msg.squadronId];
+		let squadron = this._galaxyDataHandler.squadrons.get(msg.squadronId);
 
 		if (squadron) {
 			let fighters = squadron.fighters.splice(squadron.fighters.length - 2, 1);
@@ -265,9 +195,9 @@ export class GameLogic {
 
 		console.log(JSON.stringify(msg));
 
-		let planet = this._galaxyDataHandler.planets[msg.planetId];
-		let oldFaction = this._galaxyDataHandler.factions[msg.fromFactionId];
-		let newFaction = this._galaxyDataHandler.factions[msg.factionId];
+		let planet = this._galaxyDataHandler.planets.get(msg.planetId);
+		let oldFaction = this._galaxyDataHandler.factions.get(msg.fromFactionId);
+		let newFaction = this._galaxyDataHandler.factions.get(msg.factionId);
 
 		planet.faction = newFaction;
 
@@ -299,7 +229,7 @@ export class GameLogic {
 
 		this.notify<EventFactionDestroyed>(GameEventType.FACTION_DESTROYED, {
 			type: GameEventType.FACTION_DESTROYED,
-			faction: this._galaxyDataHandler.factions[msg.factionId]
+			faction: this._galaxyDataHandler.factions.get(msg.factionId)
 		});
 	}
 }

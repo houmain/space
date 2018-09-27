@@ -4,7 +4,7 @@ import {
 } from '../communicationInterfaces';
 import { SpaceGameConfig } from '../communicationHandler';
 import { ServerMessageHandler } from '../messageHandler';
-import { GalaxyDataHandler } from '../../logic/galaxyDataHandler';
+import { GalaxyDataHandler } from '../../logic/data/galaxyDataHandler';
 import { GameServerMock } from './gameServerMock';
 
 const UPDATE_INTERVALL = 1000;

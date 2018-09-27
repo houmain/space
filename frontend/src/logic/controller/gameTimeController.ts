@@ -1,7 +1,7 @@
-import { MessageGameUpdated, ServerMessageType } from '../communication/communicationInterfaces';
-import { ObservableServerMessageHandler } from '../communication/messageHandler';
+import { MessageGameUpdated, ServerMessageType } from '../../communication/communicationInterfaces';
+import { ObservableServerMessageHandler } from '../../communication/messageHandler';
 
-export class GameTimeHandler {
+export class GameTimeController {
 
     private _serverTimeSinceStart: number = 0;
     private _timeSinceLastServerTimeUpdate: number = 0;

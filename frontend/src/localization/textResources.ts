@@ -33,6 +33,5 @@ export class TextResources {
 		console.warn(`${key} not found!`);
 		return key;
 	}
-
 }
 TextResources.initialize();

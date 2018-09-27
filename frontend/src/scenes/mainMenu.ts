@@ -4,13 +4,7 @@ import { GuiScene } from './guiScene';
 import { Texts, TextResources } from '../localization/textResources';
 import { MainMenuButton } from '../view/gui/mainMenuButton';
 
-//https://github.com/goldfire/phaser-webpack-loader/tree/master/src
-//https://github.com/rroylance/phaser-npm-webpack-typescript-starter-project/blob/master/src/app.ts
-//https://snowbillr.github.io/blog//2018-04-09-a-modern-web-development-setup-for-phaser-3/
-
 export class MainMenuScene extends GuiScene {
-
-	//private _backgroundImage: Phaser.GameObjects.Image;
 
 	public constructor() {
 		super(Scenes.MAIN_MENU);
