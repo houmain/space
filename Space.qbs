@@ -35,6 +35,14 @@ Application {
     condition: qbs.targetOS.contains("linux")
     cpp.dynamicLibraries: [ "pthread", "websockets" ]
   }
+
+  Properties {
+    condition: qbs.targetOS.contains("windows")
+    cpp.cxxFlags: [ "/std:c++17" ]
+    cpp.libraryPaths: [ "backend/libs/libwebsockets/lib" ]
+    cpp.includePaths: [ "backend", "backend/libs", "backend/libs/libwebsockets/include" ]
+    cpp.dynamicLibraries: [ "websockets_static", "ws2_32", "Shell32" ]
+  }
 }
 
 } // Project
