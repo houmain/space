@@ -43,6 +43,16 @@ Application {
     cpp.includePaths: [ "backend", "backend/libs", "backend/libs/libwebsockets/include" ]
     cpp.dynamicLibraries: [ "websockets_static", "ws2_32", "Shell32" ]
   }
+  
+  Group {
+    fileTagsFilter: product.type
+    qbs.install: true
+    qbs.installDir: {
+      if (qbs.targetOS.contains("linux"))
+        return "bin";
+      return "";
+    }
+  }  
 }
 
 } // Project
