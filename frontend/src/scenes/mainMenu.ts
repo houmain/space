@@ -13,6 +13,10 @@ export class MainMenuScene extends GuiScene {
 	public create() {
 		super.create();
 
+		// TODO: remove
+		this.startGame();
+		return;
+
 		let gameButton = new MainMenuButton(this, TextResources.getText(Texts.MAINMENU_PLAY).toUpperCase());
 		gameButton.setPosition(this.sys.canvas.width / 2, this.sys.canvas.height / 2);
 		gameButton.onClick = () => {

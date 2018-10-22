@@ -296,6 +296,7 @@ export class InputHandler {
                 let squadron = this.findOwnSquadron(planet);
                 if (squadron) {
                     let numFighters = Math.floor(squadron.fighters.length * sendRate);
+                    console.log('sendSquadron ' + numFighters);
                     if (numFighters > 0) {
                         this._clientMessageSender.sendSquadron(planet.id, this._targetPlanet.id, numFighters);
                     }

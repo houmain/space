@@ -43,8 +43,6 @@ export class GameLogicController {
 
 	private onGameJoined(msg: MessageGameJoined) {
 
-		console.log('handling onGameJoined');
-
 		let galaxy = GalaxyFactory.create(this._galaxyObjectfactory, msg.factions, msg.planets, msg.squadrons);
 
 		this._galaxyDataHandler.init(galaxy);
@@ -87,12 +85,10 @@ export class GameLogicController {
 	}
 
 	private onSquadronSent(msg: MessageSquadronSent) {
-		console.log(JSON.stringify(msg));
 
 		let sentSquadron: Squadron = this._galaxyDataHandler.squadrons.get(msg.squadronId);
 
 		if (!sentSquadron) {
-			console.log('create new squadron');
 			let faction = this._galaxyDataHandler.factions.get(msg.factionId);
 			let targetPlanet = this._galaxyDataHandler.planets.get(msg.targetPlanetId);
 
@@ -114,6 +110,7 @@ export class GameLogicController {
 		squadron.id = squadronId;
 		squadron.faction = faction;
 		squadron.planet = planet;
+		squadron.makeDynamic();
 
 		this._galaxyDataHandler.squadrons.add(squadronId, squadron);
 
@@ -126,8 +123,6 @@ export class GameLogicController {
 	}
 
 	private onSquadronsMerged(msg: MessageSquadronsMerged) {
-
-		console.log(JSON.stringify(msg));
 
 		let sourceSquadron = this._galaxyDataHandler.squadrons.get(msg.squadronId);
 		let targetSquadron = this._galaxyDataHandler.squadrons.get(msg.intoSquadronId);
@@ -165,6 +160,7 @@ export class GameLogicController {
 
 		let sentSquadron: Squadron = this._galaxyDataHandler.squadrons.get(msg.squadronId);
 		let planet = this._galaxyDataHandler.planets.get(msg.planetId);
+		sentSquadron.makeStatic();
 		planet.squadrons.push(sentSquadron);
 	}
 
@@ -172,8 +168,10 @@ export class GameLogicController {
 		let squadron = this._galaxyDataHandler.squadrons.get(msg.squadronId);
 
 		if (squadron) {
-			let fighters = squadron.fighters.splice(squadron.fighters.length - 2, 1);
+			let fighters = squadron.fighters.splice(squadron.fighters.length - 1);
+			console.log(squadron.fighters.length + ' fighters left in squadron');
 			let destroyedFighter = fighters[0];
+			console.log('yyyyyyyyyyyy' + destroyedFighter.sprite);
 			if (squadron.faction) {
 				squadron.faction.numFighters--;
 			}

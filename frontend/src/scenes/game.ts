@@ -23,7 +23,7 @@ export class GameScene extends Phaser.Scene {
 	private _gameEventObserver: GameEventObserver;
 
 	private _gameRenderer: GameSceneRenderer;
-	private _gameSceneUpdater;
+	private _gameSceneUpdater: GameSceneUpdater;
 
 	public constructor() {
 		super(Scenes.GAME);

@@ -69,6 +69,7 @@ export class GameServerMock {
 
 	private createMessageSquadronSent(clientMessage: SendSquadron) {
 
+		console.log('createMessageSquadronSent');
 		return {
 			event: ServerMessageType.SQUADRON_SENT,
 			sourcePlanetId: clientMessage.sourcePlanetId,

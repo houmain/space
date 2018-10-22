@@ -7,8 +7,6 @@ import { ServerMessageHandler } from '../messageHandler';
 import { GalaxyDataHandler } from '../../logic/data/galaxyDataHandler';
 import { GameServerMock } from './gameServerMock';
 
-const UPDATE_INTERVALL = 1000;
-
 export class CommunicationHandlerMock implements CommunicationHandler {
 
     private _messageHandler: ServerMessageHandler;
@@ -37,6 +35,7 @@ export class CommunicationHandlerMock implements CommunicationHandler {
     }
 
     public receive(msg: ServerMessage) {
+        console.log('receiving ' + JSON.stringify(msg));
         this._messageHandler.handle(msg);
     }
 
