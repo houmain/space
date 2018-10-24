@@ -11,6 +11,7 @@ import { TextResources, Texts } from '../localization/textResources';
 import { CommunicationHandler } from '../communication/communicationInterfaces';
 import { CommunicationHandlerMock } from '../communication/mock/communicationHandlerMock';
 import { GameEventObserverImpl } from '../logic/event/gameEventObserver';
+import { DebugInfo } from '../common/debug';
 
 export class InitGameScene extends GuiScene {
 
@@ -80,7 +81,7 @@ export class InitGameScene extends GuiScene {
 
 		this._communicationHandler.init(this._gameConfig);
 		this._communicationHandler.onConnected = () => {
-			console.log('Connected to server');
+			DebugInfo.debug('Connected to server');
 			this._clientMessageSender.joinGame(this._gameConfig.gameId);
 		};
 		this._communicationHandler.onDisconnected = this.onConnectionFailed.bind(this);
@@ -120,7 +121,6 @@ export class InitGameScene extends GuiScene {
 	}
 
 	public update() {
-
 		if (this._assetsLoaded && this.gameInitialized()) {
 			this.startGame();
 		}

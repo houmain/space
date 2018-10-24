@@ -37,17 +37,17 @@ export class GameSceneUpdater {
 						let planet = squadron.planet;
 						let targetX = planet.x;
 						let targetY = planet.y;
-			
+
 						let range: Phaser.Math.Vector2 = new Phaser.Math.Vector2(targetX - squadron.x, targetY - squadron.y);
-			
+
 						range = range.normalize().scale(speed);
-			
+
 						squadron.x += range.x;
 						squadron.y += range.y;
-			
+
 						squadron.sprite.x = squadron.x;
 						squadron.sprite.y = squadron.y;
-			
+
 						squadron.fighters.forEach(fighter => {
 							this.updateFighter(fighter, timeSinceLastFrame);
 						});*/

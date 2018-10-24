@@ -76,7 +76,6 @@ export class GameSceneRenderer {
 
 	private onFighterDestroyed(event: EventFighterDestroyed) {
 		let sprite = event.fighter.sprite;
-		console.log(JSON.stringify(event.fighter.squadron.id));
 		if (!sprite) {
 			console.warn('no sprite');
 		}

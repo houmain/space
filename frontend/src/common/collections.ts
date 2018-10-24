@@ -59,6 +59,10 @@ export class Map<T> {
 		return this._values;
 	}
 
+	public get length(): number {
+		return this._values.length;
+	}
+
 	private rebuildList() {
 		this._values.splice(0);
 

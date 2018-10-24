@@ -18,7 +18,7 @@ export class PlayerHud {
 		textFighters.setOrigin(0, 0);
 		textFighters.setTint(0xbbbbbb);
 
-		this._numFighters = scene.add.bitmapText(0, 20, 'gameHudCounter', '34/100');
+		this._numFighters = scene.add.bitmapText(0, 20, 'gameHudCounter', '0/0');
 		this._numFighters.setOrigin(0, 0);
 		this._numFighters.setTint(0x02a3dd);
 

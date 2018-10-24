@@ -60,6 +60,5 @@ function startGame(): void {
     }, false);
 }
 window.onload = () => {
-    console.log('Starting game');
     startGame();
 };

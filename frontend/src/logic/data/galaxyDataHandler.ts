@@ -1,5 +1,6 @@
 import { Faction, Planet, Squadron, Galaxy } from '../../data/galaxyModels';
 import { Map } from '../../common/collections';
+import { DebugInfo } from '../../common/debug';
 
 export class GalaxyDataHandler {
 
@@ -26,6 +27,8 @@ export class GalaxyDataHandler {
 		});
 
 		this.updateFactionStats();
+
+		DebugInfo.info(`Initialized GalaxyDataHandler: planets: ${this._planets.length} squadrons: ${this._squadrons.length}`);
 	}
 
 	public get initialized() {
@@ -48,7 +51,6 @@ export class GalaxyDataHandler {
 		let planets = this._planets.list;
 
 		planets.forEach(planet => {
-
 			if (planet.faction) {
 				let planetFaction = this._factions.get(planet.faction.id);
 				planetFaction.planets.push(planet);
@@ -58,7 +60,6 @@ export class GalaxyDataHandler {
 
 		let squadrons = this._squadrons.list;
 		squadrons.forEach(squadron => {
-
 			if (squadron.faction) {
 				let squadronFaction = this._factions.get(squadron.faction.id);
 				squadronFaction.numFighters += squadron.fighters.length;

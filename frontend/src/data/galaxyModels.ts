@@ -32,15 +32,8 @@ export class Faction {
     maxUpkeep: number = 0;
 }
 
-interface SquadronUpdater {
+interface SquadronUpdateFunction {
     (timeSinceLastFrame: number): void;
-}
-
-
-export class SquadronController {
-    public update(squadron: Squadron, timeSinceFrame) {
-
-    }
 }
 
 export class Squadron {
@@ -68,7 +61,7 @@ export class Squadron {
         squadron.sprite = null;
     }
 
-    public update: SquadronUpdater;
+    public update: SquadronUpdateFunction;
 
     private updateStatic(timeSinceLastFrame: number) {
 

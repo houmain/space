@@ -1,14 +1,10 @@
 ## Tasks
 ------------
-- added rendering code from GameScene to game renderer
-- remove squadrons from galaxy
 - add optional initial size for pools
 
 
 ## Known bugs
 ------------
-- new squadrons are not rendered
-- sent fighters are not updated until the new squadron arrived
 - squadrons are not in the center of a planet
 
 ## Links

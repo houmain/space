@@ -6,6 +6,7 @@ import { SpaceGameConfig } from '../communicationHandler';
 import { ServerMessageHandler } from '../messageHandler';
 import { GalaxyDataHandler } from '../../logic/data/galaxyDataHandler';
 import { GameServerMock } from './gameServerMock';
+import { DebugInfo } from '../../common/debug';
 
 export class CommunicationHandlerMock implements CommunicationHandler {
 
@@ -21,7 +22,7 @@ export class CommunicationHandlerMock implements CommunicationHandler {
     }
 
     public init(gameConfig: SpaceGameConfig) {
-        console.log('Init CommunicationHandlerMock ' + JSON.stringify(gameConfig));
+        DebugInfo.debug('Init CommunicationHandlerMock ' + JSON.stringify(gameConfig));
     }
 
     public set onConnected(func: Function) {
@@ -35,7 +36,6 @@ export class CommunicationHandlerMock implements CommunicationHandler {
     }
 
     public receive(msg: ServerMessage) {
-        console.log('receiving ' + JSON.stringify(msg));
         this._messageHandler.handle(msg);
     }
 

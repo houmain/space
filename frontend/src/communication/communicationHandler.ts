@@ -118,6 +118,4 @@ export class CommunicationHandlerWebSocket implements CommunicationHandler {
     public close() {
         this._socket.close();
     }
-
-
 }
