@@ -1,4 +1,5 @@
 import { GameEventNotifier, GameEventObserver, HandleGameEvent, GameEvent } from './eventInterfaces';
+import { Assert } from '../../common/debug';
 
 export class GameEventObserverImpl implements GameEventNotifier, GameEventObserver {
 
@@ -9,6 +10,7 @@ export class GameEventObserverImpl implements GameEventNotifier, GameEventObserv
 			this._handlers[eventId] = [];
 		}
 		this._handlers[eventId].push(callback);
+		console.log('Event ' + eventId + ' = ' + this._handlers[eventId].length + 'listeners');
 	}
 
 	public unsubscribe<T extends GameEvent>(eventId: string, callback: HandleGameEvent<T>) {
@@ -19,9 +21,11 @@ export class GameEventObserverImpl implements GameEventNotifier, GameEventObserv
 	}
 
 	public notify<T extends GameEvent>(eventId: string, event: T) {
+
 		let subscribers = this._handlers[eventId];
 		if (subscribers) {
-			subscribers.forEach(notify => {
+			subscribers.forEach((notify, index) => {
+				console.log('Notify for Event ' + eventId + ' listener ' + (index + 1) + ' from ' + subscribers.length);
 				notify(event as T);
 			});
 		}

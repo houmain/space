@@ -4,6 +4,7 @@ import { Background } from './background';
 import { GalaxyDataHandler } from '../logic/data/galaxyDataHandler';
 import { Map } from '../common/collections';
 import { GameEventObserver, EventFighterCreated, GameEventType, EventFighterDestroyed, EventSquadronCreated, EventSquadronDestroyed } from '../logic/event/eventInterfaces';
+import { DebugInfo, JSON2 } from '../common/debug';
 
 export class GameSceneRenderer {
 
@@ -35,11 +36,12 @@ export class GameSceneRenderer {
 			this.createPlanet(planet);
 		});
 
-		let squadrons = galaxyDataHandler.squadrons.list;
+		let squadrons = galaxyDataHandler.allSquadrons.list;
 		squadrons.forEach(squadron => {
 			this.createSquadron(squadron);
 
 			let fighters = squadron.fighters;
+
 			fighters.forEach(fighter => {
 				this.createFighter(fighter);
 			});
@@ -58,6 +60,7 @@ export class GameSceneRenderer {
 	}
 
 	private onFighterCreated(event: EventFighterCreated) {
+		DebugInfo.info('onFighterCreated: ' + event);//JSON2.stringify(event));
 		this.createFighter(event.fighter);
 	}
 
@@ -75,6 +78,7 @@ export class GameSceneRenderer {
 	}
 
 	private onFighterDestroyed(event: EventFighterDestroyed) {
+		DebugInfo.info('onFighterDestroyed: ' + JSON2.stringify(event));
 		let sprite = event.fighter.sprite;
 		if (!sprite) {
 			console.warn('no sprite');

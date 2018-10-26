@@ -84,7 +84,7 @@ export class InitGameScene extends GuiScene {
 			DebugInfo.debug('Connected to server');
 			this._clientMessageSender.joinGame(this._gameConfig.gameId);
 		};
-		this._communicationHandler.onDisconnected = this.onConnectionFailed.bind(this);
+		//this._communicationHandler.onDisconnected = this.onConnectionFailed.bind(this);
 		this._gameEventObserver = new GameEventObserverImpl();
 
 		new GameLogicController(this._game.player, this._serverMessageObserver, this._galaxyDataHandler, this._gameEventObserver);
@@ -99,9 +99,11 @@ export class InitGameScene extends GuiScene {
 		}
 
 		this._assetsLoaded = true;
+
+		this.sys.game.events.on('disconnected', this.onDisconnected, this);
 	}
 
-	private onConnectionFailed() {
+	private onDisconnected() {
 
 		this._infoText.text = TextResources.getText(Texts.ERROR_CONNECTION_FAILED);
 		this._infoText.setTint(0xff0000);

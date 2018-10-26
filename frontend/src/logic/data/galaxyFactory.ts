@@ -69,7 +69,7 @@ export class GalaxyFactory {
                     }
 
                     planet.squadrons.push(squadron);
-                    galaxy.squadrons.push(squadron);
+                    // galaxy.squadrons.push(squadron);
                 });
             }
 

@@ -1,6 +1,7 @@
 import { ClientMessage, ClientMessageType, JoinMessage, SendSquadron, CommunicationHandler } from './communicationInterfaces';
 import { ServerMessageHandler } from './messageHandler';
 import { printCallstack } from '../common/error';
+import { Engine } from '../common/utils';
 
 export class ClientMessageSender {
 
@@ -47,8 +48,9 @@ export interface SpaceGameConfig {
 
 export class CommunicationHandlerWebSocket implements CommunicationHandler {
 
+    private readonly _messageHandler: ServerMessageHandler;
+
     private _socket: any;
-    private _messageHandler: ServerMessageHandler;
 
     private _connectionFailed: boolean = false;
     private _connected: boolean = false;
@@ -80,11 +82,14 @@ export class CommunicationHandlerWebSocket implements CommunicationHandler {
                 }
             };
             this._socket.onclose = () => {
-                console.log('Disonnected from server');
+                console.log('Disconnected from server');
                 this._connectionFailed = true;
-                if (this.onDisconnected) {
-                    this.onDisconnected();
-                }
+
+                Engine.instance.events.emit('disconnected');
+                /*
+                                if (this.onDisconnected) {
+                                    this.onDisconnected();
+                                }*/
             };
             this._socket.onmessage = (event: any) => {
                 try {

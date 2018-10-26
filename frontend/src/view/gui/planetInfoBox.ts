@@ -69,7 +69,7 @@ export class PlanetInfoBox extends Phaser.GameObjects.Container {
 	}
 
 	public subscribeEvents() {
-		this._gameEventObserver.subscribe<EventFighterCreated>(GameEventType.FIGHTER_CREATED, this.onGameEvent.bind(this));
+		//	this._gameEventObserver.subscribe<EventFighterCreated>(GameEventType.FIGHTER_CREATED, this.onGameEvent.bind(this));
 		this._gameEventObserver.subscribe<EventFighterDestroyed>(GameEventType.FIGHTER_DESTROYED, this.onGameEvent.bind(this));
 	}
 

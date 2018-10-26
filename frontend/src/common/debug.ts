@@ -71,7 +71,7 @@ export class DebugInfo {
 export class ErrorChecker {
 
 	public static checkAllFightersHaveSprites(galaxyDataHandler: GalaxyDataHandler) {
-		let squadrons: Squadron[] = galaxyDataHandler.squadrons.list;
+		let squadrons: Squadron[] = galaxyDataHandler.allSquadrons.list;
 		squadrons.forEach(squadron => {
 			let fighters = squadron.fighters;
 			fighters.forEach(fighter => {
@@ -83,11 +83,28 @@ export class ErrorChecker {
 	}
 
 	public static checkAllSquadronsHaveSprites(galaxyDataHandler: GalaxyDataHandler) {
-		let squadrons: Squadron[] = galaxyDataHandler.squadrons.list;
+		let squadrons: Squadron[] = galaxyDataHandler.allSquadrons.list;
 		squadrons.forEach(squadron => {
 			Assert.isNotNull(squadron.sprite, 'Squadron sprite must not be null.');
 		});
 
 		DebugInfo.info('checkAllSquadronsHaveSprites OK');
 	}
+}
+
+export class JSON2 {
+
+	private static seen = [];
+	public static stringify(value: any) {
+		JSON.stringify(value, function (key, val) {
+			if (val !== null && typeof val === 'object') {
+				if (JSON2.seen.indexOf(val) >= 0) {
+					return;
+				}
+				JSON2.seen.push(val);
+			}
+			return val;
+		});
+	}
+
 }

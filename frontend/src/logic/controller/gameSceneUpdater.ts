@@ -5,16 +5,14 @@ import { GalaxyDataHandler } from '../data/galaxyDataHandler';
 export class GameSceneUpdater {
 
 	private _planets: Map<Planet>;
-	private _squadrons: Map<Squadron>;
+	private _movingSquadrons: Map<Squadron>;
 
 	public constructor(galaxyDataHandler: GalaxyDataHandler) {
 		this._planets = galaxyDataHandler.planets;
-		this._squadrons = galaxyDataHandler.squadrons;
+		this._movingSquadrons = galaxyDataHandler.movingSquadrons;
 	}
 
 	public update(timeSinceStart: number, timeSinceLastFrame: number) {
-		let FIGHTER_VELOCITY = 0.1;
-		let speed = FIGHTER_VELOCITY * timeSinceLastFrame;
 
 		let planets = this._planets.list;
 		planets.forEach(planet => {
@@ -28,38 +26,46 @@ export class GameSceneUpdater {
 
 			planet.sprite.x = planet.x;
 			planet.sprite.y = planet.y;
+
+			planet.squadrons.forEach(squadron => {
+				squadron.x = planet.x;
+				squadron.y = planet.y;
+
+				squadron.sprite.x = planet.x;
+				squadron.sprite.y = planet.y;
+
+				squadron.fighters.forEach(fighter => {
+					this.updateFighter(fighter, timeSinceLastFrame);
+				});
+			});
 		});
 
-		let squadrons = this._squadrons.list;
+		let squadrons = this._movingSquadrons.list;
 		squadrons.forEach(squadron => {
-			squadron.update(timeSinceLastFrame);
-			/*
-						let planet = squadron.planet;
-						let targetX = planet.x;
-						let targetY = planet.y;
+			const dx: number = squadron.planet.x - squadron.x;
+			const dy: number = squadron.planet.y - squadron.y;
+			const distance: number = Math.sqrt(dx * dx + dy * dy);
 
-						let range: Phaser.Math.Vector2 = new Phaser.Math.Vector2(targetX - squadron.x, targetY - squadron.y);
+			const distanceCovered: number = timeSinceLastFrame * squadron.speed;
 
-						range = range.normalize().scale(speed);
+			if (distanceCovered < distance) {
+				const f: number = distanceCovered / distance;
+				squadron.x += dx * f;
+				squadron.y += dy * f;
+			}
 
-						squadron.x += range.x;
-						squadron.y += range.y;
-
-						squadron.sprite.x = squadron.x;
-						squadron.sprite.y = squadron.y;
-
-						squadron.fighters.forEach(fighter => {
-							this.updateFighter(fighter, timeSinceLastFrame);
-						});*/
+			squadron.fighters.forEach(fighter => {
+				this.updateFighter(fighter, timeSinceLastFrame);
+			});
 		});
 	}
 
-	private updateFighter(fighter: Fighter, delta: number) {
+	private updateFighter(fighter: Fighter, timeSinceLastFrame: number) {
 
 		let ANGULAR_VELOCITY = 0.0025;
 		let FIGHTER_VELOCITY = 0.1;
 
-		fighter.orbitingAngle = fighter.orbitingAngle + ANGULAR_VELOCITY * delta;
+		fighter.orbitingAngle = fighter.orbitingAngle + ANGULAR_VELOCITY * timeSinceLastFrame;
 
 		let targetX = fighter.squadron.x;
 		let targetY = fighter.squadron.y;
@@ -67,7 +73,7 @@ export class GameSceneUpdater {
 		targetY += Math.sin(fighter.orbitingAngle) * fighter.orbitingDistance;
 
 		let range: Phaser.Math.Vector2 = new Phaser.Math.Vector2(targetX - fighter.x, targetY - fighter.y);
-		let speed = FIGHTER_VELOCITY * delta + (1 + Math.cos(fighter.orbitingAngle * 3)) / 8;
+		let speed = FIGHTER_VELOCITY * timeSinceLastFrame + (1 + Math.cos(fighter.orbitingAngle * 3)) / 8;
 
 		if (range.length() > speed) {
 			range = range.normalize().scale(speed);
@@ -75,7 +81,7 @@ export class GameSceneUpdater {
 
 		fighter.setPositon(fighter.x + range.x, fighter.y + range.y);
 
-		let newOrbitingAngle = fighter.orbitingAngle + ANGULAR_VELOCITY * delta * 5;
+		let newOrbitingAngle = fighter.orbitingAngle + ANGULAR_VELOCITY * timeSinceLastFrame * 5;
 		targetX = fighter.squadron.x + Math.cos(newOrbitingAngle) * fighter.orbitingDistance;
 		targetY = fighter.squadron.y + Math.sin(newOrbitingAngle) * fighter.orbitingDistance;
 

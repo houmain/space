@@ -32,10 +32,6 @@ export class Faction {
     maxUpkeep: number = 0;
 }
 
-interface SquadronUpdateFunction {
-    (timeSinceLastFrame: number): void;
-}
-
 export class Squadron {
     id: number;
     x: number = 0;
@@ -44,11 +40,10 @@ export class Squadron {
     fighters: Fighter[] = [];
     planet: Planet;
     sprite: Phaser.GameObjects.Sprite;
+    speed: number = 0;
 
     public constructor() {
         Squadron.reset(this);
-
-        this.makeStatic();
     }
 
     static reset(squadron: Squadron) {
@@ -59,52 +54,6 @@ export class Squadron {
         squadron.fighters.splice(0);
         squadron.planet = null;
         squadron.sprite = null;
-    }
-
-    public update: SquadronUpdateFunction;
-
-    private updateStatic(timeSinceLastFrame: number) {
-
-        this.x = this.planet.x;
-        this.y = this.planet.y;
-
-        this.sprite.x = this.x;
-        this.sprite.y = this.y;
-
-        this.fighters.forEach(fighter => {
-            fighter.update(timeSinceLastFrame);
-        });
-    }
-
-    private updateDynamic(timeSinceLastFrame: number) {
-        let FIGHTER_VELOCITY = 0.1;
-        let speed = FIGHTER_VELOCITY * timeSinceLastFrame;
-
-        let planet = this.planet;
-        let targetX = planet.x;
-        let targetY = planet.y;
-
-        let range: Phaser.Math.Vector2 = new Phaser.Math.Vector2(targetX - this.x, targetY - this.y);
-
-        range = range.normalize().scale(speed);
-
-        this.x += range.x;
-        this.y += range.y;
-
-        this.sprite.x = this.x;
-        this.sprite.y = this.y;
-
-        this.fighters.forEach(fighter => {
-            fighter.update(timeSinceLastFrame);
-        });
-    }
-
-    public makeStatic() {
-        this.update = this.updateStatic;
-    }
-
-    public makeDynamic() {
-        this.update = this.updateDynamic;
     }
 }
 
@@ -148,32 +97,5 @@ export class Fighter {
         fighter.orbitingAngle = 0;
         fighter.orbitingDistance = 100;
         fighter.squadron = null;
-    }
-
-    public update(timeSinceLastFrame: number) {
-        let ANGULAR_VELOCITY = 0.0025;
-        let FIGHTER_VELOCITY = 0.1;
-
-        this.orbitingAngle = this.orbitingAngle + ANGULAR_VELOCITY * timeSinceLastFrame;
-
-        let targetX = this.squadron.x;
-        let targetY = this.squadron.y;
-        targetX += Math.cos(this.orbitingAngle) * this.orbitingDistance;
-        targetY += Math.sin(this.orbitingAngle) * this.orbitingDistance;
-
-        let range: Phaser.Math.Vector2 = new Phaser.Math.Vector2(targetX - this.x, targetY - this.y);
-        let speed = FIGHTER_VELOCITY * timeSinceLastFrame + (1 + Math.cos(this.orbitingAngle * 3)) / 8;
-
-        if (range.length() > speed) {
-            range = range.normalize().scale(speed);
-        }
-
-        this.setPositon(this.x + range.x, this.y + range.y);
-
-        let newOrbitingAngle = this.orbitingAngle + ANGULAR_VELOCITY * timeSinceLastFrame * 5;
-        targetX = this.squadron.x + Math.cos(newOrbitingAngle) * this.orbitingDistance;
-        targetY = this.squadron.y + Math.sin(newOrbitingAngle) * this.orbitingDistance;
-
-        range = new Phaser.Math.Vector2(targetX - this.x, targetY - this.y);
     }
 }

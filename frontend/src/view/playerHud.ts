@@ -27,10 +27,15 @@ export class PlayerHud {
 
 		gameEventObserver.subscribe(GameEventType.FIGHTER_CREATED, this.onPlayerFactionChanged.bind(this));
 		gameEventObserver.subscribe(GameEventType.FIGHTER_DESTROYED, this.onPlayerFactionChanged.bind(this));
+
+		this.updateFighterCount();
 	}
 
 	private onPlayerFactionChanged() {
+		this.updateFighterCount();
+	}
 
+	private updateFighterCount() {
 		let faction = this._player.faction;
 		this._numFighters.setText(`${faction.numFighters}/${faction.maxUpkeep}`);
 	}

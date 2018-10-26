@@ -1,11 +1,19 @@
 ## Tasks
 ------------
+Frontend
 - add optional initial size for pools
+- redirect to error scene on disconnect
+- use enum for sysevents instead of strings
+- create fighters for mobding squadrons at the beginning
+
+Backend
+- at init message planetId of target planet, speed, position etc at squadrons is missing
 
 
 ## Known bugs
 ------------
 - squadrons are not in the center of a planet
+- selecting multiple player planets
 
 ## Links
 ------------

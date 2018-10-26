@@ -8,6 +8,7 @@ import { GalaxyDataHandler } from '../logic/data/galaxyDataHandler';
 import { GameSceneRenderer } from '../view/gameSceneRenderer';
 import { GameSceneUpdater } from '../logic/controller/gameSceneUpdater';
 import { GameEventObserver } from '../logic/event/eventInterfaces';
+import { TextResources, Texts } from '../localization/textResources';
 
 export class GameScene extends Phaser.Scene {
 
@@ -58,6 +59,29 @@ export class GameScene extends Phaser.Scene {
 		this._inputHandler = new InputHandler(this, this._player, this._galaxyDataHandler.planets.list, this._clientMessageSender);
 
 		this._camera.fadeIn(1000);
+
+		this.sys.game.events.on('disconnected', this.onDisconnected, this);
+	}
+
+	private onDisconnected() {
+
+		let infoText = this.add.bitmapText(this.sys.canvas.width / 2, this.sys.canvas.height / 2, 'font_8', TextResources.getText(Texts.INITGAME_JOINING_GAME));
+		infoText.setOrigin(0.5, 0.5);
+		infoText.text = TextResources.getText(Texts.ERROR_CONNECTION_FAILED);
+		infoText.setTint(0xff0000);
+		infoText.setAlpha(0);
+
+		this.tweens.add({
+			targets: infoText,
+			alpha: 1,
+			ease: 'Power1',
+			duration: 300,
+			yoyo: true,
+			repeat: 5,
+			onComplete: () => {
+				this.scene.start(Scenes.MAIN_MENU);
+			}
+		});
 	}
 
 	private resize() {

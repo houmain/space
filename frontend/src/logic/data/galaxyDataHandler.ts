@@ -6,7 +6,9 @@ export class GalaxyDataHandler {
 
 	private _factions: Map<Faction> = new Map<Faction>();
 	private _planets: Map<Planet> = new Map<Planet>();
-	private _squadrons: Map<Squadron> = new Map<Squadron>();
+
+	private _allSquadrons: Map<Squadron> = new Map<Squadron>();
+	private _movingSquadrons: Map<Squadron> = new Map<Squadron>();
 
 	public init(galaxy: Galaxy) {
 
@@ -18,17 +20,20 @@ export class GalaxyDataHandler {
 			this._planets.add(planet.id, planet);
 
 			planet.squadrons.forEach(squadron => {
-				this._squadrons.add(squadron.id, squadron);
+				this._allSquadrons.add(squadron.id, squadron);
 			});
 		});
 
 		galaxy.squadrons.forEach(squadron => {
-			this._squadrons.add(squadron.id, squadron);
+			this._allSquadrons.add(squadron.id, squadron);
+			this._movingSquadrons.add(squadron.id, squadron);
 		});
 
 		this.updateFactionStats();
 
-		DebugInfo.info(`Initialized GalaxyDataHandler: planets: ${this._planets.length} squadrons: ${this._squadrons.length}`);
+		DebugInfo.info(
+			`Initialized GalaxyDataHandler: planets: ${this._planets.length} with ${(this._allSquadrons.length - this._movingSquadrons.length)} squadrons,
+				moving squadrons: ${this._movingSquadrons.length}`);
 	}
 
 	public get initialized() {
@@ -43,8 +48,12 @@ export class GalaxyDataHandler {
 		return this._planets;
 	}
 
-	public get squadrons(): Map<Squadron> {
-		return this._squadrons;
+	public get allSquadrons(): Map<Squadron> {
+		return this._allSquadrons;
+	}
+
+	public get movingSquadrons(): Map<Squadron> {
+		return this._movingSquadrons;
 	}
 
 	private updateFactionStats() {
@@ -58,7 +67,7 @@ export class GalaxyDataHandler {
 			}
 		});
 
-		let squadrons = this._squadrons.list;
+		let squadrons = this._allSquadrons.list;
 		squadrons.forEach(squadron => {
 			if (squadron.faction) {
 				let squadronFaction = this._factions.get(squadron.faction.id);
@@ -67,4 +76,3 @@ export class GalaxyDataHandler {
 		});
 	}
 }
-
