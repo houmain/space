@@ -60,7 +60,7 @@ export class GameSceneRenderer {
 	}
 
 	private onFighterCreated(event: EventFighterCreated) {
-		DebugInfo.info('onFighterCreated: ' + event);//JSON2.stringify(event));
+		DebugInfo.info('onFighterCreated: ' + event);
 		this.createFighter(event.fighter);
 	}
 

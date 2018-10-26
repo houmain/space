@@ -176,6 +176,7 @@ export class GameLogicController {
 	private onSquadronAttacks(msg: MessageSquadronAttacks) {
 
 		let sentSquadron: Squadron = this._galaxyDataHandler.movingSquadrons.get(msg.squadronId);
+		this._galaxyDataHandler.movingSquadrons.delete(msg.squadronId);
 
 		if (!sentSquadron) {
 			DebugInfo.error(`No squadron found with id ${msg.squadronId} in moving squadrons!`);
@@ -204,6 +205,8 @@ export class GameLogicController {
 				type: GameEventType.FIGHTER_DESTROYED,
 				fighter: destroyedFighter
 			};
+
+			Assert.isNotNull(destroyedFighter, 'Destroyed Fighter must not be null');
 
 			this.notify<EventFighterDestroyed>(GameEventType.FIGHTER_DESTROYED, event);
 

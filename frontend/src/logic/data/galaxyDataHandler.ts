@@ -21,6 +21,8 @@ export class GalaxyDataHandler {
 
 			planet.squadrons.forEach(squadron => {
 				this._allSquadrons.add(squadron.id, squadron);
+
+				DebugInfo.info('Squadron ' + squadron.id + ' ' + squadron.fighters.length + ' fighters.');
 			});
 		});
 
