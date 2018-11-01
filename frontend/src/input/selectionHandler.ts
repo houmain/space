@@ -239,6 +239,7 @@ export class InputHandler {
 
     private endSelectionRect() {
         this.clearSelection();
+
         this._allPlanets.forEach(planet => {
             if (this.normalizedRect(this._selectionRect).contains(planet.x, planet.y)) {
                 if (this.isOwnPlanet(planet)) {

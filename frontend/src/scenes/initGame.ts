@@ -51,8 +51,8 @@ export class InitGameScene extends GuiScene {
 		this.load.image('planet', './images/planet_1.png');
 		this.load.image('sun', './images/planet_13.png');
 		this.load.image('pixel', './images/pixel.png');
-		this.load.image('squadron', './images/pixel.png');
-		this.load.image('fighter', './images/pixel.png');
+		this.load.image('squadron', './images/squadron.png');
+		this.load.image('fighter', './images/fighter.png');
 
 		// Textureatlas
 		this.load.atlas(Assets.ATLAS.HUD, './spritesheets/game_gui.png', './spritesheets/game_gui.json');
@@ -69,7 +69,7 @@ export class InitGameScene extends GuiScene {
 		this._serverMessageObserver = new ObservableServerMessageHandler();
 		this._galaxyDataHandler = new GalaxyDataHandler();
 
-		let mockServer = false;
+		let mockServer = true;
 		if (mockServer) {
 			console.warn('Launching mock communication handler');
 			this._communicationHandler = new CommunicationHandlerMock(this._serverMessageObserver, this._galaxyDataHandler);
@@ -90,7 +90,7 @@ export class InitGameScene extends GuiScene {
 		new GameLogicController(this._game.player, this._serverMessageObserver, this._galaxyDataHandler, this._gameEventObserver);
 		this._gameInfoHandler = new GameInfoHandler(this._gameEventObserver);
 
-		this._infoText = this.add.bitmapText(this.sys.canvas.width / 2, this.sys.canvas.height / 2, 'font_8', TextResources.getText(Texts.INITGAME_JOINING_GAME));
+		this._infoText = this.add.bitmapText(this.sys.canvas.width / 2, this.sys.canvas.height / 2, 'font_8', TextResources.getText(Texts.INIT_GAME.JOINING_GAME));
 		this._infoText.setOrigin(0.5, 0.5);
 
 		if (mockServer) {
@@ -105,7 +105,7 @@ export class InitGameScene extends GuiScene {
 
 	private onDisconnected() {
 
-		this._infoText.text = TextResources.getText(Texts.ERROR_CONNECTION_FAILED);
+		this._infoText.text = TextResources.getText(Texts.ERROR.CONNECTION_FAILED);
 		this._infoText.setTint(0xff0000);
 		this._infoText.setAlpha(0);
 

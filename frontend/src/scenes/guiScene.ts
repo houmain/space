@@ -12,12 +12,13 @@ export abstract class GuiScene extends Phaser.Scene {
 	}
 
 	private getSceneTitle(config: string) {
+
 		let title = '';
 		switch (config) {
 			case Scenes.MAIN_MENU:
-				title = TextResources.getText(Texts.MAINMENU_TITLE); break;
+				title = TextResources.getText(Texts.MAIN_MENU.TITLE); break;
 			case Scenes.INIT_GAME:
-				title = TextResources.getText(Texts.INITGAME_TITLE); break;
+				title = TextResources.getText(Texts.INIT_GAME.TITLE); break;
 			default:
 				title = 'yet another scene';
 		}

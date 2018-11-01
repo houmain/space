@@ -65,9 +65,9 @@ export class GameScene extends Phaser.Scene {
 
 	private onDisconnected() {
 
-		let infoText = this.add.bitmapText(this.sys.canvas.width / 2, this.sys.canvas.height / 2, 'font_8', TextResources.getText(Texts.INITGAME_JOINING_GAME));
+		let infoText = this.add.bitmapText(this.sys.canvas.width / 2, this.sys.canvas.height / 2, 'font_8', TextResources.getText(Texts.INIT_GAME.JOINING_GAME));
 		infoText.setOrigin(0.5, 0.5);
-		infoText.text = TextResources.getText(Texts.ERROR_CONNECTION_FAILED);
+		infoText.text = TextResources.getText(Texts.ERROR.CONNECTION_FAILED);
 		infoText.setTint(0xff0000);
 		infoText.setAlpha(0);
 

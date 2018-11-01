@@ -1,4 +1,37 @@
-export enum Texts {
+import { DebugInfo } from '../common/debug';
+
+class TextResourcesMainMenu {
+	public readonly TITLE = 'mainMenu.title';
+	public readonly PLAY = 'mainMenu.play';
+	public readonly OPTIONS = 'mainMenu.options';
+	public readonly QUIT = 'mainMenu.quit';
+}
+
+class TextResourcesInitGame {
+	public readonly TITLE = 'initGame.title';
+	public readonly JOINING_GAME = 'initGame.joiningGame';
+}
+
+class TextResourcesGame {
+	public readonly MAINTAINANCE = 'game.maintainance';
+	public readonly PRODUCTIVITY = 'game.productivity';
+	public readonly DEFENSE = 'game.defense';
+	public readonly FIGHTERS = 'game.fighters';
+	public readonly FACTION_JOINED = 'game.factionJoined';
+}
+
+class TextResourcesError {
+	public readonly CONNECTION_FAILED = 'error.connectionfailed';
+}
+
+export class Texts {
+	public static readonly MAIN_MENU: TextResourcesMainMenu = new TextResourcesMainMenu();
+	public static readonly INIT_GAME: TextResourcesInitGame = new TextResourcesInitGame();
+	public static readonly GAME: TextResourcesGame = new TextResourcesGame();
+	public static readonly ERROR: TextResourcesError = new TextResourcesError();
+}
+
+export enum TextsOld {
 	MAINMENU_TITLE = 'mainMenu.title',
 	MAINMENU_PLAY = 'mainMenu.play',
 	MAINMENU_OPTIONS = 'mainMenu.options',
@@ -7,6 +40,12 @@ export enum Texts {
 	INITGAME_TITLE = 'initGame.title',
 	INITGAME_JOINING_GAME = 'initGame.joiningGame',
 
+	GAME_MAINTAINANCE = 'game.maintainance',
+	GAME_PRODUCTIVITY = 'game.productivity',
+	GAME_DEFENSE = 'game.defense',
+	GAME_FIGHTERS = 'game.fighters',
+	GAME_FACTION_JOINED = 'game.factionJoined',
+
 	ERROR_CONNECTION_FAILED = 'error.connectionfailed'
 }
 
@@ -14,15 +53,21 @@ export class TextResources {
 	private static _resources: { [key: string]: string; } = {};
 
 	public static initialize() {
-		TextResources._resources[Texts.MAINMENU_TITLE] = 'main menu';
-		TextResources._resources[Texts.MAINMENU_PLAY] = 'play';
-		TextResources._resources[Texts.MAINMENU_OPTIONS] = 'options';
-		TextResources._resources[Texts.MAINMENU_QUIT] = 'quit';
+		TextResources._resources[Texts.MAIN_MENU.TITLE] = 'main menu';
+		TextResources._resources[Texts.MAIN_MENU.PLAY] = 'play';
+		TextResources._resources[Texts.MAIN_MENU.OPTIONS] = 'options';
+		TextResources._resources[Texts.MAIN_MENU.QUIT] = 'quit';
 
-		TextResources._resources[Texts.INITGAME_TITLE] = 'loading game';
-		TextResources._resources[Texts.INITGAME_JOINING_GAME] = 'joining game';
+		TextResources._resources[Texts.INIT_GAME.TITLE] = 'loading game';
+		TextResources._resources[Texts.INIT_GAME.JOINING_GAME] = 'joining game';
 
-		TextResources._resources[Texts.ERROR_CONNECTION_FAILED] = 'connection failed';
+		TextResources._resources[Texts.GAME.MAINTAINANCE] = 'maintainance';
+		TextResources._resources[Texts.GAME.PRODUCTIVITY] = 'productivity';
+		TextResources._resources[Texts.GAME.DEFENSE] = 'defense';
+		TextResources._resources[Texts.GAME.FIGHTERS] = 'fighters';
+		TextResources._resources[Texts.GAME.FACTION_JOINED] = '{0} joined';
+
+		TextResources._resources[Texts.ERROR.CONNECTION_FAILED] = 'connection failed';
 	}
 
 	public static getText(key: string): string {
@@ -30,8 +75,8 @@ export class TextResources {
 		if (text) {
 			return text;
 		}
-		console.warn(`${key} not found!`);
-		return key;
+		DebugInfo.warn(`${key} not found!`);
+		return `[${key}]`;
 	}
 }
 TextResources.initialize();

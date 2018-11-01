@@ -67,10 +67,8 @@ export class GameSceneUpdater {
 
 		fighter.orbitingAngle = fighter.orbitingAngle + ANGULAR_VELOCITY * timeSinceLastFrame;
 
-		let targetX = fighter.squadron.x;
-		let targetY = fighter.squadron.y;
-		targetX += Math.cos(fighter.orbitingAngle) * fighter.orbitingDistance;
-		targetY += Math.sin(fighter.orbitingAngle) * fighter.orbitingDistance;
+		let targetX = fighter.squadron.x + Math.cos(fighter.orbitingAngle) * fighter.orbitingDistance;
+		let targetY = fighter.squadron.y + Math.sin(fighter.orbitingAngle) * fighter.orbitingDistance;
 
 		let range: Phaser.Math.Vector2 = new Phaser.Math.Vector2(targetX - fighter.x, targetY - fighter.y);
 		let speed = FIGHTER_VELOCITY * timeSinceLastFrame + (1 + Math.cos(fighter.orbitingAngle * 3)) / 8;

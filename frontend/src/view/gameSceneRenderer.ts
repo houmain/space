@@ -68,7 +68,6 @@ export class GameSceneRenderer {
 		let squadron = fighter.squadron;
 
 		let sprite = this._spriteFactory.get('fighter');
-		sprite.setScale(3);
 
 		if (squadron.faction) {
 			sprite.setTint(squadron.faction.color);
@@ -94,7 +93,7 @@ export class GameSceneRenderer {
 		squadron.sprite = this._spriteFactory.get('squadron');
 		squadron.sprite.setPosition(squadron.x, squadron.y);
 		squadron.sprite.setOrigin(0.5);
-		squadron.sprite.setScale(10);
+		//		squadron.sprite.setScale(10);
 		if (squadron.faction) {
 			squadron.sprite.setTint(squadron.faction.color);
 		}

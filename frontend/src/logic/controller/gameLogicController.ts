@@ -193,6 +193,11 @@ export class GameLogicController {
 		let squadron = this._galaxyDataHandler.allSquadrons.get(msg.squadronId);
 
 		if (squadron) {
+			if (squadron.fighters.length === 0) {
+				DebugInfo.warn('Cannot remove fighter from empty squadron');
+				return;
+			}
+
 			let fighters = squadron.fighters.splice(squadron.fighters.length - 1);
 
 			let destroyedFighter = fighters[0];

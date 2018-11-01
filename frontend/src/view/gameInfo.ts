@@ -1,5 +1,7 @@
 import { Assets } from './assets';
 import { GameEventObserver, EventPlayerJoined, GameEventType, EventPlanetConquered, EventFactionDestroyed } from '../logic/event/eventInterfaces';
+import { StringUtils } from '../common/utils';
+import { TextResources, Texts } from '../localization/textResources';
 
 enum GameInfoMessageType {
     PLAYER_JOINED,
@@ -84,7 +86,7 @@ export class GameInfoHandler {
         let faction = event.faction;
 
         this.addInfoText({
-            text: `${faction.name} joined`,
+            text: StringUtils.fillText(TextResources.getText(Texts.GAME.FACTION_JOINED), faction.name),
             color: faction.color,
             type: GameInfoMessageType.PLAYER_JOINED
         });

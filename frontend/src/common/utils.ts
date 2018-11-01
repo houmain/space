@@ -38,3 +38,16 @@ export class DOMHelper {
         document.getElementById(id).style.visibility = 'hidden';
     }
 }
+
+export class StringUtils {
+
+    public static fillText(text: string, ...args: any[]): string {
+        let finalText = text;
+
+        for (let a = 0; a < args.length; a++) {
+            finalText = finalText.replace(`{${a}}`, args[a]);
+        }
+
+        return finalText;
+    }
+}

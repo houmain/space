@@ -13,6 +13,7 @@ import { Player } from './data/gameData';
 import { MainMenuScene } from './scenes/mainMenu';
 import { BotMenuScene } from './scenes/botMenu';
 import { BootScene } from './scenes/boot';
+import { NinePatchPlugin } from '@koreez/phaser3-ninepatch';
 
 export class SpaceGame extends Phaser.Game {
 
@@ -48,7 +49,7 @@ function startGame(): void {
         width: window.innerWidth,
         height: window.innerHeight,
         plugins: {
-
+            global: [{ key: 'NinePatchPlugin', plugin: NinePatchPlugin, start: true }],
         },
     };
 

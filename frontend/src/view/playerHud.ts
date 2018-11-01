@@ -1,5 +1,6 @@
 import { Player } from '../data/gameData';
 import { GameEventObserver, GameEventType } from '../logic/event/eventInterfaces';
+import { Texts, TextResources } from '../localization/textResources';
 
 /* HUD */
 export class PlayerHud {
@@ -14,7 +15,7 @@ export class PlayerHud {
 		this._container = scene.add.container(10, 10);
 		this._player = player;
 
-		let textFighters = scene.add.bitmapText(0, 0, 'gameHudText', 'fighters');
+		let textFighters = scene.add.bitmapText(0, 0, 'gameHudText', TextResources.getText(Texts.GAME.FIGHTERS));
 		textFighters.setOrigin(0, 0);
 		textFighters.setTint(0xbbbbbb);
 
