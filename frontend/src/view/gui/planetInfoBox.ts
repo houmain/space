@@ -3,6 +3,7 @@ import { Assets } from '../assets';
 import { PlanetUtils } from '../../logic/utils/utils';
 import { GameEventObserver, EventFighterCreated, GameEventType, EventFighterDestroyed, GameEvent } from '../../logic/event/eventInterfaces';
 import { TextResources, Texts } from '../../localization/textResources';
+import { NinePatch } from '@koreez/phaser3-ninepatch';
 
 export class PlanetInfoBox extends Phaser.GameObjects.Container {
 
@@ -27,9 +28,15 @@ export class PlanetInfoBox extends Phaser.GameObjects.Container {
 		this._gameEventObserver = gameEventObserver;
 		this._factionId = factionId;
 
-		let planetInfoBox = scene.add.sprite(0, 0, Assets.ATLAS.HUD, 'planetInfo.png');
+		let planetInfoBox = new NinePatch(this._scene, 0, 0, 200, 320, 'infoBox', null, {
+			top: 16, // Amount of pixels for top
+			bottom: 16, // Amount of pixels for bottom
+			left: 16, // Amount of pixels for left
+			right: 16 // Amount of pixels for right
+		});
 		planetInfoBox.setOrigin(0, 0);
-		planetInfoBox.setAlpha(0.35);
+		planetInfoBox.setAlpha(0.5);
+		this._scene.add.existing(planetInfoBox);
 		this.add(planetInfoBox);
 
 		let planet = scene.add.sprite(planetInfoBox.width / 2, 40, 'planet');

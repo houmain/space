@@ -58,12 +58,12 @@ export class GameServerMock {
 	private createMessageFighterCreated(): MessageFighterCreated {
 
 		let planet = this._galaxyDataHandler.planets.get(2);
-
+		let squadrons = planet.squadrons.list;
 		return {
 			event: ServerMessageType.FIGHTER_CREATED,
 			fighterCount: 1,
 			planetId: planet.id,
-			squadronId: planet.squadrons[0].id
+			squadronId: squadrons[0].id
 		};
 	}
 

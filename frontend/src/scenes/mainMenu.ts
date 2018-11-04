@@ -4,7 +4,7 @@ import { GuiScene } from './guiScene';
 import { Texts, TextResources } from '../localization/textResources';
 import { MainMenuButton } from '../view/gui/mainMenuButton';
 import { NinePatch } from '@koreez/phaser3-ninepatch';
-
+import { BitmapText } from '../view/gui/bitmapText';
 
 export class InfoBoxNew {
 
@@ -16,9 +16,9 @@ export class InfoBoxNew {
 	}
 
 	public create() {
-		this._container = this._scene.add.container(850, 100);
+		this._container = this._scene.add.container(450, 100);
 
-		let ninePatch = new NinePatch(this._scene, 0, 0, 300, 200, 'infoBox', null, {
+		let ninePatch = new NinePatch(this._scene, 0, 0, 300, 100, 'infoBox', null, {
 			top: 16, // Amount of pixels for top
 			bottom: 16, // Amount of pixels for bottom
 			left: 16, // Amount of pixels for left
@@ -28,10 +28,20 @@ export class InfoBoxNew {
 		ninePatch.setAlpha(0.5);
 		this._scene.add.existing(ninePatch);
 
-		let text = this._scene.add.bitmapText(20, 20, 'infoText', 'Welcome to \nBug?Galore? \nSpace Odyssey');
+		let text = new BitmapText(this._scene, 20, 20, 'infoText', 'Welcome to Bug?Galore? Space Odyssey'); //  this._scene.add.bitmapText(20, 20, 'infoText', 'Welcome to \nBug?Galore? \nSpace Odyssey');
+		text.setWordWrapWidth(300);
+		this._scene.add.existing(text);
 
 		this._container.add(ninePatch);
 		this._container.add(text);
+
+		this._scene.tweens.add({
+			targets: this._container,
+			alpha: 0,
+			duration: 3000,
+			ease: 'Power2',
+			completeDelay: 3000
+		});
 	}
 }
 
@@ -45,9 +55,8 @@ export class MainMenuScene extends GuiScene {
 		super.create();
 
 		// TODO: remove
-		//	this.startGame();
-		//	return;
-
+		this.startGame();
+		return;
 
 		let gameButton = new MainMenuButton(this, TextResources.getText(Texts.MAIN_MENU.PLAY).toUpperCase());
 		gameButton.setPosition(this.sys.canvas.width / 2, this.sys.canvas.height / 2);

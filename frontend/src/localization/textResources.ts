@@ -18,6 +18,8 @@ class TextResourcesGame {
 	public readonly DEFENSE = 'game.defense';
 	public readonly FIGHTERS = 'game.fighters';
 	public readonly FACTION_JOINED = 'game.factionJoined';
+	public readonly FACTION_DESTROYED = 'game.factionDestroyed';
+	public readonly PLANET_CONQUERED = 'game.planetConquered';
 }
 
 class TextResourcesError {
@@ -29,24 +31,6 @@ export class Texts {
 	public static readonly INIT_GAME: TextResourcesInitGame = new TextResourcesInitGame();
 	public static readonly GAME: TextResourcesGame = new TextResourcesGame();
 	public static readonly ERROR: TextResourcesError = new TextResourcesError();
-}
-
-export enum TextsOld {
-	MAINMENU_TITLE = 'mainMenu.title',
-	MAINMENU_PLAY = 'mainMenu.play',
-	MAINMENU_OPTIONS = 'mainMenu.options',
-	MAINMENU_QUIT = 'mainMenu.quit',
-
-	INITGAME_TITLE = 'initGame.title',
-	INITGAME_JOINING_GAME = 'initGame.joiningGame',
-
-	GAME_MAINTAINANCE = 'game.maintainance',
-	GAME_PRODUCTIVITY = 'game.productivity',
-	GAME_DEFENSE = 'game.defense',
-	GAME_FIGHTERS = 'game.fighters',
-	GAME_FACTION_JOINED = 'game.factionJoined',
-
-	ERROR_CONNECTION_FAILED = 'error.connectionfailed'
 }
 
 export class TextResources {
@@ -66,6 +50,8 @@ export class TextResources {
 		TextResources._resources[Texts.GAME.DEFENSE] = 'defense';
 		TextResources._resources[Texts.GAME.FIGHTERS] = 'fighters';
 		TextResources._resources[Texts.GAME.FACTION_JOINED] = '{0} joined';
+		TextResources._resources[Texts.GAME.FACTION_DESTROYED] = '{0} has been eliminated';
+		TextResources._resources[Texts.GAME.PLANET_CONQUERED] = '{0} conquered {1}';
 
 		TextResources._resources[Texts.ERROR.CONNECTION_FAILED] = 'connection failed';
 	}

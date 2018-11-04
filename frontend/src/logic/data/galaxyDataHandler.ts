@@ -7,7 +7,6 @@ export class GalaxyDataHandler {
 	private _factions: Map<Faction> = new Map<Faction>();
 	private _planets: Map<Planet> = new Map<Planet>();
 
-	private _allSquadrons: Map<Squadron> = new Map<Squadron>();
 	private _movingSquadrons: Map<Squadron> = new Map<Squadron>();
 
 	public init(galaxy: Galaxy) {
@@ -18,24 +17,16 @@ export class GalaxyDataHandler {
 
 		galaxy.planets.forEach(planet => {
 			this._planets.add(planet.id, planet);
-
-			planet.squadrons.forEach(squadron => {
-				this._allSquadrons.add(squadron.id, squadron);
-
-				DebugInfo.info('Squadron ' + squadron.id + ' ' + squadron.fighters.length + ' fighters.');
-			});
 		});
 
 		galaxy.squadrons.forEach(squadron => {
-			this._allSquadrons.add(squadron.id, squadron);
 			this._movingSquadrons.add(squadron.id, squadron);
 		});
 
 		this.updateFactionStats();
 
 		DebugInfo.info(
-			`Initialized GalaxyDataHandler: planets: ${this._planets.length} with ${(this._allSquadrons.length - this._movingSquadrons.length)} squadrons,
-				moving squadrons: ${this._movingSquadrons.length}`);
+			`Initialized GalaxyDataHandler: planets: ${this._planets.length} with ${this._movingSquadrons.length} moving squadrons`);
 	}
 
 	public get initialized() {
@@ -48,10 +39,6 @@ export class GalaxyDataHandler {
 
 	public get planets(): Map<Planet> {
 		return this._planets;
-	}
-
-	public get allSquadrons(): Map<Squadron> {
-		return this._allSquadrons;
 	}
 
 	public get movingSquadrons(): Map<Squadron> {
@@ -67,9 +54,17 @@ export class GalaxyDataHandler {
 				planetFaction.planets.push(planet);
 				planetFaction.maxUpkeep += planet.maxUpkeep;
 			}
+
+			let squadrons = planet.squadrons.list;
+			squadrons.forEach(squadron => {
+				if (squadron.faction) {
+					let squadronFaction = this._factions.get(squadron.faction.id);
+					squadronFaction.numFighters += squadron.fighters.length;
+				}
+			});
 		});
 
-		let squadrons = this._allSquadrons.list;
+		let squadrons = this._movingSquadrons.list;
 		squadrons.forEach(squadron => {
 			if (squadron.faction) {
 				let squadronFaction = this._factions.get(squadron.faction.id);

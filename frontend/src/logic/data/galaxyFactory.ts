@@ -1,4 +1,4 @@
-import { Galaxy, Planet, Faction, Squadron, Fighter } from '../../data/galaxyModels';
+import { Galaxy, Planet, Faction, Squadron } from '../../data/galaxyModels';
 import { FactionInfo, PlanetInfo, SquadronInfo } from '../../communication/communicationInterfaces';
 import { GalaxyObjectFactory } from './galaxyObjectFactory';
 
@@ -68,8 +68,7 @@ export class GalaxyFactory {
                         squadron.fighters.push(fighter);
                     }
 
-                    planet.squadrons.push(squadron);
-                    // galaxy.squadrons.push(squadron);
+                    planet.squadrons.add(squadron.id, squadron);
                 });
             }
 
@@ -100,8 +99,3 @@ export class GalaxyFactory {
         return galaxy;
     }
 }
-
-
-
-
-

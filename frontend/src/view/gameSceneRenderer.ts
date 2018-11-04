@@ -4,7 +4,7 @@ import { Background } from './background';
 import { GalaxyDataHandler } from '../logic/data/galaxyDataHandler';
 import { Map } from '../common/collections';
 import { GameEventObserver, EventFighterCreated, GameEventType, EventFighterDestroyed, EventSquadronCreated, EventSquadronDestroyed } from '../logic/event/eventInterfaces';
-import { DebugInfo, JSON2 } from '../common/debug';
+import { DebugInfo, JSONDebugger } from '../common/debug';
 
 export class GameSceneRenderer {
 
@@ -34,14 +34,23 @@ export class GameSceneRenderer {
 		let planets = this._planets.list;
 		planets.forEach(planet => {
 			this.createPlanet(planet);
+
+			let squadrons = planet.squadrons.list;
+			squadrons.forEach(squadron => {
+				this.createSquadron(squadron);
+
+				let fighters = squadron.fighters;
+				fighters.forEach(fighter => {
+					this.createFighter(fighter);
+				});
+			});
 		});
 
-		let squadrons = galaxyDataHandler.allSquadrons.list;
+		let squadrons = galaxyDataHandler.movingSquadrons.list;
 		squadrons.forEach(squadron => {
 			this.createSquadron(squadron);
 
 			let fighters = squadron.fighters;
-
 			fighters.forEach(fighter => {
 				this.createFighter(fighter);
 			});
@@ -77,7 +86,7 @@ export class GameSceneRenderer {
 	}
 
 	private onFighterDestroyed(event: EventFighterDestroyed) {
-		DebugInfo.info('onFighterDestroyed: ' + JSON2.stringify(event));
+		DebugInfo.info('onFighterDestroyed: ' + JSONDebugger.stringify(event));
 		let sprite = event.fighter.sprite;
 		if (!sprite) {
 			console.warn('no sprite');
@@ -93,7 +102,6 @@ export class GameSceneRenderer {
 		squadron.sprite = this._spriteFactory.get('squadron');
 		squadron.sprite.setPosition(squadron.x, squadron.y);
 		squadron.sprite.setOrigin(0.5);
-		//		squadron.sprite.setScale(10);
 		if (squadron.faction) {
 			squadron.sprite.setTint(squadron.faction.color);
 		}

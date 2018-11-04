@@ -27,7 +27,8 @@ export class GameSceneUpdater {
 			planet.sprite.x = planet.x;
 			planet.sprite.y = planet.y;
 
-			planet.squadrons.forEach(squadron => {
+			let squadrons = planet.squadrons.list;
+			squadrons.forEach(squadron => {
 				squadron.x = planet.x;
 				squadron.y = planet.y;
 

@@ -43,6 +43,7 @@ export class HudScene extends Phaser.Scene {
 		let menuButton = new ImageButton(this, window.innerWidth - 50, 50, Assets.ATLAS.HUD, 'menu_icon.png');
 		menuButton.onClick = () => {
 			this.scene.stop(Scenes.GAME);
+			this.scene.stop(Scenes.HUD);
 
 			this.scene.start(Scenes.MAIN_MENU);
 		};

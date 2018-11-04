@@ -168,7 +168,8 @@ export class InputHandler {
     }
 
     private findOwnSquadron(planet: Planet): Squadron {
-        for (let squadron of planet.squadrons) {
+        let squadrons = planet.squadrons.list;
+        for (let squadron of squadrons) {
             if (squadron.faction && squadron.faction.id === this._player.faction.id) {
                 return squadron;
             }

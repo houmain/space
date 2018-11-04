@@ -3,7 +3,6 @@ export class GalaxySpriteFactory {
 	private _spritePool: Phaser.GameObjects.Group;
 
 	public constructor(scene: Phaser.Scene) {
-
 		this._spritePool = scene.add.group({
 		});
 	}
@@ -20,6 +19,5 @@ export class GalaxySpriteFactory {
 		} else {
 			console.warn('cannot release sprite');
 		}
-
 	}
 }

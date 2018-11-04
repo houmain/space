@@ -1,3 +1,5 @@
+import { Map } from '../common/collections';
+
 export class Galaxy {
     planets: Planet[] = [];
     factions: Faction[] = [];
@@ -15,7 +17,7 @@ export class Planet {
     initialAngle: number = 0;
     angularVelocity: number = 0;
     sprite: Phaser.GameObjects.Sprite;
-    squadrons: Squadron[] = [];
+    squadrons: Map<Squadron> = new Map<Squadron>();
     maxUpkeep: number = 0;
     productionRate: number = 0;
     productionProgress: number = 0;

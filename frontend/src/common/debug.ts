@@ -1,6 +1,3 @@
-import { GalaxyDataHandler } from '../logic/data/galaxyDataHandler';
-import { Squadron } from '../data/galaxyModels';
-
 export let DEBUG = false;
 
 export class Assert {
@@ -68,43 +65,18 @@ export class DebugInfo {
 	}
 }
 
-export class ErrorChecker {
-
-	public static checkAllFightersHaveSprites(galaxyDataHandler: GalaxyDataHandler) {
-		let squadrons: Squadron[] = galaxyDataHandler.allSquadrons.list;
-		squadrons.forEach(squadron => {
-			let fighters = squadron.fighters;
-			fighters.forEach(fighter => {
-				Assert.isNotNull(fighter.sprite, 'Fighter sprite must not be null.');
-			});
-		});
-
-		DebugInfo.info('checkAllFightersHaveSprites OK');
-	}
-
-	public static checkAllSquadronsHaveSprites(galaxyDataHandler: GalaxyDataHandler) {
-		let squadrons: Squadron[] = galaxyDataHandler.allSquadrons.list;
-		squadrons.forEach(squadron => {
-			Assert.isNotNull(squadron.sprite, 'Squadron sprite must not be null.');
-		});
-
-		DebugInfo.info('checkAllSquadronsHaveSprites OK');
-	}
-}
-
-export class JSON2 {
+export class JSONDebugger {
 
 	private static seen = [];
 	public static stringify(value: any) {
 		JSON.stringify(value, function (key, val) {
 			if (val !== null && typeof val === 'object') {
-				if (JSON2.seen.indexOf(val) >= 0) {
+				if (JSONDebugger.seen.indexOf(val) >= 0) {
 					return;
 				}
-				JSON2.seen.push(val);
+				JSONDebugger.seen.push(val);
 			}
 			return val;
 		});
 	}
-
 }
