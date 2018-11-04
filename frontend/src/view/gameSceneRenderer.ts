@@ -90,8 +90,9 @@ export class GameSceneRenderer {
 		let sprite = event.fighter.sprite;
 		if (!sprite) {
 			console.warn('no sprite');
+		} else {
+			this._spriteFactory.release(sprite);
 		}
-		this._spriteFactory.release(sprite);
 	}
 
 	private onSquadronCreated(event: EventSquadronCreated) {

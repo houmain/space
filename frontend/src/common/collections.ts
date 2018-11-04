@@ -60,7 +60,7 @@ export class Map<T> {
 	}
 
 	public get length(): number {
-		return this._values.length;
+		return this.list.length;
 	}
 
 	private rebuildList() {
