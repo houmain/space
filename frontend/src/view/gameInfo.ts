@@ -3,6 +3,7 @@ import { StringUtils, Engine } from '../common/utils';
 import { TextResources, Texts } from '../localization/textResources';
 import { NinePatch } from '@koreez/phaser3-ninepatch';
 import { BitmapText } from './gui/bitmapText';
+import { DebugInfo } from '../common/debug';
 
 enum GameInfoMessageType {
     PLAYER_JOINED,
@@ -18,6 +19,18 @@ interface GameInfoMessage {
 
 class GameInfo extends Phaser.GameObjects.Container {
     public lifetime: number;
+
+    private _background: NinePatch;
+
+    public constructor(scene: Phaser.Scene, background: NinePatch) {
+        super(scene, 0, 0);
+        this._background = background;
+        this.add(this._background);
+    }
+
+    public get height() {
+        return this._background.height;
+    }
 }
 
 class GameInfoMessageBuilder {
@@ -44,7 +57,7 @@ class GameInfoMessageBuilder {
     private buildGameInfoMessage(msg: GameInfoMessage): GameInfo {
 
         let textMargin = 10;
-        let info = new GameInfo(this._scene, 0, 0);
+
 
         let infoBox = new NinePatch(this._scene, 0, 0, 300, 50, 'infoBox', null, {
             top: 16,
@@ -65,7 +78,7 @@ class GameInfoMessageBuilder {
             infoBox.resize(300, infoText.height + textMargin * 2);
         }
 
-        info.add(infoBox);
+        let info = new GameInfo(this._scene, infoBox);
         info.add(infoText);
 
         return info;
@@ -85,8 +98,8 @@ export class GameInfoHandler {
     public constructor(gameEventObserver: GameEventObserver) {
 
         gameEventObserver.subscribe<EventPlayerJoined>(GameEventType.PLAYER_JOINED, this.onPlayerJoined.bind(this));
-        gameEventObserver.subscribe<EventPlanetConquered>(GameEventType.PLANET_CONQUERED, this.onPlanetConquered.bind(this));
-        gameEventObserver.subscribe<EventFactionDestroyed>(GameEventType.FACTION_DESTROYED, this.onFactionDestroyed.bind(this));
+        //gameEventObserver.subscribe<EventPlanetConquered>(GameEventType.PLANET_CONQUERED, this.onPlanetConquered.bind(this));
+        //gameEventObserver.subscribe<EventFactionDestroyed>(GameEventType.FACTION_DESTROYED, this.onFactionDestroyed.bind(this));
     }
 
     public create(scene: Phaser.Scene) {
@@ -97,38 +110,39 @@ export class GameInfoHandler {
     }
 
     private onPlayerJoined(event: EventPlayerJoined) {
+        if (!this._scene)
+            return;// todo queue
         let faction = event.faction;
 
         this.addInfoText({
             text: StringUtils.fillText(TextResources.getText(Texts.GAME.FACTION_JOINED), faction.name),
-            // text: 'Einfach macht es Timo wahrscheinlich nicht mehr. Entweder er trifft gar nicht oder doppelt", sagte danach Leipzigs Trainer Rangnick',
             color: faction.color,
             type: GameInfoMessageType.PLAYER_JOINED
         });
-        /*
-               this._scene.time.delayedCall(3000, () => {
-                   this.addInfoText({
-                       text: 'Testtext1',
-                       color: faction.color,
-                       type: GameInfoMessageType.PLAYER_JOINED
-                   });
-               }, [], this);
 
-               this._scene.time.delayedCall(4000, () => {
-                   this.addInfoText({
-                       text: 'Einfach macht es Timo wahrscheinlich nicht mehr. Entweder er trifft gar nicht oder doppelt", sagte danach Leipzigs Trainer Rangnick',
-                       color: faction.color,
-                       type: GameInfoMessageType.PLAYER_JOINED
-                   });
-               }, [], this);
+        this._scene.time.delayedCall(3000, () => {
+            this.addInfoText({
+                text: 'Testtext1',
+                color: faction.color,
+                type: GameInfoMessageType.PLAYER_JOINED
+            });
+        }, [], this);
 
-               this._scene.time.delayedCall(4000, () => {
-                   this.addInfoText({
-                       text: 'Testtext3 Testtext3 \n Testtext3Testtext3 ',
-                       color: faction.color,
-                       type: GameInfoMessageType.PLAYER_JOINED
-                   });
-               }, [], this);*/
+        this._scene.time.delayedCall(4000, () => {
+            this.addInfoText({
+                text: 'Einfach macht es Timo wahrscheinlich nicht mehr. Entweder er trifft gar nicht oder doppelt", sagte danach Leipzigs Trainer Rangnick',
+                color: faction.color,
+                type: GameInfoMessageType.PLAYER_JOINED
+            });
+        }, [], this);
+
+        this._scene.time.delayedCall(4000, () => {
+            this.addInfoText({
+                text: 'Testtext3 Testtext3 \n Testtext3Testtext3 ',
+                color: faction.color,
+                type: GameInfoMessageType.PLAYER_JOINED
+            });
+        }, [], this);
     }
 
     private onPlanetConquered(event: EventPlanetConquered) {
@@ -160,7 +174,6 @@ export class GameInfoHandler {
         let info = this._infoBuilder.buildGameInfo(msg);
         info.lifetime = 5000;
         info.x = 0;
-        //   info.y = -200 - this._infoMessages.length * info.height;  //TODO replace with info height
         info.alpha = 0;
 
         this._container.add(info);
@@ -196,10 +209,6 @@ export class GameInfoHandler {
         });
 
         if (rearrangeInfos) {
-            /*
-             this._infoMessages.forEach((info, index) => {
-                 info.y = -70 - (index + 1) * info.height * 2;  //TODO replace with info height
-             });*/
             this.arrangeInfos();
         }
     }
@@ -219,15 +228,13 @@ export class GameInfoHandler {
     }
 
     private arrangeInfos() {
-        let height = Engine.instance.config.height as number;
-        let marginBottom = 100;
         let totalHeight = 0;
-        let distance = 20;
+        let distance = 10;
 
-        this._infoMessages.forEach((info, index) => {
-            totalHeight += info.height + distance;
-            info.y = -100 - totalHeight;
-
+        this._infoMessages.forEach(info => {
+            totalHeight += (info.height + distance);
+            DebugInfo.info('info.height ' + info.height + 'totalHeight' + totalHeight);
+            info.y = -totalHeight;
         });
     }
 }

@@ -29,11 +29,7 @@ export class GameSceneUpdater {
 
 			let squadrons = planet.squadrons.list;
 			squadrons.forEach(squadron => {
-				squadron.x = planet.x;
-				squadron.y = planet.y;
-
-				squadron.sprite.x = planet.x;
-				squadron.sprite.y = planet.y;
+				squadron.setPositon(planet.x, planet.y);
 
 				squadron.fighters.forEach(fighter => {
 					this.updateFighter(fighter, timeSinceLastFrame);
@@ -51,8 +47,8 @@ export class GameSceneUpdater {
 
 			if (distanceCovered < distance) {
 				const f: number = distanceCovered / distance;
-				squadron.x += dx * f;
-				squadron.y += dy * f;
+
+				squadron.setPositon(squadron.x + dx * f, squadron.y + dx * f);
 			}
 
 			squadron.fighters.forEach(fighter => {

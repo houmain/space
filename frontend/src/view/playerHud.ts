@@ -27,7 +27,7 @@ export class PlayerHud {
 		this._container.add(this._numFighters);
 
 		gameEventObserver.subscribe(GameEventType.FIGHTER_CREATED, this.onPlayerFactionChanged.bind(this));
-		//gameEventObserver.subscribe(GameEventType.FIGHTER_DESTROYED, this.onPlayerFactionChanged.bind(this));
+		gameEventObserver.subscribe(GameEventType.FIGHTER_DESTROYED, this.onPlayerFactionChanged.bind(this));
 
 		this.updateFighterCount();
 	}

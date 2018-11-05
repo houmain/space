@@ -123,8 +123,7 @@ export class GameLogicController {
 		squadron.id = squadronId;
 		squadron.faction = faction;
 		squadron.planet = targetPlanet;
-		squadron.x = x;
-		squadron.y = y;
+		squadron.setPositon(x, y);
 
 		this._gameEventNotifier.notify<EventSquadronCreated>(GameEventType.SQUADRON_CREATED, {
 			type: GameEventType.SQUADRON_CREATED,
@@ -196,6 +195,9 @@ export class GameLogicController {
 			let fighters = squadron.fighters.splice(squadron.fighters.length - 1);
 
 			let destroyedFighter = fighters[0];
+
+			DebugInfo.info('destroyedFighter ' + destroyedFighter);
+
 			DebugInfo.info(`Fighter destroyed from squadron ${destroyedFighter.squadron.id},${squadron.fighters.length} fighters left.`);
 
 			if (squadron.faction) {
@@ -207,7 +209,7 @@ export class GameLogicController {
 				fighter: destroyedFighter
 			});
 
-			//this._galaxyObjectfactory.releaseFighter(destroyedFighter);
+			this._galaxyObjectfactory.releaseFighter(destroyedFighter);
 
 			Assert.equals(squadron.fighters.length, msg.fighterCount, `Game::fighterDestroyed: Incorrect Fighter count client: ${squadron.fighters.length} server: ${msg.fighterCount}`);
 		} else {

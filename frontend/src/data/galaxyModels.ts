@@ -36,26 +36,52 @@ export class Faction {
 
 export class Squadron {
     id: number;
-    x: number = 0;
-    y: number = 0;
+    private _x: number = 0;
+    private _y: number = 0;
+    private _sprite: Phaser.GameObjects.Sprite = null;
     faction: Faction;
     fighters: Fighter[] = [];
     planet: Planet;
-    sprite: Phaser.GameObjects.Sprite;
     speed: number = 0;
 
     public constructor() {
         Squadron.reset(this);
     }
 
+    public setPositon(x: number, y: number) {
+        this._x = x;
+        this._y = y;
+        if (this._sprite) {
+            this._sprite.setPosition(x, y);
+        }
+    }
+
+    public get x() {
+        return this._x;
+    }
+
+    public get y() {
+        return this._y;
+    }
+
+    public set sprite(sprite: Phaser.GameObjects.Sprite) {
+        this._sprite = sprite;
+        this._sprite.setPosition(this._x, this._y);
+    }
+
+    public get sprite(): Phaser.GameObjects.Sprite {
+        return this._sprite;
+    }
+
+
     static reset(squadron: Squadron) {
         squadron.id = 0;
-        squadron.x = 0;
-        squadron.y = 0;
+        squadron._x = 0;
+        squadron._y = 0;
         squadron.faction = null;
         squadron.fighters.splice(0);
         squadron.planet = null;
-        squadron.sprite = null;
+        squadron._sprite = null;
     }
 }
 
@@ -92,10 +118,14 @@ export class Fighter {
         this._sprite.setPosition(this._x, this._y);
     }
 
+    public get sprite(): Phaser.GameObjects.Sprite {
+        return this._sprite;
+    }
+
     static reset(fighter: Fighter) {
         fighter._x = 0;
         fighter._y = 0;
-        // fighter._sprite = null;
+        fighter._sprite = null;
         fighter.orbitingAngle = 0;
         fighter.orbitingDistance = 100;
         fighter.squadron = null;

@@ -64,19 +64,3 @@ export class DebugInfo {
 		console.error(`[ERROR] ${text}`);
 	}
 }
-
-export class JSONDebugger {
-
-	private static seen = [];
-	public static stringify(value: any) {
-		JSON.stringify(value, function (key, val) {
-			if (val !== null && typeof val === 'object') {
-				if (JSONDebugger.seen.indexOf(val) >= 0) {
-					return;
-				}
-				JSONDebugger.seen.push(val);
-			}
-			return val;
-		});
-	}
-}

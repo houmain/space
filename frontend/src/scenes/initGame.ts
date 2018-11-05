@@ -85,7 +85,6 @@ export class InitGameScene extends GuiScene {
 			DebugInfo.debug('Connected to server');
 			this._clientMessageSender.joinGame(this._gameConfig.gameId);
 		};
-		//this._communicationHandler.onDisconnected = this.onConnectionFailed.bind(this);
 		this._gameEventObserver = new GameEventObserverImpl();
 
 		new GameLogicController(this._game.player, this._serverMessageObserver, this._galaxyDataHandler, this._gameEventObserver);

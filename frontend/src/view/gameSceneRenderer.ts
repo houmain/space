@@ -4,7 +4,7 @@ import { Background } from './background';
 import { GalaxyDataHandler } from '../logic/data/galaxyDataHandler';
 import { Map } from '../common/collections';
 import { GameEventObserver, EventFighterCreated, GameEventType, EventFighterDestroyed, EventSquadronCreated, EventSquadronDestroyed } from '../logic/event/eventInterfaces';
-import { DebugInfo, JSONDebugger } from '../common/debug';
+import { DebugInfo } from '../common/debug';
 
 export class GameSceneRenderer {
 
@@ -86,7 +86,7 @@ export class GameSceneRenderer {
 	}
 
 	private onFighterDestroyed(event: EventFighterDestroyed) {
-		DebugInfo.info('onFighterDestroyed: ' + JSONDebugger.stringify(event));
+
 		let sprite = event.fighter.sprite;
 		if (!sprite) {
 			console.warn('no sprite');

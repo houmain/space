@@ -56,8 +56,7 @@ export class GalaxyFactory {
                     squadron.id = squadronInfo.squadronId;
                     squadron.faction = factionMap[squadronInfo.factionId];
                     squadron.planet = planet;
-                    squadron.x = planet.x;
-                    squadron.y = planet.y;
+                    squadron.setPositon(planet.x, planet.y);
 
                     let fighterCount = squadronInfo.fighterCount;
                     for (let f = 0; f < fighterCount; f++) {
