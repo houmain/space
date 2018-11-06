@@ -53,14 +53,13 @@ export class GameScene extends Phaser.Scene {
 			this._galaxyDataHandler,
 			this._gameEventObserver);
 
+		this.sys.game.events.on('disconnected', this.onDisconnected, this);
 		this.sys.game.events.on('resize', this.resize, this);
 		this.resize();
 
 		this._inputHandler = new InputHandler(this, this._player, this._galaxyDataHandler.planets.list, this._clientMessageSender);
 
 		this._camera.fadeIn(1000);
-
-		this.sys.game.events.on('disconnected', this.onDisconnected, this);
 	}
 
 	private onDisconnected() {

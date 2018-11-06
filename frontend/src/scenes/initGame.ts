@@ -147,8 +147,8 @@ export class InitGameScene extends GuiScene {
 			gameEventObserver: this._gameEventObserver
 		});
 	}
-
-	protected resize() {
-		super.resize();
-	}
+	/*
+		protected resize() {
+			super.resize();
+		}*/
 }

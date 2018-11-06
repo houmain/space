@@ -98,8 +98,8 @@ export class GameInfoHandler {
     public constructor(gameEventObserver: GameEventObserver) {
 
         gameEventObserver.subscribe<EventPlayerJoined>(GameEventType.PLAYER_JOINED, this.onPlayerJoined.bind(this));
-        //gameEventObserver.subscribe<EventPlanetConquered>(GameEventType.PLANET_CONQUERED, this.onPlanetConquered.bind(this));
-        //gameEventObserver.subscribe<EventFactionDestroyed>(GameEventType.FACTION_DESTROYED, this.onFactionDestroyed.bind(this));
+        gameEventObserver.subscribe<EventPlanetConquered>(GameEventType.PLANET_CONQUERED, this.onPlanetConquered.bind(this));
+        gameEventObserver.subscribe<EventFactionDestroyed>(GameEventType.FACTION_DESTROYED, this.onFactionDestroyed.bind(this));
     }
 
     public create(scene: Phaser.Scene) {
@@ -110,8 +110,7 @@ export class GameInfoHandler {
     }
 
     private onPlayerJoined(event: EventPlayerJoined) {
-        if (!this._scene)
-            return;// todo queue
+
         let faction = event.faction;
 
         this.addInfoText({
@@ -119,30 +118,6 @@ export class GameInfoHandler {
             color: faction.color,
             type: GameInfoMessageType.PLAYER_JOINED
         });
-
-        this._scene.time.delayedCall(3000, () => {
-            this.addInfoText({
-                text: 'Testtext1',
-                color: faction.color,
-                type: GameInfoMessageType.PLAYER_JOINED
-            });
-        }, [], this);
-
-        this._scene.time.delayedCall(4000, () => {
-            this.addInfoText({
-                text: 'Einfach macht es Timo wahrscheinlich nicht mehr. Entweder er trifft gar nicht oder doppelt", sagte danach Leipzigs Trainer Rangnick',
-                color: faction.color,
-                type: GameInfoMessageType.PLAYER_JOINED
-            });
-        }, [], this);
-
-        this._scene.time.delayedCall(4000, () => {
-            this.addInfoText({
-                text: 'Testtext3 Testtext3 \n Testtext3Testtext3 ',
-                color: faction.color,
-                type: GameInfoMessageType.PLAYER_JOINED
-            });
-        }, [], this);
     }
 
     private onPlanetConquered(event: EventPlanetConquered) {

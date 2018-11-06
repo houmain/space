@@ -43,7 +43,7 @@ export class GameSceneUpdater {
 			const dy: number = squadron.planet.y - squadron.y;
 			const distance: number = Math.sqrt(dx * dx + dy * dy);
 
-			const distanceCovered: number = timeSinceLastFrame * squadron.speed;
+			const distanceCovered: number = timeSinceStart * squadron.speed;
 
 			if (distanceCovered < distance) {
 				const f: number = distanceCovered / distance;

@@ -56,7 +56,7 @@ function startGame(): void {
     const game = new SpaceGame(config);
 
     window.addEventListener('resize', function (event) {
-        game.renderer.resize(window.innerWidth, window.innerHeight);
+        game.resize(window.innerWidth, window.innerHeight); //renderer.resize(window.innerWidth, window.innerHeight);
         game.events.emit('resize');
     }, false);
 }
