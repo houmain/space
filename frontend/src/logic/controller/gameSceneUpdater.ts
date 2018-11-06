@@ -43,12 +43,12 @@ export class GameSceneUpdater {
 			const dy: number = squadron.planet.y - squadron.y;
 			const distance: number = Math.sqrt(dx * dx + dy * dy);
 
-			const distanceCovered: number = timeSinceStart * squadron.speed;
+			const distanceCovered: number = timeSinceLastFrame * 0.001 * squadron.speed;
 
 			if (distanceCovered < distance) {
 				const f: number = distanceCovered / distance;
 
-				squadron.setPositon(squadron.x + dx * f, squadron.y + dx * f);
+				squadron.setPositon(squadron.x + dx * f, squadron.y + dy * f);
 			}
 
 			squadron.fighters.forEach(fighter => {
