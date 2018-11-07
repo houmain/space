@@ -1,3 +1,5 @@
+import { parse, stringify } from 'flatted/esm';
+
 export class Engine {
 
     private static _instance: Phaser.Game;
@@ -49,5 +51,16 @@ export class StringUtils {
         }
 
         return finalText;
+    }
+}
+
+export class JSONDebugger {
+
+    public static stringify(object: any): string {
+        return stringify(object);
+    }
+
+    public static parse(jsonString: string): any {
+        return parse(jsonString);
     }
 }

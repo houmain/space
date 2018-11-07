@@ -1,4 +1,4 @@
-import { MessageGameJoined, ServerMessageType, MessageFighterCreated, ClientMessage, ClientMessageType, MessagePlayerJoined, SendSquadron, MessageSquadronSent, MessageFighterDestroyed } from '../communicationInterfaces';
+import { MessageGameJoined, ServerMessageType, MessageFighterCreated, ClientMessage, ClientMessageType, MessagePlayerJoined, SendSquadron, MessageSquadronSent, MessageFighterDestroyed, MessageSquadronAttacks, MessageSquadronDestroyed } from '../communicationInterfaces';
 import { GalaxyDataHandler } from '../../logic/data/galaxyDataHandler';
 import { CommunicationHandlerMock } from './communicationHandlerMock';
 import { DebugInfo } from '../../common/debug';
@@ -9,6 +9,8 @@ export class GameServerMock {
 
 	private _communicationHandler: CommunicationHandlerMock;
 	private _galaxyDataHandler: GalaxyDataHandler;
+
+	private _currentSquadronId = 100;
 
 	public constructor(communicationHandler: CommunicationHandlerMock, galaxyDataHandler: GalaxyDataHandler) {
 		this._communicationHandler = communicationHandler;
@@ -22,15 +24,38 @@ export class GameServerMock {
 				setTimeout(() => {
 					this._communicationHandler.receive(this.createMessagePlayerJoined());
 				}, 500);
+				/*setTimeout(() => {
+					//	this.update();
+					this._communicationHandler.receive(this.createMessageSquadronSent({
+						action: ServerMessageType.SQUADRON_SENT,
+						sourcePlanetId: 2,
+						targetPlanetId: 3,
+						fighterCount: 1
+					}));
+				}, 3000);
 				setTimeout(() => {
 					//	this.update();
-					this._communicationHandler.receive(this.createMessageFighterDestroyed());
-				}, 3000);
+					this._communicationHandler.receive(this.createMessageSquadronSent({
+						action: ServerMessageType.SQUADRON_SENT,
+						sourcePlanetId: 2,
+						targetPlanetId: 4,
+						fighterCount: 1
+					}));
+				}, 6000);*/
 				break;
 			case ClientMessageType.SEND_SQUADRON:
+				let msg = clientMessage as SendSquadron;
+				this._currentSquadronId++;
+
 				setTimeout(() => {
-					this._communicationHandler.receive(this.createMessageSquadronSent(clientMessage as SendSquadron));
+					this._communicationHandler.receive(this.createMessageSquadronSent(msg, this._currentSquadronId));
 				}, 500);
+				setTimeout(() => {
+					this._communicationHandler.receive(this.createMessageSquadronAttacks(msg, this._currentSquadronId));
+				}, 3000);
+				setTimeout(() => {
+					this._communicationHandler.receive(this.createMessageSquadronDestroyed(msg, this._currentSquadronId));
+				}, 5000);
 				break;
 		}
 	}
@@ -70,13 +95,26 @@ export class GameServerMock {
 		};
 	}
 
-	private createMessageSquadronSent(clientMessage: SendSquadron) {
+	private createMessageSquadronSent(clientMessage: SendSquadron, squadronId: number): MessageSquadronSent {
 		DebugInfo.info('[MOCK] Created SendSquadron');
 		return {
 			event: ServerMessageType.SQUADRON_SENT,
 			sourcePlanetId: clientMessage.sourcePlanetId,
 			targetPlanetId: clientMessage.targetPlanetId,
 			fighterCount: clientMessage.fighterCount,
+			factionId: 1,
+			sourceSquadronId: 1,
+			speed: 50,
+			squadronId: squadronId
+		};
+	}
+
+	private createMessageSquadronAttacks(clientMessage: SendSquadron, squadronId: number): MessageSquadronAttacks {
+		DebugInfo.info('[MOCK] Created SquadronAttacks');
+		return {
+			event: ServerMessageType.SQUADRON_ATTACKS,
+			planetId: clientMessage.targetPlanetId,
+			squadronId: squadronId
 		};
 	}
 
@@ -88,6 +126,15 @@ export class GameServerMock {
 			squadronId: 2,
 			bySquadronId: 12,
 			fighterCount: 1
+		};
+	}
+
+	private createMessageSquadronDestroyed(clientMessage: SendSquadron, squadronId: number): MessageSquadronDestroyed {
+		DebugInfo.info('[MOCK] Created SquadronDestroyed');
+		return {
+			event: ServerMessageType.SQUADRON_DESTROYED,
+			planetId: clientMessage.targetPlanetId,
+			squadronId: squadronId
 		};
 	}
 

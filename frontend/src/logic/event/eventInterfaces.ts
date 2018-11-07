@@ -1,3 +1,4 @@
+
 import { Fighter, Faction, Planet, Squadron } from '../../data/galaxyModels';
 import { Observer } from '../../common/commonInterfaces';
 
@@ -17,6 +18,7 @@ export const enum GameEventType {
 	FIGHTER_CREATED = 'fighterCreated',
 	FIGHTER_DESTROYED = 'fighterDestroyed',
 	SQUADRON_CREATED = 'squadronCreated',
+	SQUADRON_ATTACKS_PLANET = 'squadronAttacksPlanet',
 	SQUADRON_DESTROYED = 'squadronDestroyed',
 	PLANET_CONQUERED = 'planetConquered',
 	FACTION_DESTROYED = 'factionDestroyed',
@@ -41,11 +43,18 @@ export interface EventFighterCreated extends GameEvent {
 export interface EventFighterDestroyed extends GameEvent {
 	fighter: Fighter;
 }
+
 export interface EventSquadronCreated extends GameEvent {
 	squadron: Squadron;
 }
 
+export interface EventSquadronAttacksPlanet extends GameEvent {
+	planet: Planet;
+	squadron: Squadron;
+}
+
 export interface EventSquadronDestroyed extends GameEvent {
+	planet: Planet;
 	squadron: Squadron;
 }
 

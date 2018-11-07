@@ -103,18 +103,40 @@ export class GameSceneRenderer {
 		squadron.sprite = this._spriteFactory.get('squadron');
 		squadron.sprite.setPosition(squadron.x, squadron.y);
 		squadron.sprite.setOrigin(0.5);
+		squadron.sprite.visible = true;
 		if (squadron.faction) {
 			squadron.sprite.setTint(squadron.faction.color);
 		}
+		DebugInfo.info('GameSceneRenderer createSquadron');
 	}
 
 	private onSquadronDestroyed(event: EventSquadronDestroyed) {
 		let sprite = event.squadron.sprite;
+
+		let color = 0x000000;
+		if (event.squadron.faction) {
+			color = event.squadron.faction.color;
+		}
+
+		let emitter0 = this._scene.add.particles('fighter').createEmitter({
+			x: sprite.x,
+			y: sprite.y,
+			speed: { min: -80, max: 80 },
+			angle: { min: 0, max: 360 },
+			scale: { start: 5, end: 0 },
+			blendMode: 'SCREEN',
+			tint: [color],
+			lifespan: 600
+		});
+		emitter0.explode(10, sprite.x, sprite.y);
+
 		this._spriteFactory.release(sprite);
 	}
 
 	public render() {
 		let planets = this._planets.list;
+
+		const CIRCLE_RADIUS = 20;
 
 		this._background.update();
 
@@ -122,12 +144,12 @@ export class GameSceneRenderer {
 
 		planets.forEach(planet => {
 			if (planet.faction) {
-				this._graphics.lineStyle(4, planet.faction.color, 1);
+				this._graphics.lineStyle(4, planet.faction.color, 0.5);
 
 				this._graphics.strokeCircle(
 					planet.x,
 					planet.y,
-					30
+					CIRCLE_RADIUS
 				);
 			}
 		});

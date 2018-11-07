@@ -47,7 +47,6 @@ export class GameSceneUpdater {
 
 			if (distanceCovered < distance) {
 				const f: number = distanceCovered / distance;
-
 				squadron.setPositon(squadron.x + dx * f, squadron.y + dy * f);
 			}
 

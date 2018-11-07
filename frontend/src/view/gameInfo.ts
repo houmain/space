@@ -1,12 +1,15 @@
-import { GameEventObserver, EventPlayerJoined, GameEventType, EventPlanetConquered, EventFactionDestroyed } from '../logic/event/eventInterfaces';
-import { StringUtils, Engine } from '../common/utils';
+import { GameEventObserver, EventPlayerJoined, GameEventType, EventPlanetConquered, EventFactionDestroyed, EventSquadronDestroyed, EventSquadronAttacksPlanet } from '../logic/event/eventInterfaces';
+import { StringUtils } from '../common/utils';
 import { TextResources, Texts } from '../localization/textResources';
 import { NinePatch } from '@koreez/phaser3-ninepatch';
 import { BitmapText } from './gui/bitmapText';
+import { Player } from '../data/gameData';
 import { DebugInfo } from '../common/debug';
 
 enum GameInfoMessageType {
     PLAYER_JOINED,
+    SQUADRON_ATTACKS_PLANET,
+    SQUADRON_DESTROYED,
     PLANET_CONQUERED,
     FACTION_DESTROYED
 }
@@ -46,6 +49,8 @@ class GameInfoMessageBuilder {
 
         switch (msg.type) {
             case GameInfoMessageType.PLAYER_JOINED:
+            case GameInfoMessageType.SQUADRON_ATTACKS_PLANET:
+            case GameInfoMessageType.SQUADRON_DESTROYED:
             case GameInfoMessageType.PLANET_CONQUERED:
             case GameInfoMessageType.FACTION_DESTROYED:
                 info = this.buildGameInfoMessage(msg);
@@ -57,7 +62,6 @@ class GameInfoMessageBuilder {
     private buildGameInfoMessage(msg: GameInfoMessage): GameInfo {
 
         let textMargin = 10;
-
 
         let infoBox = new NinePatch(this._scene, 0, 0, 300, 50, 'infoBox', null, {
             top: 16,
@@ -87,6 +91,7 @@ class GameInfoMessageBuilder {
 
 export class GameInfoHandler {
 
+    private readonly _player: Player;
     private _scene: Phaser.Scene;
 
     private _infoBuilder: GameInfoMessageBuilder;
@@ -95,9 +100,12 @@ export class GameInfoHandler {
 
     private _container: Phaser.GameObjects.Container;
 
-    public constructor(gameEventObserver: GameEventObserver) {
+    public constructor(player: Player, gameEventObserver: GameEventObserver) {
+        this._player = player;
 
         gameEventObserver.subscribe<EventPlayerJoined>(GameEventType.PLAYER_JOINED, this.onPlayerJoined.bind(this));
+        gameEventObserver.subscribe<EventSquadronDestroyed>(GameEventType.SQUADRON_ATTACKS_PLANET, this.onSquadronAttacksPlanet.bind(this));
+        gameEventObserver.subscribe<EventSquadronDestroyed>(GameEventType.SQUADRON_DESTROYED, this.onSquadronDestroyed.bind(this));
         gameEventObserver.subscribe<EventPlanetConquered>(GameEventType.PLANET_CONQUERED, this.onPlanetConquered.bind(this));
         gameEventObserver.subscribe<EventFactionDestroyed>(GameEventType.FACTION_DESTROYED, this.onFactionDestroyed.bind(this));
     }
@@ -120,12 +128,62 @@ export class GameInfoHandler {
         });
     }
 
+    private onSquadronAttacksPlanet(event: EventSquadronAttacksPlanet) {
+        let squadron = event.squadron;
+        let planet = event.planet;
+
+        let text;
+
+        if (planet.faction && planet.faction.id === this._player.faction.id) {
+            text = StringUtils.fillText(TextResources.getText(Texts.GAME.PLAYER_PLANET_UNDER_ATTACK), planet.name, squadron.faction.name);
+        }
+
+        if (text) {
+            this.addInfoText({
+                text: text,
+                color: 0xff0000,
+                type: GameInfoMessageType.SQUADRON_ATTACKS_PLANET
+            });
+        }
+    }
+
+    private onSquadronDestroyed(event: EventSquadronDestroyed) {
+        let squadron = event.squadron;
+        let planet = event.planet;
+
+        let text;
+
+        if (squadron.faction && squadron.faction.id === this._player.faction.id) {
+            text = StringUtils.fillText(TextResources.getText(Texts.GAME.PLAYER_ATTACK_FAILED), planet.name);
+        } else {
+            if (planet.faction && planet.faction.id === this._player.faction.id) {
+                //text = StringUtils.fillText(TextResources.getText(Texts.GAME.PLAYER_REPELLED_ATTACK), planet.name);
+            }
+        }
+
+        if (text) {
+            this.addInfoText({
+                text: text,
+                color: 0xffffff,
+                type: GameInfoMessageType.SQUADRON_DESTROYED
+            });
+        }
+    }
+
     private onPlanetConquered(event: EventPlanetConquered) {
         let faction = event.faction;
         let planet = event.planet;
 
+        let text = '';
+
+        if (faction.id === this._player.faction.id) {
+            text = StringUtils.fillText(TextResources.getText(Texts.GAME.PLAYER_CONQUERED_PLANET), planet.name);
+        } else {
+            text = StringUtils.fillText(TextResources.getText(Texts.GAME.FACTION_CONQUERED_PLANET), faction.name, planet.name);
+        }
+
         this.addInfoText({
-            text: StringUtils.fillText(TextResources.getText(Texts.GAME.PLANET_CONQUERED), faction.name, planet.name),
+            text: text,
             color: faction.color,
             type: GameInfoMessageType.PLANET_CONQUERED
         });
@@ -134,8 +192,15 @@ export class GameInfoHandler {
     private onFactionDestroyed(event: EventFactionDestroyed) {
         let faction = event.faction;
 
+        let text = '';
+        if (faction.id === this._player.faction.id) {
+            text = StringUtils.fillText(TextResources.getText(Texts.GAME.PLAYER_GAME_OVER));
+        } else {
+            text = StringUtils.fillText(TextResources.getText(Texts.GAME.FACTION_DESTROYED), faction.name);
+        }
+
         this.addInfoText({
-            text: StringUtils.fillText(TextResources.getText(Texts.GAME.FACTION_DESTROYED), faction.name),
+            text: text,
             color: faction.color,
             type: GameInfoMessageType.FACTION_DESTROYED
         });
@@ -147,19 +212,22 @@ export class GameInfoHandler {
 
     private showInfoText(msg: GameInfoMessage) {
         let info = this._infoBuilder.buildGameInfo(msg);
-        info.lifetime = 5000;
-        info.x = 0;
-        info.alpha = 0;
 
-        this._container.add(info);
-        this._infoMessages.push(info);
+        if (info) {
+            info.lifetime = 5000;
+            info.x = 0;
+            info.alpha = 0;
 
-        this._scene.tweens.add({
-            targets: info,
-            alpha: 1,
-            duration: 500,
-            ease: 'Linear',
-        });
+            this._container.add(info);
+            this._infoMessages.push(info);
+
+            this._scene.tweens.add({
+                targets: info,
+                alpha: 1,
+                duration: 500,
+                ease: 'Linear',
+            });
+        }
     }
 
     public update(timeElapsed: number) {
@@ -208,7 +276,6 @@ export class GameInfoHandler {
 
         this._infoMessages.forEach(info => {
             totalHeight += (info.height + distance);
-            DebugInfo.info('info.height ' + info.height + 'totalHeight' + totalHeight);
             info.y = -totalHeight;
         });
     }

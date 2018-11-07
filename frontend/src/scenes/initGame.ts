@@ -88,7 +88,7 @@ export class InitGameScene extends GuiScene {
 		this._gameEventObserver = new GameEventObserverImpl();
 
 		new GameLogicController(this._game.player, this._serverMessageObserver, this._galaxyDataHandler, this._gameEventObserver);
-		this._gameInfoHandler = new GameInfoHandler(this._gameEventObserver);
+		this._gameInfoHandler = new GameInfoHandler(this._game.player, this._gameEventObserver);
 
 		this._infoText = this.add.bitmapText(this.sys.canvas.width / 2, this.sys.canvas.height / 2, 'font_8', TextResources.getText(Texts.INIT_GAME.JOINING_GAME));
 		this._infoText.setOrigin(0.5, 0.5);

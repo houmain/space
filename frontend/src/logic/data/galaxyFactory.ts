@@ -1,4 +1,4 @@
-import { Galaxy, Planet, Faction, Squadron } from '../../data/galaxyModels';
+import { Galaxy, Planet, Faction, Squadron, Fighter } from '../../data/galaxyModels';
 import { FactionInfo, PlanetInfo, SquadronInfo } from '../../communication/communicationInterfaces';
 import { GalaxyObjectFactory } from './galaxyObjectFactory';
 
@@ -64,6 +64,7 @@ export class GalaxyFactory {
                         fighter.setPositon(planet.x, planet.y);
                         fighter.orbitingAngle = f * 360 / fighterCount;
                         fighter.squadron = squadron;
+                        fighter.orbitingDistance = Fighter.FIGHTER_ORBITING_DISTANCE_PLANET;
                         squadron.fighters.push(fighter);
                     }
 

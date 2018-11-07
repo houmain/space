@@ -73,7 +73,6 @@ export class Squadron {
         return this._sprite;
     }
 
-
     static reset(squadron: Squadron) {
         squadron.id = 0;
         squadron._x = 0;
@@ -82,15 +81,21 @@ export class Squadron {
         squadron.fighters.splice(0);
         squadron.planet = null;
         squadron._sprite = null;
+        squadron.speed = 0;
     }
 }
 
 export class Fighter {
+
+
+    static readonly FIGHTER_ORBITING_DISTANCE_PLANET = 30;
+    static readonly FIGHTER_ORBITING_DISTANCE_MOVING = 10;
+
     private _x: number = 0;
     private _y: number = 0;
     private _sprite: Phaser.GameObjects.Sprite = null;
-    orbitingAngle: number = 0;
-    orbitingDistance: number = 100;
+    orbitingAngle: number;
+    orbitingDistance: number;
     squadron: Squadron;
 
     public constructor() {
@@ -127,7 +132,7 @@ export class Fighter {
         fighter._y = 0;
         fighter._sprite = null;
         fighter.orbitingAngle = 0;
-        fighter.orbitingDistance = 100;
+        fighter.orbitingDistance = Fighter.FIGHTER_ORBITING_DISTANCE_PLANET;
         fighter.squadron = null;
     }
 }
