@@ -49,6 +49,8 @@ export class GameScene extends Phaser.Scene {
 		this._camera.centerToBounds();
 
 		this._gameSceneUpdater = new GameSceneUpdater(this._galaxyDataHandler);
+		this._gameSceneUpdater.init();
+
 		this._gameRenderer = new GameSceneRenderer(this,
 			this._galaxyDataHandler,
 			this._gameEventObserver);

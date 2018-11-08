@@ -7,10 +7,21 @@
         {
             "type": "chrome",
             "request": "launch",
-            "runtimeExecutable": "/usr/bin/chromium",
+            // "runtimeExecutable": "/usr/bin/chromium",
             "name": "Launch Chrome against localhost",
             "url": "http://localhost:8080",
-            "webRoot": "${workspaceFolder}"
+            "webRoot": "${workspaceFolder}/src",
+            "sourceMaps": true,
+            "sourceMapPathOverrides": {
+                "*": "${webRoot}/*"
+            }
+        },
+        {
+            "type": "chrome",
+            "request": "attach",
+            "name": "Attach to Chrome",
+            "port": 9222,
+            "webRoot": "${workspaceRoot}/src"
         }
     ]
 }

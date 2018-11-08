@@ -1,0 +1,44 @@
+{"frames": [
+
+{
+	"filename": "fighter.png",
+	"frame": {"x":261,"y":13,"w":3,"h":3},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":3,"h":3},
+	"sourceSize": {"w":3,"h":3}
+},
+{
+	"filename": "planet_1.png",
+	"frame": {"x":1,"y":1,"w":128,"h":128},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "planet_13.png",
+	"frame": {"x":131,"y":1,"w":128,"h":128},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "squadron.png",
+	"frame": {"x":261,"y":1,"w":10,"h":10},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":10,"h":10},
+	"sourceSize": {"w":10,"h":10}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "game.png",
+	"format": "RGBA8888",
+	"size": {"w":272,"h":130},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:51b9d94fcc920c4a2fa3bdc62b77a4a2:f9d913700f7ff73d1ed3cbceca3a5875:fc2835210f98bae8e8c1b7f0a84c9321$"
+}
+}

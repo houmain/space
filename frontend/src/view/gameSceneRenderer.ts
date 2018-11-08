@@ -6,7 +6,13 @@ import { Map } from '../common/collections';
 import { GameEventObserver, EventFighterCreated, GameEventType, EventFighterDestroyed, EventSquadronCreated, EventSquadronDestroyed } from '../logic/event/eventInterfaces';
 import { DebugInfo } from '../common/debug';
 
+const LAYER_PLANETS = 0;
+const LAYER_SQUADRONS = 1;
+const LAYER_FIGHTER = 2;
+
 export class GameSceneRenderer {
+
+
 
 	private _scene: Phaser.Scene;
 	private _spriteFactory: GalaxySpriteFactory;
@@ -66,6 +72,7 @@ export class GameSceneRenderer {
 	private createPlanet(planet: Planet) {
 		planet.sprite = this._scene.add.sprite(0, 0, planet.parent ? 'planet' : 'sun');
 		planet.sprite.setScale(planet.parent ? 0.25 : 0.35);
+		planet.sprite.setDepth(LAYER_PLANETS);
 	}
 
 	private onFighterCreated(event: EventFighterCreated) {
@@ -76,8 +83,9 @@ export class GameSceneRenderer {
 	private createFighter(fighter: Fighter) {
 		let squadron = fighter.squadron;
 
-		let sprite = this._spriteFactory.get('fighter');
-
+		let sprite = this._spriteFactory.get('fighter.png');
+		sprite.setDepth(LAYER_FIGHTER);
+		sprite.setVisible(true);
 		if (squadron.faction) {
 			sprite.setTint(squadron.faction.color);
 		}
@@ -100,36 +108,41 @@ export class GameSceneRenderer {
 	}
 
 	private createSquadron(squadron: Squadron) {
-		squadron.sprite = this._spriteFactory.get('squadron');
-		squadron.sprite.setPosition(squadron.x, squadron.y);
-		squadron.sprite.setOrigin(0.5);
-		squadron.sprite.visible = true;
+		let sprite = this._spriteFactory.get('squadron.png');
+
+		sprite.setPosition(squadron.x, squadron.y);
+		sprite.setOrigin(0.5);
+		sprite.setVisible(true);
+		sprite.setDepth(LAYER_SQUADRONS);
+
 		if (squadron.faction) {
-			squadron.sprite.setTint(squadron.faction.color);
+			sprite.setTint(squadron.faction.color);
 		}
+
+		squadron.sprite = sprite;
 		DebugInfo.info('GameSceneRenderer createSquadron');
 	}
 
 	private onSquadronDestroyed(event: EventSquadronDestroyed) {
 		let sprite = event.squadron.sprite;
+		/*
+				let color = 0x000000;
+				if (event.squadron.faction) {
+					color = event.squadron.faction.color;
+				}
 
-		let color = 0x000000;
-		if (event.squadron.faction) {
-			color = event.squadron.faction.color;
-		}
-
-		let emitter0 = this._scene.add.particles('fighter').createEmitter({
-			x: sprite.x,
-			y: sprite.y,
-			speed: { min: -80, max: 80 },
-			angle: { min: 0, max: 360 },
-			scale: { start: 5, end: 0 },
-			blendMode: 'SCREEN',
-			tint: [color],
-			lifespan: 600
-		});
-		emitter0.explode(10, sprite.x, sprite.y);
-
+				let emitter0 = this._scene.add.particles('fighter').createEmitter({
+					x: sprite.x,
+					y: sprite.y,
+					speed: { min: -80, max: 80 },
+					angle: { min: 0, max: 360 },
+					scale: { start: 5, end: 0 },
+					blendMode: 'SCREEN',
+					tint: [color],
+					lifespan: 600
+				});
+				emitter0.explode(10, sprite.x, sprite.y);
+		*/
 		this._spriteFactory.release(sprite);
 	}
 

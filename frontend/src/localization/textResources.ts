@@ -14,6 +14,7 @@ class TextResourcesInitGame {
 
 class TextResourcesGame {
 	//---- Planet info ---------------
+	public readonly FACTION = 'game.faction';
 	public readonly MAINTAINANCE = 'game.maintainance';
 	public readonly PRODUCTIVITY = 'game.productivity';
 	public readonly DEFENSE = 'game.defense';
@@ -59,6 +60,7 @@ export class TextResources {
 		TextResources._resources[Texts.INIT_GAME.TITLE] = 'loading game';
 		TextResources._resources[Texts.INIT_GAME.JOINING_GAME] = 'joining game';
 
+		TextResources._resources[Texts.GAME.FACTION] = 'faction';
 		TextResources._resources[Texts.GAME.MAINTAINANCE] = 'maintainance';
 		TextResources._resources[Texts.GAME.PRODUCTIVITY] = 'productivity';
 		TextResources._resources[Texts.GAME.DEFENSE] = 'defense';

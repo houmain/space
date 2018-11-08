@@ -12,20 +12,41 @@ export class GameSceneUpdater {
 		this._movingSquadrons = galaxyDataHandler.movingSquadrons;
 	}
 
+	public init() {
+		this.initializePositions(0, 0);
+	}
+
+	private initializePositions(timeSinceStart: number, timeSinceLastFrame: number) {
+		let planets = this._planets.list;
+		planets.forEach(planet => {
+			let angle = planet.initialAngle + planet.angularVelocity * timeSinceStart;
+			planet.setPosition(Math.cos(angle) * planet.distance, Math.sin(angle) * planet.distance);
+
+			if (planet.parent) {
+				planet.setPosition(planet.x + planet.parent.x, planet.y + planet.parent.y);
+			}
+
+			let squadrons = planet.squadrons.list;
+			squadrons.forEach(squadron => {
+				squadron.setPositon(planet.x, planet.y);
+
+				squadron.fighters.forEach(fighter => {
+					fighter.setPosition(planet.x, planet.y);
+				});
+			});
+		});
+	}
+
 	public update(timeSinceStart: number, timeSinceLastFrame: number) {
 
 		let planets = this._planets.list;
 		planets.forEach(planet => {
 			let angle = planet.initialAngle + planet.angularVelocity * timeSinceStart;
-			planet.x = Math.cos(angle) * planet.distance;
-			planet.y = Math.sin(angle) * planet.distance;
-			if (planet.parent) {
-				planet.x += planet.parent.x;
-				planet.y += planet.parent.y;
-			}
+			planet.setPosition(Math.cos(angle) * planet.distance, Math.sin(angle) * planet.distance);
 
-			planet.sprite.x = planet.x;
-			planet.sprite.y = planet.y;
+			if (planet.parent) {
+				planet.setPosition(planet.x + planet.parent.x, planet.y + planet.parent.y);
+			}
 
 			let squadrons = planet.squadrons.list;
 			squadrons.forEach(squadron => {
@@ -73,7 +94,7 @@ export class GameSceneUpdater {
 			range = range.normalize().scale(speed);
 		}
 
-		fighter.setPositon(fighter.x + range.x, fighter.y + range.y);
+		fighter.setPosition(fighter.x + range.x, fighter.y + range.y);
 
 		let newOrbitingAngle = fighter.orbitingAngle + ANGULAR_VELOCITY * timeSinceLastFrame * 5;
 		targetX = fighter.squadron.x + Math.cos(newOrbitingAngle) * fighter.orbitingDistance;

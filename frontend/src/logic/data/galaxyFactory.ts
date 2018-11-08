@@ -39,8 +39,7 @@ export class GalaxyFactory {
             planet.productionRate = planetInfo.productionRate;
             planet.productionProgress = planetInfo.productionProgress;
             planet.defenseBonus = planetInfo.defenseBonus;
-            planet.x = Math.cos(planet.initialAngle) * planet.distance;
-            planet.y = Math.sin(planet.initialAngle) * planet.distance;
+            planet.setPosition(Math.cos(planet.initialAngle) * planet.distance, Math.sin(planet.initialAngle) * planet.distance);
 
             if (planetInfo.faction) {
                 planet.faction = factionMap[planetInfo.faction];
@@ -61,7 +60,7 @@ export class GalaxyFactory {
                     let fighterCount = squadronInfo.fighterCount;
                     for (let f = 0; f < fighterCount; f++) {
                         let fighter = galaxyObjectFactory.buildFighter();
-                        fighter.setPositon(planet.x, planet.y);
+                        fighter.setPosition(planet.x, planet.y);
                         fighter.orbitingAngle = f * 360 / fighterCount;
                         fighter.squadron = squadron;
                         fighter.orbitingDistance = Fighter.FIGHTER_ORBITING_DISTANCE_PLANET;
@@ -82,6 +81,16 @@ export class GalaxyFactory {
             squadron.id = squadronInfo.squadronId;
             squadron.planet = null;
             squadrons.push(squadron);
+
+            let fighterCount = squadronInfo.fighterCount;
+            for (let f = 0; f < fighterCount; f++) {
+                let fighter = galaxyObjectFactory.buildFighter();
+                fighter.setPosition(squadron.x, squadron.y);
+                fighter.orbitingAngle = f * 360 / fighterCount;
+                fighter.squadron = squadron;
+                fighter.orbitingDistance = Fighter.FIGHTER_ORBITING_DISTANCE_PLANET;
+                squadron.fighters.push(fighter);
+            }
         });
 
         factions.forEach(faction => {

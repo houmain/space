@@ -11,17 +11,42 @@ export class Planet {
     name: string;
     parent: Planet;
     faction: Faction;
-    x: number;
-    y: number;
+    private _x: number;
+    private _y: number;
     distance: number = 0;
     initialAngle: number = 0;
     angularVelocity: number = 0;
-    sprite: Phaser.GameObjects.Sprite;
+    private _sprite: Phaser.GameObjects.Sprite = null;
     squadrons: Map<Squadron> = new Map<Squadron>();
     maxUpkeep: number = 0;
     productionRate: number = 0;
     productionProgress: number = 0;
     defenseBonus: number = 0;
+
+    public get x() {
+        return this._x;
+    }
+
+    public get y() {
+        return this._y;
+    }
+
+    public set sprite(sprite: Phaser.GameObjects.Sprite) {
+        this._sprite = sprite;
+        this._sprite.setPosition(this._x, this._y);
+    }
+
+    public get sprite(): Phaser.GameObjects.Sprite {
+        return this._sprite;
+    }
+
+    public setPosition(x: number, y: number) {
+        this._x = x;
+        this._y = y;
+        if (this._sprite) {
+            this._sprite.setPosition(x, y);
+        }
+    }
 }
 
 export class Faction {
@@ -87,7 +112,6 @@ export class Squadron {
 
 export class Fighter {
 
-
     static readonly FIGHTER_ORBITING_DISTANCE_PLANET = 30;
     static readonly FIGHTER_ORBITING_DISTANCE_MOVING = 10;
 
@@ -110,7 +134,7 @@ export class Fighter {
         return this._y;
     }
 
-    public setPositon(x: number, y: number) {
+    public setPosition(x: number, y: number) {
         this._x = x;
         this._y = y;
         if (this._sprite) {

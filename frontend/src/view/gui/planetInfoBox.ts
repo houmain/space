@@ -14,6 +14,7 @@ export class PlanetInfoBox extends Phaser.GameObjects.Container {
 	private _selectedPlanets: Planet[];
 
 	private _planetName: Phaser.GameObjects.BitmapText;
+	private _factionName: Phaser.GameObjects.BitmapText;
 	private _numFighters: Phaser.GameObjects.BitmapText;
 
 	private _factionId: number;
@@ -28,7 +29,7 @@ export class PlanetInfoBox extends Phaser.GameObjects.Container {
 		this._gameEventObserver = gameEventObserver;
 		this._factionId = factionId;
 
-		let planetInfoBox = new NinePatch(this._scene, 0, 0, 200, 320, 'infoBox', null, {
+		let planetInfoBox = new NinePatch(this._scene, 0, 0, 240, 370, 'infoBox', null, {
 			top: 16, // Amount of pixels for top
 			bottom: 16, // Amount of pixels for bottom
 			left: 16, // Amount of pixels for left
@@ -47,18 +48,24 @@ export class PlanetInfoBox extends Phaser.GameObjects.Container {
 		this._planetName.setOrigin(0.5);
 		this.add(this._planetName);
 
-		this.addLabel(planetInfoBox.width / 2, 110, TextResources.getText(Texts.GAME.FIGHTERS));
-		this._numFighters = scene.add.bitmapText(planetInfoBox.width / 2 - 20, 120, 'gameHudCounter', '7', 32);
+		this.addLabel(planetInfoBox.width / 2, 110, TextResources.getText(Texts.GAME.FACTION));
+		this._factionName = scene.add.bitmapText(planetInfoBox.width / 2, 130, 'infoText', 'Factionxxx');
+		this._factionName.setOrigin(0.5);
+		this._factionName.setTint(0x02a3dd);
+		this.add(this._factionName);
+
+		this.addLabel(planetInfoBox.width / 2, 160, TextResources.getText(Texts.GAME.FIGHTERS));
+		this._numFighters = scene.add.bitmapText(planetInfoBox.width / 2 - 20, 170, 'gameHudCounter', '7', 32);
 		this._numFighters.setOrigin(0, 0);
 		this._numFighters.setTint(0x02a3dd);
 		this.add(this._numFighters);
 
-		this.addLabel(planetInfoBox.width / 2, 170, TextResources.getText(Texts.GAME.MAINTAINANCE));
-		this._starsMaintainance = this.addStars(60, 200);
-		this.addLabel(planetInfoBox.width / 2, 220, TextResources.getText(Texts.GAME.PRODUCTIVITY));
-		this._starsProductivity = this.addStars(60, 250);
-		this.addLabel(planetInfoBox.width / 2, 270, TextResources.getText(Texts.GAME.DEFENSE));
-		this._starsDefense = this.addStars(60, 300);
+		this.addLabel(planetInfoBox.width / 2, 220, TextResources.getText(Texts.GAME.MAINTAINANCE));
+		this._starsMaintainance = this.addStars(60, 250);
+		this.addLabel(planetInfoBox.width / 2, 270, TextResources.getText(Texts.GAME.PRODUCTIVITY));
+		this._starsProductivity = this.addStars(60, 300);
+		this.addLabel(planetInfoBox.width / 2, 320, TextResources.getText(Texts.GAME.DEFENSE));
+		this._starsDefense = this.addStars(60, 350);
 	}
 
 	private addLabel(x: number, y: number, label: string) {
@@ -101,6 +108,7 @@ export class PlanetInfoBox extends Phaser.GameObjects.Container {
 
 	private updateInfoBox() {
 		let planetName = '';
+		let factionName = '';
 		let numFighters = 0;
 		let productivity = 0;
 		let maintainance = 0;
@@ -109,14 +117,21 @@ export class PlanetInfoBox extends Phaser.GameObjects.Container {
 		if (this._selectedPlanets.length === 1) {
 			let planet = this._selectedPlanets[0];
 			planetName = planet.name;
+			if (planet.faction) {
+				factionName = planet.faction.name;
+			}
 			numFighters = PlanetUtils.getNumFightersByFactionId(planet, this._factionId);
 			productivity = planet.productionRate;
 			maintainance = planet.maxUpkeep;
 			defense = planet.defenseBonus;
 		} else if (this._selectedPlanets.length > 0) {
 			planetName = `${this._selectedPlanets.length} planets`;
-			this._selectedPlanets.forEach(planet => {
 
+			if (this._selectedPlanets[0].faction) {
+				factionName = this._selectedPlanets[0].faction.name;
+			}
+
+			this._selectedPlanets.forEach(planet => {
 				numFighters += PlanetUtils.getNumFightersByFactionId(planet, this._factionId);
 				productivity += planet.productionRate;
 				maintainance += planet.maxUpkeep;
@@ -129,6 +144,7 @@ export class PlanetInfoBox extends Phaser.GameObjects.Container {
 		}
 
 		this._planetName.setText(planetName);
+		this._factionName.setText(factionName);
 		this._numFighters.setText(numFighters.toString());
 
 		this.updateStars(this._starsProductivity, this.getNumActiveProductivityStars(productivity));

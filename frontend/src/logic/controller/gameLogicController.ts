@@ -8,6 +8,7 @@ import { GameEventNotifier, GameEvent, EventPlayerJoined, GameEventType, EventFi
 import { GalaxyObjectFactory } from '../data/galaxyObjectFactory';
 import { GalaxyFactory } from '../data/galaxyFactory';
 import { JSONDebugger } from '../../common/utils';
+import { PlanetUtils } from '../utils/utils';
 
 export class GameLogicController {
 
@@ -61,7 +62,7 @@ export class GameLogicController {
 
 		if (squadron) {
 			let fighter = this._galaxyObjectfactory.buildFighter();
-			fighter.setPositon(squadron.planet.x, squadron.planet.y);
+			fighter.setPosition(squadron.planet.x, squadron.planet.y);
 			fighter.orbitingAngle = 0;
 			fighter.squadron = squadron;
 			fighter.orbitingDistance = Fighter.FIGHTER_ORBITING_DISTANCE_PLANET;
@@ -143,23 +144,18 @@ export class GameLogicController {
 		let planet = this._galaxyDataHandler.planets.get(msg.planetId);
 		let targetSquadron = planet.squadrons.get(msg.intoSquadronId);
 
-		let fighters: Fighter[] = sourceSquadron.fighters.splice(0, sourceSquadron.fighters.length);
-
-		fighters.forEach(fighter => {
-			fighter.orbitingDistance = Fighter.FIGHTER_ORBITING_DISTANCE_PLANET;
-		});
-		targetSquadron.fighters.push(...fighters);
+		this.handOverFighters(sourceSquadron, targetSquadron);
 
 		Assert.equals(targetSquadron.fighters.length, msg.fighterCount, `Game::squadronsMerged: Incorrect Fighter count client: ${targetSquadron.fighters.length} server: ${msg.fighterCount}`);
 		this._galaxyDataHandler.movingSquadrons.delete(sourceSquadron.id);
 		DebugInfo.info(`Removed squadron ${sourceSquadron.id} from moving squadrons.`);
 
-		this.deleteSquadron(sourceSquadron, planet);
+		this.deleteSquadron(sourceSquadron);
 
 		DebugInfo.info(`Squadrons merged. Now ${this._galaxyDataHandler.movingSquadrons.length} moving squadrons.`);
 	}
 
-	private deleteSquadron(squadron: Squadron, planet: Planet) {
+	private deleteSquadron(squadron: Squadron, planet?: Planet) {
 
 		this._gameEventNotifier.notify<EventSquadronDestroyed>(GameEventType.SQUADRON_DESTROYED, {
 			type: GameEventType.SQUADRON_DESTROYED,
@@ -178,12 +174,19 @@ export class GameLogicController {
 			DebugInfo.error(`No squadron found with id ${msg.squadronId} in moving squadrons!`);
 		}
 
-		let planet = this._galaxyDataHandler.planets.get(msg.planetId);
-		planet.squadrons.add(sentSquadron.id, sentSquadron);
-
 		sentSquadron.fighters.forEach(fighter => {
 			fighter.orbitingDistance = Fighter.FIGHTER_ORBITING_DISTANCE_PLANET;
 		});
+
+		let planet = this._galaxyDataHandler.planets.get(msg.planetId);
+
+		let quastl = PlanetUtils.getSquadronByFactionId(planet, sentSquadron.faction.id);
+		if (quastl) {
+			this.handOverFighters(sentSquadron, quastl);
+			// todo kommt das noch eine destroyed nachricht?
+		} else {
+			planet.squadrons.add(sentSquadron.id, sentSquadron);
+		}
 
 		DebugInfo.info(`Removed squadron ${sentSquadron.id} from moving squadrons, now ${this._galaxyDataHandler.movingSquadrons.length} moving squadrons.`);
 		DebugInfo.info(`Squadron ${sentSquadron.id} attacks planet ${planet.name}.`);
@@ -194,6 +197,15 @@ export class GameLogicController {
 			squadron: sentSquadron,
 			planet: planet
 		});
+	}
+
+	private handOverFighters(sourceSquadron: Squadron, targetSquadron: Squadron) {
+		let fighters: Fighter[] = sourceSquadron.fighters.splice(0, sourceSquadron.fighters.length);
+		fighters.forEach(fighter => {
+			fighter.squadron = targetSquadron;
+			fighter.orbitingDistance = Fighter.FIGHTER_ORBITING_DISTANCE_PLANET;
+		});
+		targetSquadron.fighters.push(...fighters);
 	}
 
 	private onFighterDestroyed(msg: MessageFighterDestroyed) {

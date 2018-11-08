@@ -51,11 +51,12 @@ export class InitGameScene extends GuiScene {
 		this.load.image('planet', './images/planet_1.png');
 		this.load.image('sun', './images/planet_13.png');
 		this.load.image('pixel', './images/pixel.png');
-		this.load.image('squadron', './images/squadron.png');
-		this.load.image('fighter', './images/fighter.png');
+		//	this.load.image('squadron', './images/squadron.png');
+		//	this.load.image('fighter', './images/fighter.png');
 
 		// Textureatlas
 		this.load.atlas(Assets.ATLAS.HUD, './spritesheets/game_gui.png', './spritesheets/game_gui.json');
+		this.load.atlas(Assets.ATLAS.GAME, './spritesheets/game.png', './spritesheets/game.json');
 
 		// fonts
 		this.load.bitmapFont('gameHudCounter', './fonts/font_counter_-export.png', './fonts/font_counter_-export.xml');
@@ -147,8 +148,8 @@ export class InitGameScene extends GuiScene {
 			gameEventObserver: this._gameEventObserver
 		});
 	}
-	/*
-		protected resize() {
-			super.resize();
-		}*/
+
+	protected resize() {
+		super.resize();
+	}
 }

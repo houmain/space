@@ -39,3 +39,4 @@ https://christosmonogios.com/2016/10/29/Create-A-Linked-List-With-TypeScript/ Li
 # Assets
 https://sourceforge.net/projects/spacescape/ galaxy skybox generator
 https://wingless-seraph.net/en/material-music.html Music
+http://www.texturesforplanets.com/index.shtml

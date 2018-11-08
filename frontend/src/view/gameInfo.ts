@@ -61,7 +61,8 @@ class GameInfoMessageBuilder {
 
     private buildGameInfoMessage(msg: GameInfoMessage): GameInfo {
 
-        let textMargin = 10;
+        let textMarginLeft = 20;
+        let textMarginTop = 10;
 
         let infoBox = new NinePatch(this._scene, 0, 0, 300, 50, 'infoBox', null, {
             top: 16,
@@ -73,13 +74,13 @@ class GameInfoMessageBuilder {
         infoBox.setAlpha(0.5);
         this._scene.add.existing(infoBox);
 
-        let infoText = new BitmapText(this._scene, textMargin, textMargin, 'gameInfo', msg.text);
+        let infoText = new BitmapText(this._scene, textMarginLeft, textMarginTop, 'gameInfo', msg.text);
         infoText.setOrigin(0, 0);
         infoText.setWordWrapWidth(infoBox.width);
         this._scene.add.existing(infoText);
 
-        if (infoText.height + textMargin > infoBox.height) {
-            infoBox.resize(300, infoText.height + textMargin * 2);
+        if (infoText.height + textMarginTop > infoBox.height) {
+            infoBox.resize(300, infoText.height + textMarginTop * 2);
         }
 
         let info = new GameInfo(this._scene, infoBox);
@@ -153,10 +154,10 @@ export class GameInfoHandler {
 
         let text;
 
-        if (squadron.faction && squadron.faction.id === this._player.faction.id) {
+        if (planet && squadron.faction && squadron.faction.id === this._player.faction.id) {
             text = StringUtils.fillText(TextResources.getText(Texts.GAME.PLAYER_ATTACK_FAILED), planet.name);
         } else {
-            if (planet.faction && planet.faction.id === this._player.faction.id) {
+            if (planet && planet.faction && planet.faction.id === this._player.faction.id) {
                 //text = StringUtils.fillText(TextResources.getText(Texts.GAME.PLAYER_REPELLED_ATTACK), planet.name);
             }
         }
