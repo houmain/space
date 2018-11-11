@@ -6,6 +6,8 @@ export class GalaxyFactory {
 
     public static create(galaxyObjectFactory: GalaxyObjectFactory, factionInfos: FactionInfo[], planetInfos: PlanetInfo[], squadronInfos: SquadronInfo[]): Galaxy {
 
+
+
         let galaxy = new Galaxy();
 
         let infoMap: { [id: number]: PlanetInfo; } = {};

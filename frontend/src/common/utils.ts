@@ -64,3 +64,34 @@ export class JSONDebugger {
         return parse(jsonString);
     }
 }
+
+export interface RandomNumberGenerator {
+    random(): number;
+
+    next(min: number, max: number): number;
+}
+
+export class ArrayUtils {
+
+    public static shuffle<T>(array: T[], rng: RandomNumberGenerator): T[] {
+
+        let counter = array.length;
+
+        // While there are elements in the array
+        while (counter > 0) {
+            // Pick a random index
+            let index = Math.floor(rng.random() * counter);
+
+            // Decrease counter by 1
+            counter--;
+
+            // And swap the last element with it
+            let temp = array[counter];
+            array[counter] = array[index];
+            array[index] = temp;
+        }
+
+        return array;
+    }
+}
+

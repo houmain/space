@@ -4,7 +4,6 @@ Frontend
 - add optional initial size for pools
 - redirect to error scene on disconnect
 - use enum for sysevents instead of strings
-- create fighters for mobding squadrons at the beginning
 
 Backend
 - at init message planetId of target planet, speed, position etc at squadrons is missing
@@ -12,8 +11,7 @@ Backend
 
 ## Known bugs
 ------------
-- squadrons are not in the center of a planet
-- selecting multiple player planets
+
 
 ## Links
 ------------
@@ -40,3 +38,21 @@ https://christosmonogios.com/2016/10/29/Create-A-Linked-List-With-TypeScript/ Li
 https://sourceforge.net/projects/spacescape/ galaxy skybox generator
 https://wingless-seraph.net/en/material-music.html Music
 http://www.texturesforplanets.com/index.shtml
+
+assets
+https://dinvstudio.itch.io/dynamic-space-background-lite-free
+https://sinestesia.itch.io/2d-explosions-animations
+https://sinestesia.itch.io/free-2d-explosion-animations-2
+https://v-ktor.itch.io/nebula-background-images
+https://v-ktor.itch.io/planet-sprites
+https://v-ktor.itch.io/star-sprites
+https://jimmyjohn99.itch.io/particle-fx-sprite-sheet-pack
+https://timothyadan.itch.io/scifi-tactics-sfx-bundle
+https://cool-cat-game-studio.itch.io/sci-fi-music-pack
+https://solarphasing.itch.io/industrial-noises-ambient-1-sfx-sound
+https://bleeoop.itch.io/interface-bleeps
+https://itch.io/game-assets/free
+ 
+
+# Utils
+http://free-tex-packer.com/
