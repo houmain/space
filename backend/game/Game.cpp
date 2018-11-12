@@ -296,6 +296,8 @@ void Game::send_squadron(Faction& faction, const json::Value& value) {
   if (fighter_count > 0) {
     source_squadron->fighter_count -= fighter_count;
     auto squadron = create_squadron(target_planet, fighter_count, &faction);
+    squadron.x = source_planet.x;
+    squadron.y = source_planet.y;
     m_moving_squadrons.push_back(squadron);
     broadcast(build_squadron_sent_message(*source_squadron, squadron));
   }
