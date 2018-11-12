@@ -1,5 +1,6 @@
 import { Scenes } from './scenes';
 import { Assets } from '../view/assets';
+import { SceneEvents } from '../logic/event/eventInterfaces';
 
 class LoadingBar {
     private _container: Phaser.GameObjects.Container;
@@ -65,7 +66,7 @@ export class Preloader extends Phaser.Scene {
 
         this.loadMainMenuAssets();
 
-        this.sys.game.events.on('resize', this.resize, this);
+        this.sys.game.events.on(SceneEvents.RESIZE, this.resize, this);
         this.resize();
     }
 

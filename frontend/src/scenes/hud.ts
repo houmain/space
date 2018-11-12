@@ -1,12 +1,12 @@
 import { GameInfoHandler } from '../view/gameInfo';
 import { Player } from '../data/gameData';
-import { Scenes, GameSceneEvents } from './scenes';
+import { Scenes } from './scenes';
 import { PlayerHud } from '../view/playerHud';
 import { Assets } from '../view/assets';
 import { Planet } from '../data/galaxyModels';
 import { PlanetInfoBox } from '../view/gui/planetInfoBox';
 import { ImageButton } from '../view/gui/guiModels';
-import { GameEventObserver } from '../logic/event/eventInterfaces';
+import { GameEventObserver, SceneEvents } from '../logic/event/eventInterfaces';
 
 export class HudScene extends Phaser.Scene {
 
@@ -37,7 +37,7 @@ export class HudScene extends Phaser.Scene {
 		this._planetInfoBox.setVisible(false);
 		this.add.existing(this._planetInfoBox);
 
-		this.sys.game.events.on('resize', this.resize, this);
+		this.sys.game.events.on(SceneEvents.RESIZE, this.resize, this);
 		this.resize();
 
 		let menuButton = new ImageButton(this, window.innerWidth - 50, 50, Assets.ATLAS.HUD, 'menu_icon.png');
@@ -52,7 +52,7 @@ export class HudScene extends Phaser.Scene {
 		this.add.existing(menuButton);
 
 		let gameScene = this.scene.get(Scenes.GAME);
-		gameScene.events.on(GameSceneEvents.PLANET_SELECTION_CHANGED, this.planetSelectionChanged.bind(this));
+		gameScene.events.on(SceneEvents.PLANET_SELECTION_CHANGED, this.planetSelectionChanged.bind(this));
 	}
 
 	private planetSelectionChanged(planets: Planet[]) {

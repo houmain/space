@@ -50,9 +50,13 @@ export class GameLogicController {
 	}
 
 	private onPlayerJoined(msg: MessagePlayerJoined) {
+
+		let faction = this._galaxyDataHandler.factions.get(msg.factionId);
+
 		this.notify<EventPlayerJoined>(GameEventType.PLAYER_JOINED, {
 			type: GameEventType.PLAYER_JOINED,
-			faction: this._galaxyDataHandler.factions.get(msg.factionId)
+			faction: faction,
+			planet: faction.planets[0]
 		} as EventPlayerJoined);
 	}
 

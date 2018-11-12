@@ -5,6 +5,7 @@ import { Texts, TextResources } from '../localization/textResources';
 import { MainMenuButton } from '../view/gui/mainMenuButton';
 import { NinePatch } from '@koreez/phaser3-ninepatch';
 import { BitmapText } from '../view/gui/bitmapText';
+import { SceneEvents } from '../logic/event/eventInterfaces';
 
 export class InfoBoxNew {
 
@@ -80,7 +81,7 @@ export class MainMenuScene extends GuiScene {
 		};
 		this.add.existing(quitButton);
 
-		this.sys.game.events.on('resize', this.resize, this);
+		this.sys.game.events.on(SceneEvents.RESIZE, this.resize, this);
 		this.resize();
 
 		let i = new InfoBoxNew(this);

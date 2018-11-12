@@ -7,8 +7,10 @@ import { Player } from '../data/gameData';
 import { GalaxyDataHandler } from '../logic/data/galaxyDataHandler';
 import { GameSceneRenderer } from '../view/gameSceneRenderer';
 import { GameSceneUpdater } from '../logic/controller/gameSceneUpdater';
-import { GameEventObserver } from '../logic/event/eventInterfaces';
+import { GameEventObserver, SceneEvents } from '../logic/event/eventInterfaces';
 import { TextResources, Texts } from '../localization/textResources';
+import { GameInfoMessage } from '../view/gameInfo';
+import { Planet } from '../data/galaxyModels';
 
 export class GameScene extends Phaser.Scene {
 
@@ -55,8 +57,14 @@ export class GameScene extends Phaser.Scene {
 			this._galaxyDataHandler,
 			this._gameEventObserver);
 
-		this.sys.game.events.on('disconnected', this.onDisconnected, this);
-		this.sys.game.events.on('resize', this.resize, this);
+		let hudScene = this.scene.get(Scenes.HUD);
+		hudScene.events.on(SceneEvents.CLICKED_ON_INFO, (planet: Planet) => {
+			let cam: any = this.cameras.main;
+			cam.centerOn(planet.x, planet.y);
+		});
+
+		this.sys.game.events.on(SceneEvents.DISCONNECTED, this.onDisconnected, this);
+		this.sys.game.events.on(SceneEvents.RESIZE, this.resize, this);
 		this.resize();
 
 		this._inputHandler = new InputHandler(this, this._player, this._galaxyDataHandler.planets.list, this._clientMessageSender);
@@ -103,6 +111,6 @@ export class GameScene extends Phaser.Scene {
 	}
 
 	public shutdown() {
-		this.sys.game.events.off('resize', this.resize, this, true);
+		this.sys.game.events.off(SceneEvents.RESIZE, this.resize, this, true);
 	}
 }

@@ -14,6 +14,7 @@ import { MainMenuScene } from './scenes/mainMenu';
 import { BotMenuScene } from './scenes/botMenu';
 import { BootScene } from './scenes/boot';
 import { NinePatchPlugin } from '@koreez/phaser3-ninepatch';
+import { SceneEvents } from './logic/event/eventInterfaces';
 
 export class SpaceGame extends Phaser.Game {
 
@@ -57,7 +58,7 @@ function startGame(): void {
 
     window.addEventListener('resize', function (event) {
         game.resize(window.innerWidth, window.innerHeight); //renderer.resize(window.innerWidth, window.innerHeight);
-        game.events.emit('resize');
+        game.events.emit(SceneEvents.RESIZE);
     }, false);
 }
 window.onload = () => {

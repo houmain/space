@@ -1,4 +1,5 @@
 import { parse, stringify } from 'flatted/esm';
+import Prando from 'prando';
 
 export class Engine {
 
@@ -95,3 +96,19 @@ export class ArrayUtils {
     }
 }
 
+export class SeedableRng implements RandomNumberGenerator {
+
+    private _prando: Prando;
+
+    public constructor(seed: string | number) {
+        this._prando = new Prando(seed);
+    }
+
+    public random(): number {
+        return this._prando.next();
+    }
+
+    public next(min: number, max: number): number {
+        return this._prando.next(min, max);
+    }
+}

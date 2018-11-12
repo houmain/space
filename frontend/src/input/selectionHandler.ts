@@ -1,7 +1,7 @@
 import { Planet, Squadron } from '../data/galaxyModels';
 import { ClientMessageSender } from '../communication/communicationHandler';
 import { Player } from '../data/gameData';
-import { GameSceneEvents } from '../scenes/scenes';
+import { SceneEvents } from '../logic/event/eventInterfaces';
 
 class SendArrow {
     private _planet: Planet;
@@ -140,7 +140,7 @@ export class InputHandler {
                 break;
         }
 
-        this._scene.events.emit(GameSceneEvents.PLANET_SELECTION_CHANGED, this._selectedPlanets);
+        this._scene.events.emit(SceneEvents.PLANET_SELECTION_CHANGED, this._selectedPlanets);
 
         this._state = InputState.Idle;
     }

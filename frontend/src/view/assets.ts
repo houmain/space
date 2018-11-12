@@ -3,6 +3,7 @@ class TextureAtlasList {
 	public readonly MAIN_MENU: string = 'atlasMainMenu2';
 	public readonly HUD: string = 'atlasGameGui';
 	public readonly GAME: string = 'atlasGame';
+	public readonly PLANETS: string = 'atlasPlanets';
 }
 
 export class Assets {

@@ -12,6 +12,7 @@ import { CommunicationHandler } from '../communication/communicationInterfaces';
 import { CommunicationHandlerMock } from '../communication/mock/communicationHandlerMock';
 import { GameEventObserverImpl } from '../logic/event/gameEventObserver';
 import { DebugInfo } from '../common/debug';
+import { SceneEvents } from '../logic/event/eventInterfaces';
 
 export class InitGameScene extends GuiScene {
 
@@ -57,7 +58,7 @@ export class InitGameScene extends GuiScene {
 		// Textureatlas
 		this.load.atlas(Assets.ATLAS.HUD, './spritesheets/game_gui.png', './spritesheets/game_gui.json');
 		this.load.atlas(Assets.ATLAS.GAME, './spritesheets/game.png', './spritesheets/game.json');
-		this.load.atlas('PLANETS', './spritesheets/planets.png', './spritesheets/planets.json');
+		this.load.atlas(Assets.ATLAS.PLANETS, './spritesheets/planets.png', './spritesheets/planets.json');
 
 		// fonts
 		this.load.bitmapFont('gameHudCounter', './fonts/font_counter_-export.png', './fonts/font_counter_-export.xml');
@@ -102,7 +103,7 @@ export class InitGameScene extends GuiScene {
 
 		this._assetsLoaded = true;
 
-		this.sys.game.events.on('disconnected', this.onDisconnected, this);
+		this.sys.game.events.on(SceneEvents.DISCONNECTED, this.onDisconnected, this);
 	}
 
 	private onDisconnected() {

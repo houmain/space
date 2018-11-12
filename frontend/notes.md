@@ -3,7 +3,7 @@
 Frontend
 - add optional initial size for pools
 - redirect to error scene on disconnect
-- use enum for sysevents instead of strings
+- todo separate sys game hud event
 
 Backend
 - at init message planetId of target planet, speed, position etc at squadrons is missing

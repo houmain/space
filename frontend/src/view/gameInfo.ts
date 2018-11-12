@@ -1,10 +1,11 @@
-import { GameEventObserver, EventPlayerJoined, GameEventType, EventPlanetConquered, EventFactionDestroyed, EventSquadronDestroyed, EventSquadronAttacksPlanet } from '../logic/event/eventInterfaces';
+import { GameEventObserver, EventPlayerJoined, GameEventType, EventPlanetConquered, EventFactionDestroyed, EventSquadronDestroyed, EventSquadronAttacksPlanet, SceneEvents } from '../logic/event/eventInterfaces';
 import { StringUtils } from '../common/utils';
 import { TextResources, Texts } from '../localization/textResources';
 import { NinePatch } from '@koreez/phaser3-ninepatch';
 import { BitmapText } from './gui/bitmapText';
 import { Player } from '../data/gameData';
 import { DebugInfo } from '../common/debug';
+import { Planet } from '../data/galaxyModels';
 
 enum GameInfoMessageType {
     PLAYER_JOINED,
@@ -14,10 +15,11 @@ enum GameInfoMessageType {
     FACTION_DESTROYED
 }
 
-interface GameInfoMessage {
+export interface GameInfoMessage {
     text: string;
     color: number;
     type: GameInfoMessageType;
+    cameraTarget?: Planet;
 }
 
 class GameInfo extends Phaser.GameObjects.Container {
@@ -72,6 +74,7 @@ class GameInfoMessageBuilder {
         });
         infoBox.setOrigin(0, 0);
         infoBox.setAlpha(0.5);
+        infoBox.setInteractive();
         this._scene.add.existing(infoBox);
 
         let infoText = new BitmapText(this._scene, textMarginLeft, textMarginTop, 'gameInfo', msg.text);
@@ -82,6 +85,12 @@ class GameInfoMessageBuilder {
         if (infoText.height + textMarginTop > infoBox.height) {
             infoBox.resize(300, infoText.height + textMarginTop * 2);
         }
+
+        infoBox.on('pointerdown', () => {
+            if (msg.cameraTarget) {
+                this._scene.events.emit(SceneEvents.CLICKED_ON_INFO, msg.cameraTarget);
+            }
+        });
 
         let info = new GameInfo(this._scene, infoBox);
         info.add(infoText);
@@ -125,7 +134,8 @@ export class GameInfoHandler {
         this.addInfoText({
             text: StringUtils.fillText(TextResources.getText(Texts.GAME.FACTION_JOINED), faction.name),
             color: faction.color,
-            type: GameInfoMessageType.PLAYER_JOINED
+            type: GameInfoMessageType.PLAYER_JOINED,
+            cameraTarget: event.planet
         });
     }
 
@@ -186,7 +196,8 @@ export class GameInfoHandler {
         this.addInfoText({
             text: text,
             color: faction.color,
-            type: GameInfoMessageType.PLANET_CONQUERED
+            type: GameInfoMessageType.PLANET_CONQUERED,
+            cameraTarget: event.planet
         });
     }
 

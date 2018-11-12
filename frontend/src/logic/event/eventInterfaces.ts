@@ -2,6 +2,14 @@
 import { Fighter, Faction, Planet, Squadron } from '../../data/galaxyModels';
 import { Observer } from '../../common/commonInterfaces';
 
+// todo separate sys game hud event
+export const enum SceneEvents {
+	RESIZE = 'resize',
+	DISCONNECTED = 'disconnected',
+	CLICKED_ON_INFO = 'clickedOnInfo',
+	PLANET_SELECTION_CHANGED = 'planetSelectionChanged'
+}
+
 export interface GameEventNotifier {
 	notify<T extends GameEvent>(eventId: string, event: T);
 }
@@ -34,6 +42,7 @@ export interface GameEvent {
 
 export interface EventPlayerJoined extends GameEvent {
 	faction: Faction;
+	planet: Planet;
 }
 
 export interface EventFighterCreated extends GameEvent {

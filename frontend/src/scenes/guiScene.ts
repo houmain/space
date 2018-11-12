@@ -1,5 +1,6 @@
 import { Scenes } from './scenes';
 import { TextResources, Texts } from '../localization/textResources';
+import { SceneEvents } from '../logic/event/eventInterfaces';
 
 export abstract class GuiScene extends Phaser.Scene {
 
@@ -31,7 +32,7 @@ export abstract class GuiScene extends Phaser.Scene {
 
 		this.add.bitmapText(20, 0, 'font_8', this._sceneTitle);
 
-		this.sys.game.events.on('resize', this.resize, this);
+		this.sys.game.events.on(SceneEvents.RESIZE, this.resize, this);
 		this.resize();
 	}
 
