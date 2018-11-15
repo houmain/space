@@ -40,7 +40,8 @@ export enum ServerMessageType {
     FIGHTER_DESTROYED = 'fighterDestroyed',
     PLANET_CONQUERED = 'planetConquered',
     SQUADRON_DESTROYED = 'squadronDestroyed',
-    FACTION_DESTROYED = 'factionDestroyed'
+    FACTION_DESTROYED = 'factionDestroyed',
+    FACTION_WON = 'factionWon'
 }
 
 export interface ServerMessage {
@@ -135,5 +136,9 @@ export interface MessageSquadronDestroyed extends ServerMessage {
 }
 
 export interface MessageFactionDestroyed extends ServerMessage {
+    factionId: number;
+}
+
+export interface MessageFactionWon extends ServerMessage {
     factionId: number;
 }

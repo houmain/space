@@ -28,6 +28,7 @@ class TextResourcesGame {
 	public readonly PLAYER_CONQUERED_PLANET = 'game.playerConqueredPlanet';
 	public readonly PLAYER_PLANET_LOST = 'game.planetLost';
 	public readonly PLAYER_GAME_OVER = 'game.playerGameOver';
+	public readonly PLAYER_WON_GAME = 'game.playerWonGame';
 
 
 	// factions
@@ -74,6 +75,7 @@ export class TextResources {
 		TextResources._resources[Texts.GAME.PLAYER_CONQUERED_PLANET] = 'Our brave forces conquered {0}!';
 		TextResources._resources[Texts.GAME.PLAYER_PLANET_LOST] = 'We lost {0} to {1}';
 		TextResources._resources[Texts.GAME.PLAYER_GAME_OVER] = 'Our desperate struggle has come to an end!';
+		TextResources._resources[Texts.GAME.PLAYER_WON_GAME] = 'We have won!';
 
 		// factions
 		TextResources._resources[Texts.GAME.FACTION_JOINED] = '{0} joined';

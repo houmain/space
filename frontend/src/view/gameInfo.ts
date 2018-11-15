@@ -1,4 +1,4 @@
-import { GameEventObserver, EventPlayerJoined, GameEventType, EventPlanetConquered, EventFactionDestroyed, EventSquadronDestroyed, EventSquadronAttacksPlanet, SceneEvents } from '../logic/event/eventInterfaces';
+import { GameEventObserver, EventPlayerJoined, GameEventType, EventPlanetConquered, EventFactionDestroyed, EventSquadronDestroyed, EventSquadronAttacksPlanet, SceneEvents, EventFactionWon } from '../logic/event/eventInterfaces';
 import { StringUtils } from '../common/utils';
 import { TextResources, Texts } from '../localization/textResources';
 import { NinePatch } from '@koreez/phaser3-ninepatch';
@@ -13,7 +13,8 @@ enum GameInfoMessageType {
     SQUADRON_ATTACKS_PLANET,
     SQUADRON_DESTROYED,
     PLANET_CONQUERED,
-    FACTION_DESTROYED
+    FACTION_DESTROYED,
+    FACTION_WON,
 }
 
 export interface GameInfoMessage {
@@ -68,6 +69,7 @@ class GameInfoMessageBuilder {
             case GameInfoMessageType.SQUADRON_ATTACKS_PLANET:
             case GameInfoMessageType.SQUADRON_DESTROYED:
             case GameInfoMessageType.FACTION_DESTROYED:
+            case GameInfoMessageType.FACTION_WON:
                 info = this.buildGameInfoMessage(msg);
                 break;
         }
@@ -198,6 +200,7 @@ export class GameInfoHandler {
         gameEventObserver.subscribe<EventSquadronDestroyed>(GameEventType.SQUADRON_DESTROYED, this.onSquadronDestroyed.bind(this));
         gameEventObserver.subscribe<EventPlanetConquered>(GameEventType.PLANET_CONQUERED, this.onPlanetConquered.bind(this));
         gameEventObserver.subscribe<EventFactionDestroyed>(GameEventType.FACTION_DESTROYED, this.onFactionDestroyed.bind(this));
+        gameEventObserver.subscribe<EventFactionDestroyed>(GameEventType.FACTION_WON, this.onFactionWon.bind(this));
     }
 
     public create(scene: Phaser.Scene) {
@@ -301,6 +304,23 @@ export class GameInfoHandler {
             text: text,
             color: faction.color,
             type: GameInfoMessageType.FACTION_DESTROYED
+        });
+    }
+
+    private onFactionWon(event: EventFactionWon) {
+        let faction = event.faction;
+
+        let text = '';
+        if (faction.id === this._player.faction.id) {
+            text = StringUtils.fillText(TextResources.getText(Texts.GAME.PLAYER_WON_GAME));
+        } else {
+            text = StringUtils.fillText(TextResources.getText(Texts.GAME.PLAYER_GAME_OVER), faction.name);
+        }
+
+        this.addInfoText({
+            text: text,
+            color: faction.color,
+            type: GameInfoMessageType.FACTION_WON
         });
     }
 

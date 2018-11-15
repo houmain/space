@@ -30,6 +30,7 @@ export const enum GameEventType {
 	SQUADRON_DESTROYED = 'squadronDestroyed',
 	PLANET_CONQUERED = 'planetConquered',
 	FACTION_DESTROYED = 'factionDestroyed',
+	FACTION_WON = 'factionWon'
 }
 
 export interface HandleGameEvent<T extends GameEvent> {
@@ -73,5 +74,9 @@ export interface EventPlanetConquered extends GameEvent {
 }
 
 export interface EventFactionDestroyed extends GameEvent {
+	faction: Faction;
+}
+
+export interface EventFactionWon extends GameEvent {
 	faction: Faction;
 }

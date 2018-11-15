@@ -1,10 +1,10 @@
 import { GalaxyDataHandler } from '../data/galaxyDataHandler';
 import { ObservableServerMessageHandler } from '../../communication/messageHandler';
-import { MessageGameJoined, ServerMessageType, MessageFighterCreated, MessageSquadronSent, MessageSquadronsMerged, MessageSquadronAttacks, MessageFighterDestroyed, MessagePlanetConquered, MessageSquadronDestroyed, MessagePlayerJoined, MessageFactionDestroyed } from '../../communication/communicationInterfaces';
+import { MessageGameJoined, ServerMessageType, MessageFighterCreated, MessageSquadronSent, MessageSquadronsMerged, MessageSquadronAttacks, MessageFighterDestroyed, MessagePlanetConquered, MessageSquadronDestroyed, MessagePlayerJoined, MessageFactionDestroyed, MessageFactionWon } from '../../communication/communicationInterfaces';
 import { Player } from '../../data/gameData';
 import { Fighter, Squadron, Faction, Planet } from '../../data/galaxyModels';
 import { Assert, DebugInfo } from '../../common/debug';
-import { GameEventNotifier, GameEvent, EventPlayerJoined, GameEventType, EventFighterCreated, EventSquadronCreated, EventSquadronDestroyed, EventFighterDestroyed, EventPlanetConquered, EventFactionDestroyed, EventSquadronAttacksPlanet } from '../event/eventInterfaces';
+import { GameEventNotifier, GameEvent, EventPlayerJoined, GameEventType, EventFighterCreated, EventSquadronCreated, EventSquadronDestroyed, EventFighterDestroyed, EventPlanetConquered, EventFactionDestroyed, EventSquadronAttacksPlanet, EventFactionWon } from '../event/eventInterfaces';
 import { GalaxyObjectFactory } from '../data/galaxyObjectFactory';
 import { GalaxyFactory } from '../data/galaxyFactory';
 import { JSONDebugger } from '../../common/utils';
@@ -28,7 +28,7 @@ export class GameLogicController {
 		this._galaxyObjectfactory = new GalaxyObjectFactory();
 
 		serverMessageObserver.subscribe<MessageGameJoined>(ServerMessageType.GAME_JOINED, this.onGameJoined.bind(this));
-		serverMessageObserver.subscribe<MessageGameJoined>(ServerMessageType.PLAYER_JOINED, this.onPlayerJoined.bind(this));
+		serverMessageObserver.subscribe<MessagePlayerJoined>(ServerMessageType.PLAYER_JOINED, this.onPlayerJoined.bind(this));
 		serverMessageObserver.subscribe<MessageFighterCreated>(ServerMessageType.FIGHTER_CREATED, this.onFighterCreated.bind(this));
 		serverMessageObserver.subscribe<MessageSquadronSent>(ServerMessageType.SQUADRON_SENT, this.onSquadronSent.bind(this));
 		serverMessageObserver.subscribe<MessageSquadronsMerged>(ServerMessageType.SQUADRONS_MERGED, this.onSquadronsMerged.bind(this));
@@ -37,6 +37,7 @@ export class GameLogicController {
 		serverMessageObserver.subscribe<MessagePlanetConquered>(ServerMessageType.PLANET_CONQUERED, this.onPlanetConquered.bind(this));
 		serverMessageObserver.subscribe<MessageSquadronDestroyed>(ServerMessageType.SQUADRON_DESTROYED, this.onSquadronDestroyed.bind(this));
 		serverMessageObserver.subscribe<MessageFactionDestroyed>(ServerMessageType.FACTION_DESTROYED, this.onFactionDestroyed.bind(this));
+		serverMessageObserver.subscribe<MessageFactionWon>(ServerMessageType.FACTION_WON, this.onFactionWon.bind(this));
 	}
 
 	private notify<T extends GameEvent>(eventId: string, event: T) {
@@ -283,6 +284,13 @@ export class GameLogicController {
 	private onFactionDestroyed(msg: MessageFactionDestroyed) {
 		this.notify<EventFactionDestroyed>(GameEventType.FACTION_DESTROYED, {
 			type: GameEventType.FACTION_DESTROYED,
+			faction: this._galaxyDataHandler.factions.get(msg.factionId)
+		});
+	}
+
+	private onFactionWon(msg: MessageFactionWon) {
+		this.notify<EventFactionWon>(GameEventType.FACTION_WON, {
+			type: GameEventType.FACTION_WON,
 			faction: this._galaxyDataHandler.factions.get(msg.factionId)
 		});
 	}
