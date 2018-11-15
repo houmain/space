@@ -6,14 +6,14 @@ export class GalaxyFactory {
 
     public static create(galaxyObjectFactory: GalaxyObjectFactory, factionInfos: FactionInfo[], planetInfos: PlanetInfo[], squadronInfos: SquadronInfo[]): Galaxy {
 
-
-
         let galaxy = new Galaxy();
 
         let infoMap: { [id: number]: PlanetInfo; } = {};
         let planetMap: { [id: number]: Planet; } = {};
         let factionMap: { [id: number]: Faction; } = {};
         let factionColors: number[] = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00];
+
+        let avatars: string[] = ['faction01', 'faction02', 'faction03', 'faction04', 'faction05'];
 
         let factions: Faction[] = [];
         factionInfos.forEach((factionInfo, index) => {
@@ -22,6 +22,7 @@ export class GalaxyFactory {
             faction.name = factionInfo.name;
             faction.color = factionColors[index];
             faction.destroyed = false;
+            faction.avatar = avatars[index];
             factions.push(faction);
             factionMap[faction.id] = faction;
         });

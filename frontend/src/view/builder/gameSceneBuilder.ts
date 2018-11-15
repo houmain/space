@@ -90,6 +90,10 @@ export class GameSceneBuilder {
 		planet.sprite = this._scene.add.sprite(0, 0, Assets.ATLAS.PLANETS, planet.parent ? this.getNextPlanetTextureName() : 'sun');
 		planet.sprite.setScale(scale);
 		planet.sprite.setDepth(LAYER_PLANETS);
+
+		planet.overlayShadow = this._scene.add.sprite(0, 0, Assets.ATLAS.PLANETS, 'planet_overlay_shading');
+		planet.overlayShadow.setScale(scale);
+		planet.overlayShadow.setDepth(LAYER_PLANETS);
 	}
 
 	private getNextPlanetTextureName(): string {

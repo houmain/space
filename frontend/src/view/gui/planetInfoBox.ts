@@ -13,6 +13,7 @@ export class PlanetInfoBox extends Phaser.GameObjects.Container {
 
 	private _selectedPlanets: Planet[];
 
+	private _planetImage: Phaser.GameObjects.Sprite;
 	private _planetName: Phaser.GameObjects.BitmapText;
 	private _factionName: Phaser.GameObjects.BitmapText;
 	private _numFighters: Phaser.GameObjects.BitmapText;
@@ -40,9 +41,13 @@ export class PlanetInfoBox extends Phaser.GameObjects.Container {
 		this._scene.add.existing(planetInfoBox);
 		this.add(planetInfoBox);
 
-		let planet = scene.add.sprite(planetInfoBox.width / 2, 40, 'planet');
-		planet.setScale(0.5);
-		this.add(planet);
+		this._planetImage = scene.add.sprite(planetInfoBox.width / 2, 40, Assets.ATLAS.PLANETS, 'planet02');
+		this._planetImage.setScale(0.5);
+		this.add(this._planetImage);
+
+		let overlayImage = scene.add.sprite(planetInfoBox.width / 2, 40, Assets.ATLAS.PLANETS, 'planet_overlay_shading');
+		overlayImage.setScale(0.5);
+		this.add(overlayImage);
 
 		this._planetName = scene.add.bitmapText(planetInfoBox.width / 2, 80, 'infoText', 'Planet #1');
 		this._planetName.setOrigin(0.5);
@@ -113,6 +118,7 @@ export class PlanetInfoBox extends Phaser.GameObjects.Container {
 		let productivity = 0;
 		let maintainance = 0;
 		let defense = 0;
+		let planetImage = '';
 
 		if (this._selectedPlanets.length === 1) {
 			let planet = this._selectedPlanets[0];
@@ -124,6 +130,7 @@ export class PlanetInfoBox extends Phaser.GameObjects.Container {
 			productivity = planet.productionRate;
 			maintainance = planet.maxUpkeep;
 			defense = planet.defenseBonus;
+			planetImage = planet.sprite.frame.name;
 		} else if (this._selectedPlanets.length > 0) {
 			planetName = `${this._selectedPlanets.length} planets`;
 
@@ -143,6 +150,7 @@ export class PlanetInfoBox extends Phaser.GameObjects.Container {
 			defense /= this._selectedPlanets.length;
 		}
 
+		this._planetImage.setTexture(Assets.ATLAS.PLANETS, planetImage);
 		this._planetName.setText(planetName);
 		this._factionName.setText(factionName);
 		this._numFighters.setText(numFighters.toString());

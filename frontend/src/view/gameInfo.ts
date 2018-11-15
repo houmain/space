@@ -5,7 +5,8 @@ import { NinePatch } from '@koreez/phaser3-ninepatch';
 import { BitmapText } from './gui/bitmapText';
 import { Player } from '../data/gameData';
 import { DebugInfo } from '../common/debug';
-import { Planet } from '../data/galaxyModels';
+import { Planet, Faction } from '../data/galaxyModels';
+import { Assets } from './assets';
 
 enum GameInfoMessageType {
     PLAYER_JOINED,
@@ -20,6 +21,14 @@ export interface GameInfoMessage {
     color: number;
     type: GameInfoMessageType;
     cameraTarget?: Planet;
+}
+
+export interface PlayerJoinedInfoMessage extends GameInfoMessage {
+    faction: Faction;
+}
+
+export interface PlanetConqueredInfoMessage extends GameInfoMessage {
+    planet: Planet;
 }
 
 class GameInfo extends Phaser.GameObjects.Container {
@@ -51,13 +60,82 @@ class GameInfoMessageBuilder {
 
         switch (msg.type) {
             case GameInfoMessageType.PLAYER_JOINED:
+                info = this.buildPlayerJoinedMessage(msg as PlayerJoinedInfoMessage);
+                break;
+            case GameInfoMessageType.PLANET_CONQUERED:
+                info = this.buildPlanetConqueredMessage(msg as PlanetConqueredInfoMessage);
+                break;
             case GameInfoMessageType.SQUADRON_ATTACKS_PLANET:
             case GameInfoMessageType.SQUADRON_DESTROYED:
-            case GameInfoMessageType.PLANET_CONQUERED:
             case GameInfoMessageType.FACTION_DESTROYED:
                 info = this.buildGameInfoMessage(msg);
                 break;
         }
+        return info;
+    }
+
+    private buildPlayerJoinedMessage(msg: PlayerJoinedInfoMessage): GameInfo {
+
+        let infoBox = new NinePatch(this._scene, 0, 0, 300, 150, 'infoBox', null, {
+            top: 16,
+            bottom: 16,
+            left: 16,
+            right: 16
+        });
+        infoBox.setOrigin(0, 0);
+        infoBox.setAlpha(0.5);
+        infoBox.setInteractive();
+        this._scene.add.existing(infoBox);
+
+        let textMarginLeft = 20;
+        let textMarginTop = 10;
+
+        let factionImage = this._scene.add.sprite(10, 10, Assets.ATLAS.FACTIONS, msg.faction.avatar);
+        factionImage.setOrigin(1, 0);
+        factionImage.setPosition(infoBox.width - 20, 20);
+
+        let infoText = new BitmapText(this._scene, textMarginLeft, textMarginTop, 'gameInfo', msg.text);
+        infoText.setOrigin(0, 0);
+        infoText.setWordWrapWidth(infoBox.width - factionImage.width);
+        this._scene.add.existing(infoText);
+
+        let info = new GameInfo(this._scene, infoBox);
+        info.add(factionImage);
+        info.add(infoText);
+
+        return info;
+    }
+
+    private buildPlanetConqueredMessage(msg: PlanetConqueredInfoMessage): GameInfo {
+
+        let infoBox = new NinePatch(this._scene, 0, 0, 300, 150, 'infoBox', null, {
+            top: 16,
+            bottom: 16,
+            left: 16,
+            right: 16
+        });
+        infoBox.setOrigin(0, 0);
+        infoBox.setAlpha(0.5);
+        infoBox.setInteractive();
+        this._scene.add.existing(infoBox);
+
+        let textMarginLeft = 20;
+        let textMarginTop = 10;
+
+        let planetImage = this._scene.add.sprite(10, 10, Assets.ATLAS.PLANETS, msg.planet.sprite.frame.name);
+        planetImage.setOrigin(1, 0);
+        planetImage.setScale(0.75);
+        planetImage.setPosition(infoBox.width - 20, 20);
+
+        let infoText = new BitmapText(this._scene, textMarginLeft, textMarginTop, 'gameInfo', msg.text);
+        infoText.setOrigin(0, 0);
+        infoText.setWordWrapWidth(infoBox.width - planetImage.width);
+        this._scene.add.existing(infoText);
+
+        let info = new GameInfo(this._scene, infoBox);
+        info.add(planetImage);
+        info.add(infoText);
+
         return info;
     }
 
@@ -89,6 +167,8 @@ class GameInfoMessageBuilder {
         infoBox.on('pointerdown', () => {
             if (msg.cameraTarget) {
                 this._scene.events.emit(SceneEvents.CLICKED_ON_INFO, msg.cameraTarget);
+            } else {
+                DebugInfo.info('no msg.cameraTarget');
             }
         });
 
@@ -131,12 +211,15 @@ export class GameInfoHandler {
 
         let faction = event.faction;
 
-        this.addInfoText({
+        let playerJoinedMessage: PlayerJoinedInfoMessage = {
             text: StringUtils.fillText(TextResources.getText(Texts.GAME.FACTION_JOINED), faction.name),
             color: faction.color,
             type: GameInfoMessageType.PLAYER_JOINED,
-            cameraTarget: event.planet
-        });
+            cameraTarget: event.planet,
+            faction: faction
+        };
+
+        this.addInfoText(playerJoinedMessage);
     }
 
     private onSquadronAttacksPlanet(event: EventSquadronAttacksPlanet) {
@@ -193,12 +276,15 @@ export class GameInfoHandler {
             text = StringUtils.fillText(TextResources.getText(Texts.GAME.FACTION_CONQUERED_PLANET), faction.name, planet.name);
         }
 
-        this.addInfoText({
+        let msg: PlanetConqueredInfoMessage = {
             text: text,
             color: faction.color,
             type: GameInfoMessageType.PLANET_CONQUERED,
-            cameraTarget: event.planet
-        });
+            cameraTarget: event.planet,
+            planet: planet
+        };
+
+        this.addInfoText(msg);
     }
 
     private onFactionDestroyed(event: EventFactionDestroyed) {

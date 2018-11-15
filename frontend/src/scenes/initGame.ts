@@ -52,13 +52,12 @@ export class InitGameScene extends GuiScene {
 		this.load.image('planet', './images/planet_1.png');
 		this.load.image('sun', './images/planet_13.png');
 		this.load.image('pixel', './images/pixel.png');
-		//	this.load.image('squadron', './images/squadron.png');
-		//	this.load.image('fighter', './images/fighter.png');
 
 		// Textureatlas
 		this.load.atlas(Assets.ATLAS.HUD, './spritesheets/game_gui.png', './spritesheets/game_gui.json');
 		this.load.atlas(Assets.ATLAS.GAME, './spritesheets/game.png', './spritesheets/game.json');
 		this.load.atlas(Assets.ATLAS.PLANETS, './spritesheets/planets.png', './spritesheets/planets.json');
+		this.load.atlas(Assets.ATLAS.FACTIONS, './spritesheets/factions.png', './spritesheets/factions.json');
 
 		// fonts
 		this.load.bitmapFont('gameHudCounter', './fonts/font_counter_-export.png', './fonts/font_counter_-export.xml');
@@ -73,7 +72,7 @@ export class InitGameScene extends GuiScene {
 		this._serverMessageObserver = new ObservableServerMessageHandler();
 		this._galaxyDataHandler = new GalaxyDataHandler();
 
-		let mockServer = false;
+		let mockServer = true;
 		if (mockServer) {
 			console.warn('Launching mock communication handler');
 			this._communicationHandler = new CommunicationHandlerMock(this._serverMessageObserver, this._galaxyDataHandler);

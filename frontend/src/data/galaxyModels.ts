@@ -17,6 +17,7 @@ export class Planet {
     initialAngle: number = 0;
     angularVelocity: number = 0;
     private _sprite: Phaser.GameObjects.Sprite = null;
+    private _overlayShadow: Phaser.GameObjects.Sprite = null;
     squadrons: Map<Squadron> = new Map<Squadron>();
     maxUpkeep: number = 0;
     productionRate: number = 0;
@@ -40,10 +41,20 @@ export class Planet {
         return this._sprite;
     }
 
+    public set overlayShadow(overlayShadow: Phaser.GameObjects.Sprite) {
+        this._overlayShadow = overlayShadow;
+        this._overlayShadow.setPosition(this._x, this._y);
+    }
+
+    public get overlayShadow(): Phaser.GameObjects.Sprite {
+        return this._overlayShadow;
+    }
+
     public setPosition(x: number, y: number) {
         this._x = x;
         this._y = y;
         if (this._sprite) {
+            this._overlayShadow.setPosition(this._x, this._y);
             this._sprite.setPosition(x, y);
         }
     }
@@ -57,6 +68,7 @@ export class Faction {
     planets: Planet[] = [];
     numFighters: number = 0;
     maxUpkeep: number = 0;
+    avatar: string;
 }
 
 export class Squadron {
