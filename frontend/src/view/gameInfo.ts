@@ -4,7 +4,6 @@ import { TextResources, Texts } from '../localization/textResources';
 import { NinePatch } from '@koreez/phaser3-ninepatch';
 import { BitmapText } from './gui/bitmapText';
 import { Player } from '../data/gameData';
-import { DebugInfo } from '../common/debug';
 import { Planet, Faction } from '../data/galaxyModels';
 import { Assets } from './assets';
 
@@ -43,6 +42,11 @@ class GameInfo extends Phaser.GameObjects.Container {
         this.add(this._background);
     }
 
+    public set onClick(onClick: Function) {
+        this._background.setInteractive();
+        this._background.on('pointerdown', onClick);
+    }
+
     public get height() {
         return this._background.height;
     }
@@ -73,12 +77,19 @@ class GameInfoMessageBuilder {
                 info = this.buildGameInfoMessage(msg);
                 break;
         }
+
+        if (msg.cameraTarget) {
+            info.onClick = () => {
+                this._scene.events.emit(SceneEvents.CLICKED_ON_INFO, msg.cameraTarget);
+            };
+        }
+
         return info;
     }
 
-    private buildPlayerJoinedMessage(msg: PlayerJoinedInfoMessage): GameInfo {
+    private createBox(width: number, height: number): NinePatch {
 
-        let infoBox = new NinePatch(this._scene, 0, 0, 300, 150, 'infoBox', null, {
+        let infoBox = new NinePatch(this._scene, 0, 0, width, height, 'infoBox', null, {
             top: 16,
             bottom: 16,
             left: 16,
@@ -86,8 +97,14 @@ class GameInfoMessageBuilder {
         });
         infoBox.setOrigin(0, 0);
         infoBox.setAlpha(0.5);
-        infoBox.setInteractive();
         this._scene.add.existing(infoBox);
+
+        return infoBox;
+    }
+
+    private buildPlayerJoinedMessage(msg: PlayerJoinedInfoMessage): GameInfo {
+
+        let infoBox = this.createBox(400, 150);
 
         let textMarginLeft = 20;
         let textMarginTop = 10;
@@ -110,16 +127,7 @@ class GameInfoMessageBuilder {
 
     private buildPlanetConqueredMessage(msg: PlanetConqueredInfoMessage): GameInfo {
 
-        let infoBox = new NinePatch(this._scene, 0, 0, 300, 150, 'infoBox', null, {
-            top: 16,
-            bottom: 16,
-            left: 16,
-            right: 16
-        });
-        infoBox.setOrigin(0, 0);
-        infoBox.setAlpha(0.5);
-        infoBox.setInteractive();
-        this._scene.add.existing(infoBox);
+        let infoBox = this.createBox(400, 150);
 
         let textMarginLeft = 20;
         let textMarginTop = 10;
@@ -146,16 +154,7 @@ class GameInfoMessageBuilder {
         let textMarginLeft = 20;
         let textMarginTop = 10;
 
-        let infoBox = new NinePatch(this._scene, 0, 0, 300, 50, 'infoBox', null, {
-            top: 16,
-            bottom: 16,
-            left: 16,
-            right: 16
-        });
-        infoBox.setOrigin(0, 0);
-        infoBox.setAlpha(0.5);
-        infoBox.setInteractive();
-        this._scene.add.existing(infoBox);
+        let infoBox = this.createBox(400, 50);
 
         let infoText = new BitmapText(this._scene, textMarginLeft, textMarginTop, 'gameInfo', msg.text);
         infoText.setOrigin(0, 0);
@@ -165,14 +164,6 @@ class GameInfoMessageBuilder {
         if (infoText.height + textMarginTop > infoBox.height) {
             infoBox.resize(300, infoText.height + textMarginTop * 2);
         }
-
-        infoBox.on('pointerdown', () => {
-            if (msg.cameraTarget) {
-                this._scene.events.emit(SceneEvents.CLICKED_ON_INFO, msg.cameraTarget);
-            } else {
-                DebugInfo.info('no msg.cameraTarget');
-            }
-        });
 
         let info = new GameInfo(this._scene, infoBox);
         info.add(infoText);

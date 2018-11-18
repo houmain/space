@@ -72,7 +72,7 @@ export class InitGameScene extends GuiScene {
 		this._serverMessageObserver = new ObservableServerMessageHandler();
 		this._galaxyDataHandler = new GalaxyDataHandler();
 
-		let mockServer = false;
+		let mockServer = true;
 		if (mockServer) {
 			console.warn('Launching mock communication handler');
 			this._communicationHandler = new CommunicationHandlerMock(this._serverMessageObserver, this._galaxyDataHandler);
