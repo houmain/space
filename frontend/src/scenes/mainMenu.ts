@@ -56,8 +56,8 @@ export class MainMenuScene extends GuiScene {
 		super.create();
 
 		// TODO: remove
-		this.startGame();
-		return;
+		//this.startGame();
+		//return;
 
 		let gameButton = new MainMenuButton(this, TextResources.getText(Texts.MAIN_MENU.PLAY).toUpperCase());
 		gameButton.setPosition(this.sys.canvas.width / 2, this.sys.canvas.height / 2);
@@ -66,11 +66,14 @@ export class MainMenuScene extends GuiScene {
 		};
 		this.add.existing(gameButton);
 
-		let optionsButton = new MainMenuButton(this, TextResources.getText(Texts.MAIN_MENU.OPTIONS).toUpperCase());
-		optionsButton.setPosition(this.sys.canvas.width / 2 - 350, this.sys.canvas.height / 2);
-		optionsButton.setScale(0.9);
-		optionsButton.setAlpha(0.9);
-		this.add.existing(optionsButton);
+		let multiplayerGameButton = new MainMenuButton(this, TextResources.getText(Texts.MAIN_MENU.PLAY).toUpperCase());
+		multiplayerGameButton.setPosition(this.sys.canvas.width / 2 - 350, this.sys.canvas.height / 2);
+		multiplayerGameButton.setScale(0.9);
+		multiplayerGameButton.setAlpha(0.9);
+		multiplayerGameButton.onClick = () => {
+			this.chooseGameType();
+		};
+		this.add.existing(multiplayerGameButton);
 
 		let quitButton = new MainMenuButton(this, TextResources.getText(Texts.MAIN_MENU.QUIT).toUpperCase());
 		quitButton.setPosition(this.sys.canvas.width / 2 + 350, this.sys.canvas.height / 2);
@@ -86,6 +89,10 @@ export class MainMenuScene extends GuiScene {
 
 		let i = new InfoBoxNew(this);
 		i.create();
+	}
+
+	private chooseGameType() {
+		this.scene.start(Scenes.CHOOSE_GAME_TYPE);
 	}
 
 	private startGame() {

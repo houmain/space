@@ -2,7 +2,7 @@ import { Scenes } from './scenes';
 import { GameLogicController } from '../logic/controller/gameLogicController';
 import { SpaceGame } from '../Game';
 import { ObservableServerMessageHandler } from '../communication/messageHandler';
-import { ClientMessageSender, SpaceGameConfig, CommunicationHandlerWebSocket } from '../communication/communicationHandler';
+import { SpaceGameConfig, CommunicationHandlerWebSocket } from '../communication/communicationHandler';
 import { GalaxyDataHandler } from '../logic/data/galaxyDataHandler';
 import { GameInfoHandler } from '../view/gameInfo';
 import { Assets } from '../view/assets';
@@ -13,6 +13,7 @@ import { CommunicationHandlerMock } from '../communication/mock/communicationHan
 import { GameEventObserverImpl } from '../logic/event/gameEventObserver';
 import { DebugInfo } from '../common/debug';
 import { SceneEvents } from '../logic/event/eventInterfaces';
+import { ClientMessageSender } from '../communication/clientMessageSender';
 
 export class InitGameScene extends GuiScene {
 
@@ -72,7 +73,7 @@ export class InitGameScene extends GuiScene {
 		this._serverMessageObserver = new ObservableServerMessageHandler();
 		this._galaxyDataHandler = new GalaxyDataHandler();
 
-		let mockServer = true;
+		let mockServer = false;
 		if (mockServer) {
 			console.warn('Launching mock communication handler');
 			this._communicationHandler = new CommunicationHandlerMock(this._serverMessageObserver, this._galaxyDataHandler);

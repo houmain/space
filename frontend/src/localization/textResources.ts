@@ -1,10 +1,29 @@
 import { DebugInfo } from '../common/debug';
 
-class TextResourcesMainMenu {
+class TextResourcesCommon {
+	public readonly CANCEL = 'common.cancel';
+}
+
+class TextResourcesMenu {
 	public readonly TITLE = 'mainMenu.title';
 	public readonly PLAY = 'mainMenu.play';
 	public readonly OPTIONS = 'mainMenu.options';
 	public readonly QUIT = 'mainMenu.quit';
+}
+
+class TextResourcesChooseGameType {
+	public readonly TITLE = 'chooseGameType.title';
+	public readonly CREATE_NEW_GAME = 'menu.createNewGame';
+	public readonly JOIN_GAME = 'menu.joinGame';
+}
+
+class TextResourcesNewGameSettings {
+	public readonly TITLE = 'newGameSettings.title';
+	public readonly CREATE = 'newGameSettings.create';
+}
+
+class TextResourcesLobby {
+	public readonly TITLE = 'lobby.title';
 }
 
 class TextResourcesInitGame {
@@ -30,7 +49,6 @@ class TextResourcesGame {
 	public readonly PLAYER_GAME_OVER = 'game.playerGameOver';
 	public readonly PLAYER_WON_GAME = 'game.playerWonGame';
 
-
 	// factions
 	public readonly FACTION_CONQUERED_PLANET = 'game.factionConqueredPlanet';
 	public readonly FACTION_JOINED = 'game.factionJoined';
@@ -42,7 +60,11 @@ class TextResourcesError {
 }
 
 export class Texts {
-	public static readonly MAIN_MENU: TextResourcesMainMenu = new TextResourcesMainMenu();
+	public static readonly COMMON: TextResourcesCommon = new TextResourcesCommon();
+	public static readonly MAIN_MENU: TextResourcesMenu = new TextResourcesMenu();
+	public static readonly CHOOSE_GAME_TYPE: TextResourcesChooseGameType = new TextResourcesChooseGameType();
+	public static readonly NEW_GAME_SETTINGS: TextResourcesNewGameSettings = new TextResourcesNewGameSettings();
+	public static readonly LOBBY: TextResourcesLobby = new TextResourcesLobby();
 	public static readonly INIT_GAME: TextResourcesInitGame = new TextResourcesInitGame();
 	public static readonly GAME: TextResourcesGame = new TextResourcesGame();
 	public static readonly ERROR: TextResourcesError = new TextResourcesError();
@@ -52,15 +74,27 @@ export class TextResources {
 	private static _resources: { [key: string]: string; } = {};
 
 	public static initialize() {
-		//---- Planet info ---------------
+
+		TextResources._resources[Texts.COMMON.CANCEL] = 'cancel';
+
 		TextResources._resources[Texts.MAIN_MENU.TITLE] = 'main menu';
 		TextResources._resources[Texts.MAIN_MENU.PLAY] = 'play';
 		TextResources._resources[Texts.MAIN_MENU.OPTIONS] = 'options';
 		TextResources._resources[Texts.MAIN_MENU.QUIT] = 'quit';
 
+		TextResources._resources[Texts.CHOOSE_GAME_TYPE.TITLE] = 'Choose game type';
+		TextResources._resources[Texts.CHOOSE_GAME_TYPE.CREATE_NEW_GAME] = 'Create new game';
+		TextResources._resources[Texts.CHOOSE_GAME_TYPE.JOIN_GAME] = 'Join existing game';
+
+		TextResources._resources[Texts.NEW_GAME_SETTINGS.TITLE] = 'New Game settings';
+		TextResources._resources[Texts.NEW_GAME_SETTINGS.CREATE] = 'Create';
+
+		TextResources._resources[Texts.LOBBY.TITLE] = 'lobby';
+
 		TextResources._resources[Texts.INIT_GAME.TITLE] = 'loading game';
 		TextResources._resources[Texts.INIT_GAME.JOINING_GAME] = 'joining game';
 
+		//---- Planet info ---------------
 		TextResources._resources[Texts.GAME.FACTION] = 'faction';
 		TextResources._resources[Texts.GAME.MAINTAINANCE] = 'maintainance';
 		TextResources._resources[Texts.GAME.PRODUCTIVITY] = 'productivity';

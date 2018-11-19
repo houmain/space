@@ -15,6 +15,9 @@ import { BotMenuScene } from './scenes/botMenu';
 import { BootScene } from './scenes/boot';
 import { NinePatchPlugin } from '@koreez/phaser3-ninepatch';
 import { SceneEvents } from './logic/event/eventInterfaces';
+import { ChooseGameTypeScene } from './scenes/chooseGameType';
+import { NewGameSettingsScene } from './scenes/newGameSettings';
+import { LobbyScene } from './scenes/lobby';
 
 export class SpaceGame extends Phaser.Game {
 
@@ -30,6 +33,9 @@ export class SpaceGame extends Phaser.Game {
         this.scene.add(Scenes.BOOT, new BootScene(), true);
         this.scene.add(Scenes.PRELOADER, new Preloader());
         this.scene.add(Scenes.MAIN_MENU, new MainMenuScene());
+        this.scene.add(Scenes.CHOOSE_GAME_TYPE, new ChooseGameTypeScene());
+        this.scene.add(Scenes.NEW_GAME_SETTINGS, new NewGameSettingsScene());
+        this.scene.add(Scenes.LOBBY, new LobbyScene());
         this.scene.add(Scenes.BOT_MENU, new BotMenuScene());
         this.scene.add(Scenes.INIT_GAME, new InitGameScene(this));
         this.scene.add(Scenes.GAME, new GameScene());

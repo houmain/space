@@ -1,4 +1,4 @@
-import { MessageGameJoined, ServerMessageType, MessageFighterCreated, ClientMessage, ClientMessageType, MessagePlayerJoined, SendSquadron, MessageSquadronSent, MessageFighterDestroyed, MessageSquadronAttacks, MessageSquadronDestroyed, JoinMessage, ServerMessage } from '../communicationInterfaces';
+import { MessageGameJoined, ServerMessageType, MessageFighterCreated, ClientMessage, ClientMessageType, MessagePlayerJoined, SendSquadron, MessageSquadronSent, MessageFighterDestroyed, MessageSquadronAttacks, MessageSquadronDestroyed, JoinGameMessage, ServerMessage, CreateGameMessage } from '../communicationInterfaces';
 import { GalaxyDataHandler } from '../../logic/data/galaxyDataHandler';
 import { CommunicationHandlerMock } from './communicationHandlerMock';
 import { DebugInfo } from '../../common/debug';
@@ -30,8 +30,11 @@ export class GameServerMock {
 
 	public receive(clientMessage: ClientMessage) {
 		switch (clientMessage.action) {
+			case ClientMessageType.CREATE_GAME:
+				this.onCreateGame(clientMessage as CreateGameMessage);
+				break;
 			case ClientMessageType.JOIN_GAME:
-				this.onJoinGame(clientMessage as JoinMessage);
+				this.onJoinGame(clientMessage as JoinGameMessage);
 				break;
 			case ClientMessageType.SEND_SQUADRON:
 				this.onSendSquadron(clientMessage as SendSquadron);
@@ -54,7 +57,15 @@ export class GameServerMock {
 		}
 	}
 
-	private onJoinGame(msg: JoinMessage) {
+	private onCreateGame(msg: CreateGameMessage) {
+		DebugInfo.info(`Received createMessage`);
+
+		setTimeout(() => {
+			this.sendToClient(MockMessageBuilder.createMessageGameCreated());
+		}, 500);
+	}
+
+	private onJoinGame(msg: JoinGameMessage) {
 		DebugInfo.info(`Received joinMessage, game id: ${msg.gameId}`);
 
 		this.sendToClient(MockMessageBuilder.createMessageGameJoined(), 500, () => {
@@ -118,7 +129,7 @@ export class GameServerMock {
 
 	private update() {
 		/*this.doNextAction();
-
+	
 		setTimeout(() => {
 			this.update();
 		}, UPDATE_INTERVALL);*/

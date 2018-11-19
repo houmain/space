@@ -90,6 +90,13 @@ export class Preloader extends Phaser.Scene {
         // Test TODO
         this.load.image('infoBox', './images/infoBox.png');
         this.load.bitmapFont('infoText', './fonts/neuropol_18-export.png', './fonts/neuropol_18-export.xml');
+        this.load.image('settingsBox', './images/settings_box.png');
+        this.load.image('roundButtonActive', './images/round_button_active.png');
+        this.load.image('roundButton', './images/round_button.png');
+        this.load.image('cancelButton', './images/cancel_button.png');
+        this.load.image('playIcon', './images/play_icon.png');
+        this.load.image('cancelIcon', './images/cancel_icon.png');
+
     }
 
     public create() {

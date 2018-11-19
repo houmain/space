@@ -1,7 +1,14 @@
-import { MessageGameJoined, MessagePlayerJoined, ServerMessageType, SendSquadron, MessageSquadronSent, MessageSquadronAttacks, MessageSquadronDestroyed, MessageFighterDestroyed, MessagePlanetConquered, MessageFighterCreated, MessageSquadronsMerged } from '../communicationInterfaces';
+import { MessageGameJoined, MessagePlayerJoined, ServerMessageType, SendSquadron, MessageSquadronSent, MessageSquadronAttacks, MessageSquadronDestroyed, MessageFighterDestroyed, MessagePlanetConquered, MessageFighterCreated, MessageSquadronsMerged, MessageGameCreated } from '../communicationInterfaces';
 import { DebugInfo } from '../../common/debug';
 
 export class MockMessageBuilder {
+
+	public static createMessageGameCreated(): MessageGameCreated {
+		return {
+			event: ServerMessageType.GAME_CREATED,
+			gameId: 1
+		};
+	}
 
 	public static createMessageGameJoined(): MessageGameJoined {
 		let joinMsg: string;

@@ -1,11 +1,8 @@
 import { Scenes } from './scenes';
-//import { GuiFactory } from '../view/gui/guiFactory';
-//import { GuiConfig } from '../view/gui/guiConfigModels';
 import { BotLoader } from '../logic/bot/botLoader';
 import { DOMHelper } from '../common/utils';
 import { BotScriptLoader } from '../logic/bot/scriptLoader';
 import { BotController } from '../logic/bot/botInterfaces';
-import { Assets } from '../view/assets';
 
 export class BotMenuScene extends Phaser.Scene {
 	public constructor() {

@@ -1,45 +1,7 @@
-import { ClientMessage, ClientMessageType, JoinMessage, SendSquadron, CommunicationHandler } from './communicationInterfaces';
+import { ClientMessage, ClientMessageType, JoinGameMessage, SendSquadron, CommunicationHandler } from './communicationInterfaces';
 import { ServerMessageHandler } from './messageHandler';
 import { printCallstack } from '../common/error';
 import { Engine } from '../common/utils';
-
-export class ClientMessageSender {
-
-    private _communicationHandler: CommunicationHandler;
-
-    public constructor(communicationHandler: CommunicationHandler) {
-        this._communicationHandler = communicationHandler;
-    }
-
-    public joinGame(gameId: number) {
-        let msg: JoinMessage = {
-            action: ClientMessageType.JOIN_GAME,
-            gameId: gameId
-        };
-
-        this.send(msg);
-    }
-
-    public sendSquadron(sourcePlanetId: number, targetPlanetId: number, fighterCount: number) {
-        let msg: SendSquadron = {
-            action: ClientMessageType.SEND_SQUADRON,
-            sourcePlanetId: sourcePlanetId,
-            targetPlanetId: targetPlanetId,
-            fighterCount: fighterCount
-        };
-
-        this.send(msg);
-    }
-
-    private send(msg: ClientMessage) {
-        try {
-            this._communicationHandler.send(msg);
-        } catch (error) {
-            printCallstack(error);
-            alert(error);
-        }
-    }
-}
 
 export interface SpaceGameConfig {
     url: string;

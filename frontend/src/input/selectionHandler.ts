@@ -1,7 +1,7 @@
 import { Planet, Squadron } from '../data/galaxyModels';
-import { ClientMessageSender } from '../communication/communicationHandler';
 import { Player } from '../data/gameData';
 import { SceneEvents } from '../logic/event/eventInterfaces';
+import { ClientMessageSender } from '../communication/clientMessageSender';
 
 class SendArrow {
     private _planet: Planet;
