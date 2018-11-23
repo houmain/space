@@ -7,8 +7,10 @@ import { CommunicationHandlerMock } from '../communication/mock/communicationHan
 import { CommunicationHandlerWebSocket, SpaceGameConfig } from '../communication/communicationHandler';
 import { ClientMessageSender } from '../communication/clientMessageSender';
 import { DebugInfo } from '../common/debug';
-import { ObservableServerMessageHandler } from '../communication/messageHandler';
+import { ObservableServerMessageHandler, ServerMessageQueue } from '../communication/messageHandler';
 import { GalaxyDataHandler } from '../logic/data/galaxyDataHandler';
+import { Texts, TextResources } from '../localization/textResources';
+import { GameTimeController } from '../logic/controller/gameTimeController';
 
 export class NewGameSettings {
 	numPlanets: number;
@@ -27,6 +29,8 @@ export class NewGameSettingsScene extends GuiScene {
 	private _clientMessageSender: ClientMessageSender;
 	private _serverMessageObserver: ObservableServerMessageHandler;
 	private _galaxyDataHandler: GalaxyDataHandler;
+	private _serverMessageQueue: ServerMessageQueue;
+	private _timeController: GameTimeController;
 
 	public constructor() {
 		super(Scenes.NEW_GAME_SETTINGS);
@@ -35,25 +39,27 @@ export class NewGameSettingsScene extends GuiScene {
 	public create() {
 		super.create();
 
-		this._container = this.add.container(450, 100);
+		this._serverMessageQueue = new ServerMessageQueue();
+
+		this._container = this.add.container(0, 0);
 
 		let box = new NinePatch(this, 0, 0, 1200, 500, 'settingsBox', null, {
-			top: 60, // Amount of pixels for top
-			bottom: 30, // Amount of pixels for bottom
-			left: 60, // Amount of pixels for left
-			right: 124 // Amount of pixels for right
+			top: 60,
+			bottom: 30,
+			left: 60,
+			right: 124
 		});
 		box.setOrigin(0, 0);
 		box.setAlpha(0.5);
 		this.add.existing(box);
 
 		let fontSize = 60;
-		// server 
-		let serverLabel = this.add.bitmapText(40, 100, 'font_8', 'Server:', fontSize);
+		// server
+		let serverLabel = this.add.bitmapText(40, 100, 'font_8', TextResources.getText(Texts.NEW_GAME_SETTINGS.SERVER), fontSize);
 		this._server = this.add.bitmapText(510, 100, 'font_8', 'ws://127.0.0.1:9995/', fontSize);
-		let numPlanetsLabel = this.add.bitmapText(40, 150, 'font_8', 'Num planets:', fontSize);
+		let numPlanetsLabel = this.add.bitmapText(40, 150, 'font_8', TextResources.getText(Texts.NEW_GAME_SETTINGS.NUM_PLANETS), fontSize);
 		this._numPlanets = this.add.bitmapText(510, 150, 'font_8', '4', fontSize);
-		let numFactionsLabel = this.add.bitmapText(40, 200, 'font_8', 'Num factions:', fontSize);
+		let numFactionsLabel = this.add.bitmapText(40, 200, 'font_8', TextResources.getText(Texts.NEW_GAME_SETTINGS.NUM_FACTIONS), fontSize);
 		this._numFactions = this.add.bitmapText(510, 200, 'font_8', '3', fontSize);
 
 		let createButton = new RoundButton(this);
@@ -61,9 +67,11 @@ export class NewGameSettingsScene extends GuiScene {
 		createButton.onClick = () => {
 
 			// create communicationHandler
-
-			this._serverMessageObserver = new ObservableServerMessageHandler();
+			this._serverMessageQueue.subscribe<MessageGameCreated>(ServerMessageType.GAME_CREATED, this.onGameCreated.bind(this));
+			this._timeController = new GameTimeController();
+			this._serverMessageObserver = new ObservableServerMessageHandler(this._serverMessageQueue, this._timeController);
 			this._galaxyDataHandler = new GalaxyDataHandler();
+
 			let mockServer = true;
 			if (mockServer) {
 				console.warn('Launching mock communication handler');
@@ -86,8 +94,7 @@ export class NewGameSettingsScene extends GuiScene {
 					numFactions: Number(this._numFactions.text),
 					numPlanets: Number(this._numPlanets.text)
 				});
-
-				this._serverMessageObserver.subscribe<MessageGameCreated>(ServerMessageType.GAME_CREATED, this.onGameCreated.bind(this));
+				//this._serverMessageObserver.subscribe<MessageGameCreated>(ServerMessageType.GAME_CREATED, this.onGameCreated.bind(this));
 
 				//this._clientMessageSender.joinGame(this._gameConfig.gameId);
 			};
@@ -95,7 +102,7 @@ export class NewGameSettingsScene extends GuiScene {
 
 			// create game
 
-			// on success goto lobby
+			// on success goto player settings page then lobby
 		};
 
 		this._container.add(box);
@@ -111,12 +118,21 @@ export class NewGameSettingsScene extends GuiScene {
 	}
 
 	private onGameCreated(msg: MessageGameCreated) {
+		console.log('GameCreated');
 		this._clientMessageSender.joinGame(msg.gameId);
 
-		this.goToLobby();
+		this.goToPlayerSettingsScene();
 	}
 
-	private goToLobby() {
-		this.scene.start(Scenes.LOBBY);
+	private goToPlayerSettingsScene() {
+		this.scene.start(Scenes.PLAYER_SETTINGS, {
+			serverMessageQueue: this._serverMessageQueue,
+			timeController: this._timeController,
+			clientMessageSender: this._clientMessageSender
+		});
+	}
+
+	public update() {
+		this._serverMessageQueue.handleMessages();
 	}
 }

@@ -3,7 +3,7 @@ import {
     ServerMessageType, FactionInfo, PlanetInfo, MessageFighterCreated, ServerMessage
 } from '../communicationInterfaces';
 import { SpaceGameConfig } from '../communicationHandler';
-import { ServerMessageHandler } from '../messageHandler';
+import { ServerMessageHandler, ServerMessageQueue } from '../messageHandler';
 import { GalaxyDataHandler } from '../../logic/data/galaxyDataHandler';
 import { GameServerMock } from './gameServerMock';
 import { DebugInfo } from '../../common/debug';
@@ -37,6 +37,7 @@ export class CommunicationHandlerMock implements CommunicationHandler {
 
     public receive(msg: ServerMessage) {
         this._messageHandler.handle(msg);
+        //  this._serverMessageQeue.queueMessage(msg);
     }
 
     public close() {

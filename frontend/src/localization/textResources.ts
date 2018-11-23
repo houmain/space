@@ -20,6 +20,15 @@ class TextResourcesChooseGameType {
 class TextResourcesNewGameSettings {
 	public readonly TITLE = 'newGameSettings.title';
 	public readonly CREATE = 'newGameSettings.create';
+	public readonly SERVER = 'newGameSettings.server';
+	public readonly NUM_PLANETS = 'newGameSettings.numPlanets';
+	public readonly NUM_FACTIONS = 'newGameSettings.numFactions';
+}
+
+class TextResourcesPlayerSettings {
+	public readonly TITLE = 'playerSettings.title';
+	public readonly NAME = 'playerSettings.name';
+	public readonly COLOR = 'playerSettings.color';
 }
 
 class TextResourcesLobby {
@@ -64,6 +73,7 @@ export class Texts {
 	public static readonly MAIN_MENU: TextResourcesMenu = new TextResourcesMenu();
 	public static readonly CHOOSE_GAME_TYPE: TextResourcesChooseGameType = new TextResourcesChooseGameType();
 	public static readonly NEW_GAME_SETTINGS: TextResourcesNewGameSettings = new TextResourcesNewGameSettings();
+	public static readonly PLAYER_SETTINGS: TextResourcesPlayerSettings = new TextResourcesPlayerSettings();
 	public static readonly LOBBY: TextResourcesLobby = new TextResourcesLobby();
 	public static readonly INIT_GAME: TextResourcesInitGame = new TextResourcesInitGame();
 	public static readonly GAME: TextResourcesGame = new TextResourcesGame();
@@ -88,6 +98,13 @@ export class TextResources {
 
 		TextResources._resources[Texts.NEW_GAME_SETTINGS.TITLE] = 'New Game settings';
 		TextResources._resources[Texts.NEW_GAME_SETTINGS.CREATE] = 'Create';
+		TextResources._resources[Texts.NEW_GAME_SETTINGS.SERVER] = 'Server';
+		TextResources._resources[Texts.NEW_GAME_SETTINGS.NUM_FACTIONS] = '# factions';
+		TextResources._resources[Texts.NEW_GAME_SETTINGS.NUM_PLANETS] = '# planets';
+
+		TextResources._resources[Texts.PLAYER_SETTINGS.TITLE] = 'Player settings';
+		TextResources._resources[Texts.PLAYER_SETTINGS.NAME] = 'Name';
+		TextResources._resources[Texts.PLAYER_SETTINGS.COLOR] = 'Color';
 
 		TextResources._resources[Texts.LOBBY.TITLE] = 'lobby';
 

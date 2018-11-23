@@ -14,6 +14,8 @@ export interface CommunicationHandler {
 export enum ClientMessageType {
     CREATE_GAME = 'createGame',
     JOIN_GAME = 'joinGame',
+    SEND_PLAYER_INFO = 'sendPlayerInfo',
+    PLAYER_READY = 'playerReady',
     SEND_SQUADRON = 'sendSquadron'
 }
 
@@ -30,6 +32,19 @@ export interface JoinGameMessage extends ClientMessage {
     gameId: number;
 }
 
+export interface SendPlayerInfoMessage extends ClientMessage {
+    gameId: number;
+    playerId: number;
+    name: string;
+    avatar: string;
+    faction: string;
+    color: string;
+}
+
+export interface PlayerIsReadyMessage extends ClientMessage {
+    playerId: number;
+}
+
 export interface SendSquadron extends ClientMessage {
     sourcePlanetId: number;
     targetPlanetId: number;
@@ -40,6 +55,7 @@ export enum ServerMessageType {
     GAME_CREATED = 'gameCreated',
     GAME_JOINED = 'gameJoined',
     PLAYER_JOINED = 'playerJoined',
+    START_GAME = 'startGame',
     GAME_UPDATED = 'gameUpdated',
     FIGHTER_CREATED = 'fighterCreated',
     SQUADRON_SENT = 'squadronSent',
@@ -94,6 +110,10 @@ export interface SquadronInfo {
 
 export interface MessagePlayerJoined extends ServerMessage {
     factionId: number;
+}
+
+export interface MessageStartGame extends ServerMessage {
+
 }
 
 export interface MessageGameUpdated extends ServerMessage {

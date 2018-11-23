@@ -6,9 +6,9 @@ export class GameTimeController {
     private _serverTimeSinceStart: number = 0;
     private _timeSinceLastServerTimeUpdate: number = 0;
 
-    public constructor(serverMessageObserver: ObservableServerMessageHandler) {
-        serverMessageObserver.subscribe<MessageGameUpdated>(ServerMessageType.GAME_UPDATED,
-            this.updateServerTime.bind(this));
+    public constructor() { //serverMessageObserver: ObservableServerMessageHandler
+        //     serverMessageObserver.subscribe<MessageGameUpdated>(ServerMessageType.GAME_UPDATED,
+        //        this.updateServerTime.bind(this));
     }
 
     public updateServerTime(msg: MessageGameUpdated) {

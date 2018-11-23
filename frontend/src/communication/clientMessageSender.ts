@@ -1,4 +1,4 @@
-import { CommunicationHandler, JoinGameMessage, ClientMessageType, SendSquadron, ClientMessage, CreateGameMessage } from './communicationInterfaces';
+import { CommunicationHandler, JoinGameMessage, ClientMessageType, SendSquadron, ClientMessage, CreateGameMessage, SendPlayerInfoMessage, PlayerIsReadyMessage } from './communicationInterfaces';
 import { printCallstack } from '../common/error';
 import { NewGameSettings } from '../scenes/newGameSettings';
 
@@ -29,6 +29,25 @@ export class ClientMessageSender {
 		this.send(msg);
 	}
 
+	public sendPlayerInfo() {
+		this.send<SendPlayerInfoMessage>({
+			action: ClientMessageType.SEND_PLAYER_INFO,
+			avatar: 'faction01',
+			color: '0xff0000',
+			name: 'berni',
+			gameId: 0,
+			faction: 'faction1',
+			playerId: 0
+		});
+	}
+
+	public sendReady() {
+		this.send<PlayerIsReadyMessage>({
+			action: ClientMessageType.PLAYER_READY,
+			playerId: 0
+		});
+	}
+
 	public sendSquadron(sourcePlanetId: number, targetPlanetId: number, fighterCount: number) {
 		let msg: SendSquadron = {
 			action: ClientMessageType.SEND_SQUADRON,
@@ -40,7 +59,7 @@ export class ClientMessageSender {
 		this.send(msg);
 	}
 
-	private send(msg: ClientMessage) {
+	private send<T extends ClientMessage>(msg: T) {
 		try {
 			this._communicationHandler.send(msg);
 		} catch (error) {

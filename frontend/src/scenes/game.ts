@@ -1,7 +1,7 @@
 import { Scenes } from './scenes';
 import { InputHandler } from '../input/selectionHandler';
 import { GameTimeController } from '../logic/controller/gameTimeController';
-import { ObservableServerMessageHandler } from '../communication/messageHandler';
+import { ObservableServerMessageHandler, ServerMessageQueue } from '../communication/messageHandler';
 import { Player } from '../data/gameData';
 import { GalaxyDataHandler } from '../logic/data/galaxyDataHandler';
 import { GameSceneRenderer } from '../view/gameSceneRenderer';
@@ -17,6 +17,7 @@ export class GameScene extends Phaser.Scene {
 
 	private _player: Player;
 	private _galaxyDataHandler: GalaxyDataHandler;
+	private _serverMessageQueue: ServerMessageQueue;
 
 	private _inputHandler: InputHandler;
 	private _timeController: GameTimeController;
@@ -37,13 +38,15 @@ export class GameScene extends Phaser.Scene {
 		this._serverMessageObserver = data.serverMessageObserver;
 		this._gameEventObserver = data.gameEventObserver;
 		this._galaxyDataHandler = data.galaxyDataHandler;
+		this._serverMessageQueue = data.serverMessageQueue;
+		this._timeController = data.timeController;
 
 		this._player = data.player;
 	}
 
 	public create() {
 
-		this._timeController = new GameTimeController(this._serverMessageObserver);
+		//this._timeController = new GameTimeController(this._serverMessageObserver);
 
 		this._camera = this.cameras.main;
 		this._camera.setBounds(-1024, -1024, 2048, 2048);
@@ -99,6 +102,7 @@ export class GameScene extends Phaser.Scene {
 	}
 
 	public update(timeSinceStart: number, timeSinceLastFrame: number) {
+		this._serverMessageQueue.handleMessages();
 
 		this._timeController.addLocalElapsedTime(timeSinceLastFrame);
 

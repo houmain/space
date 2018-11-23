@@ -1,7 +1,7 @@
 import { Scenes } from './scenes';
 import { GameLogicController } from '../logic/controller/gameLogicController';
 import { SpaceGame } from '../Game';
-import { ObservableServerMessageHandler } from '../communication/messageHandler';
+import { ObservableServerMessageHandler, ServerMessageQueue } from '../communication/messageHandler';
 import { SpaceGameConfig, CommunicationHandlerWebSocket } from '../communication/communicationHandler';
 import { GalaxyDataHandler } from '../logic/data/galaxyDataHandler';
 import { GameInfoHandler } from '../view/gameInfo';
@@ -14,6 +14,7 @@ import { GameEventObserverImpl } from '../logic/event/gameEventObserver';
 import { DebugInfo } from '../common/debug';
 import { SceneEvents } from '../logic/event/eventInterfaces';
 import { ClientMessageSender } from '../communication/clientMessageSender';
+import { GameTimeController } from '../logic/controller/gameTimeController';
 
 export class InitGameScene extends GuiScene {
 
@@ -23,9 +24,11 @@ export class InitGameScene extends GuiScene {
 	private _serverMessageObserver: ObservableServerMessageHandler;
 	private _clientMessageSender: ClientMessageSender;
 	private _gameEventObserver: GameEventObserverImpl;
+	private _serverMessageQueue: ServerMessageQueue;
 
 	private _galaxyDataHandler: GalaxyDataHandler;
 	private _gameInfoHandler: GameInfoHandler;
+	private _timeController: GameTimeController;
 
 	private _assetsLoaded = false;
 
@@ -70,7 +73,9 @@ export class InitGameScene extends GuiScene {
 	public create() {
 		super.create();
 
-		this._serverMessageObserver = new ObservableServerMessageHandler();
+		this._serverMessageQueue = new ServerMessageQueue();
+		this._timeController = new GameTimeController();
+		this._serverMessageObserver = new ObservableServerMessageHandler(this._serverMessageQueue, this._timeController);
 		this._galaxyDataHandler = new GalaxyDataHandler();
 
 		let mockServer = false;
@@ -90,7 +95,7 @@ export class InitGameScene extends GuiScene {
 		};
 		this._gameEventObserver = new GameEventObserverImpl();
 
-		new GameLogicController(this._game.player, this._serverMessageObserver, this._galaxyDataHandler, this._gameEventObserver);
+		new GameLogicController(this._game.player, this._serverMessageObserver, this._galaxyDataHandler, this._gameEventObserver, this._serverMessageQueue);
 		this._gameInfoHandler = new GameInfoHandler(this._game.player, this._gameEventObserver);
 
 		this._infoText = this.add.bitmapText(this.sys.canvas.width / 2, this.sys.canvas.height / 2, 'font_8', TextResources.getText(Texts.INIT_GAME.JOINING_GAME));
@@ -126,6 +131,9 @@ export class InitGameScene extends GuiScene {
 	}
 
 	public update() {
+
+		this._serverMessageQueue.handleMessages();
+
 		if (this._assetsLoaded && this.gameInitialized()) {
 			this.startGame();
 		}
@@ -142,7 +150,9 @@ export class InitGameScene extends GuiScene {
 			galaxyDataHandler: this._galaxyDataHandler,
 			clientMessageSender: this._clientMessageSender,
 			serverMessageObserver: this._serverMessageObserver,
-			gameEventObserver: this._gameEventObserver
+			gameEventObserver: this._gameEventObserver,
+			serverMessageQueue: this._serverMessageQueue,
+			timeController: this._timeController
 		});
 		this.scene.start(Scenes.HUD, {
 			player: this._game.player,
