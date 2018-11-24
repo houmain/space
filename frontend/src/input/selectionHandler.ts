@@ -12,9 +12,10 @@ class SendArrow {
         this._shaft = scene.add.quad(planet.x, planet.y, 'pixel');
     }
 
-    public update(x: number, y: number, snapped: boolean) {
+    public update(x: number, y: number, snapped: boolean, opacity: number) {
         let lineStrength = (snapped ? 5 : 2);
-        this._shaft.bottomLeftAlpha = this._shaft.bottomRightAlpha = 0.3;
+        this._shaft.topLeftAlpha = this._shaft.topRightAlpha = 1.0 * opacity;
+        this._shaft.bottomLeftAlpha = this._shaft.bottomRightAlpha = 0.3 * opacity;
         let start: Phaser.Math.Vector2 = new Phaser.Math.Vector2(this._planet.x, this._planet.y);
         let end: Phaser.Math.Vector2 = new Phaser.Math.Vector2(x, y);
         let dir = end.clone().subtract(start).normalize();
@@ -38,12 +39,16 @@ class SendArrow {
  */
 
 const DOUBLE_CLICK_TIME = 400;
+const SEND_TIMEOUT = 800;
+const SEND_RATE_INITIAL = 0.25;
+const SEND_RATE_INCREMENT = 0.25;
 
 enum InputState {
     Idle,
     DraggingCamera,
     DraggingSelectionRect,
     DraggingSendArrow,
+    Sending,
 }
 
 export class InputHandler {
@@ -63,6 +68,8 @@ export class InputHandler {
     private _selectionRect: Phaser.Geom.Rectangle;
     private _selectedPlanets: Planet[] = [];
     private _targetPlanet: Planet;
+    private _sendTime: number;
+    private _sendRate: number;
     private _graphics; //: Phaser.GameObjects.Graphics;
 
     public constructor(scene: Phaser.Scene, player: Player, planets: Planet[], clientMessageSender: ClientMessageSender) {
@@ -91,6 +98,17 @@ export class InputHandler {
     private onMouseDown(pointer: Phaser.Input.Pointer) {
         this._downScrollX = this._camera.scrollX;
         this._downScrollY = this._camera.scrollY;
+
+        if (this._state === InputState.Sending) {
+            let planet = this.planetUnderCursor(this._currentMouseX, this._currentMouseY);
+            if (planet == this._targetPlanet) {
+                this.increaseSending();
+                return;
+            }
+            else {
+                this.endSending();
+            }
+        }
 
         if (pointer.downTime - this._lastDownTime < DOUBLE_CLICK_TIME) {
             this._state = InputState.DraggingSelectionRect;
@@ -132,6 +150,9 @@ export class InputHandler {
 
     private onMouseUp(pointer: Phaser.Input.Pointer) {
         switch (this._state) {
+            case InputState.DraggingCamera:
+                this.endMoveCamera();
+                break;
             case InputState.DraggingSelectionRect:
                 this.endSelectionRect();
                 break;
@@ -139,10 +160,7 @@ export class InputHandler {
                 this.endSendArrows(pointer.x, pointer.y);
                 break;
         }
-
         this._scene.events.emit(SceneEvents.PLANET_SELECTION_CHANGED, this._selectedPlanets);
-
-        this._state = InputState.Idle;
     }
 
     private getWorldPosition(x: number, y: number): Phaser.Math.Vector2 {
@@ -159,7 +177,6 @@ export class InputHandler {
                 return planet;
             }
         }
-
         return null;
     }
 
@@ -174,7 +191,6 @@ export class InputHandler {
                 return squadron;
             }
         }
-
         return null;
     }
 
@@ -195,7 +211,6 @@ export class InputHandler {
         if (clearSelection) {
             this.clearSelection();
         }
-
         this._selectedPlanets.push(planet);
     }
 
@@ -203,6 +218,10 @@ export class InputHandler {
         this._camera.setScroll(
             this._downScrollX - dx / this._camera.zoom,
             this._downScrollY - dy / this._camera.zoom);
+    }
+
+    private endMoveCamera() {
+        this._state = InputState.Idle;
     }
 
     private startSelectionRect(x: number, y: number) {
@@ -249,6 +268,22 @@ export class InputHandler {
             }
         });
         this._graphics.clear();
+        this._state = InputState.Idle;
+    }
+
+    private updateSelections() {
+        if (this._selectedPlanets.length > 0) {
+            this._graphics.clear();
+
+            this._selectedPlanets.forEach(planet => {
+                this._graphics.strokeRectShape({
+                    x: planet.x - 25,
+                    y: planet.y - 25,
+                    width: 50,
+                    height: 50
+                });
+            });
+        }
     }
 
     private createSendArrows() {
@@ -262,25 +297,28 @@ export class InputHandler {
     }
 
     private destroySendArrows() {
-        this._graphics.clear();
         this._sendArrows.forEach(arrow => { arrow.destroy(); });
         this._sendArrows = [];
     }
 
-    private updateSendArrows() {
+    private updateTargetPlanet() {
+        this._targetPlanet = null;
         let planet = this.planetUnderCursor(this._currentMouseX, this._currentMouseY);
+        if (planet && !this.isPlanetSelected(planet))
+            this._targetPlanet = planet;
+    }
+
+    private updateSendArrows(opacity: number) {
         let worldPos = this.getWorldPosition(this._currentMouseX, this._currentMouseY);
 
         let snapped = false;
-        this._targetPlanet = null;
-        if (planet && !this.isPlanetSelected(planet)) {
-            this._targetPlanet = planet;
-            worldPos.set(planet.x, planet.y);
+        if (this._targetPlanet) {
+            worldPos.set(this._targetPlanet.x, this._targetPlanet.y);
             snapped = true;
         }
 
         this._sendArrows.forEach(arrow => {
-            arrow.update(worldPos.x, worldPos.y, snapped);
+            arrow.update(worldPos.x, worldPos.y, snapped, opacity);
         });
     }
 
@@ -291,38 +329,67 @@ export class InputHandler {
                 this.clearSelection();
                 this.selectPlanet(planet);
             }
+            this.destroySendArrows();
+            this._state = InputState.Idle;
         }
         else {
-            let sendRate = 0.5;
-            this._selectedPlanets.forEach(planet => {
-                let squadron = this.findOwnSquadron(planet);
-                if (squadron) {
-                    let numFighters = Math.floor(squadron.fighters.length * sendRate);
-                    if (numFighters > 0) {
-                        this._clientMessageSender.sendSquadron(planet.id, this._targetPlanet.id, numFighters);
-                    }
-                }
-            });
+            this.startSending();
         }
-        this.destroySendArrows();
     }
 
-    public update() {
-        if (this._selectedPlanets.length > 0) {
-            this._graphics.clear();
+    private startSending() {
+        this._state = InputState.Sending;
+        this._sendTime = SEND_TIMEOUT;
+        this._sendRate = SEND_RATE_INITIAL;
+    }
 
-            this._selectedPlanets.forEach(planet => {
-                this._graphics.strokeRectShape({
-                    x: planet.x - 25,
-                    y: planet.y - 25,
-                    width: 50,
-                    height: 50
-                });
-            });
+    private increaseSending() {
+        this._sendTime = SEND_TIMEOUT;
+        this._sendRate += SEND_RATE_INCREMENT;
+        if (this._sendRate >= 1) {
+            this.sendFighters();
+            this._sendRate = 0;
         }
+    }
 
-        if (this._state === InputState.DraggingSendArrow) {
-            this.updateSendArrows();
+    private updateSending(timeSinceLastFrame: number) {
+        this._sendTime -= timeSinceLastFrame;
+        if (this._sendTime <= 0) {
+            this.endSending();
+            this.destroySendArrows();
+            this._state = InputState.Idle;
+        }
+    }
+
+    private endSending() {
+        this.sendFighters();
+        this.destroySendArrows();
+        this._state = InputState.Idle;
+    }
+
+    private sendFighters() {
+        this._selectedPlanets.forEach(planet => {
+            let squadron = this.findOwnSquadron(planet);
+            if (squadron) {
+                let numFighters = Math.max(1, Math.floor(squadron.fighters.length * this._sendRate));
+                this._clientMessageSender.sendSquadron(planet.id, this._targetPlanet.id, numFighters);
+            }
+        });
+    }
+
+    public update(timeSinceLastFrame: number) {
+        this.updateSelections();
+
+        switch (this._state) {
+            case InputState.DraggingSendArrow:
+                this.updateTargetPlanet();
+                this.updateSendArrows(1);
+                break;
+
+            case InputState.Sending:
+                this.updateSending(timeSinceLastFrame);
+                this.updateSendArrows(this._sendTime / SEND_TIMEOUT);
+                break;
         }
     }
 }

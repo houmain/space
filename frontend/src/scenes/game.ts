@@ -110,7 +110,7 @@ export class GameScene extends Phaser.Scene {
 
 		this._gameRenderer.render();
 
-		this._inputHandler.update();
+		this._inputHandler.update(timeSinceLastFrame);
 	}
 
 	public shutdown() {
