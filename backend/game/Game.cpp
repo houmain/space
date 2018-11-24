@@ -40,7 +40,7 @@ Game::Game()
     planet.faction = &m_factions.at(static_cast<size_t>(i));
     planet.distance = 200;
     planet.initial_angle = i * 6.28 / 5;
-    planet.angular_velocity = 6.28 / 50;
+    planet.angular_velocity = 6.28 / 100;
     planet.production_rate = (i == 0 ? 0.4 : 0.2);
     planet.max_upkeep = (i == 1 ? 40 : 30);
     planet.defense_bonus = (i == 2 ? 10 : 0);
@@ -52,7 +52,7 @@ Game::Game()
       moon.parent = &planet;
       moon.distance = 60;
       moon.initial_angle = j * 6.28 / 3;
-      moon.angular_velocity = 6.28 / 15;
+      moon.angular_velocity = 6.28 / 30;
       moon.production_rate = 0.1;
       moon.max_upkeep = 15;
       moon.squadrons.push_back(create_squadron(moon, 3));
@@ -178,7 +178,9 @@ void Game::update_moving_squadrons(double time_elapsed) {
     const auto distance = std::sqrt(dx * dx + dy * dy);
     const auto distance_covered = time_elapsed * squadron.speed;
 
-    if (distance_covered < distance) {
+    const auto radius = 30;
+
+    if (distance_covered < distance - radius) {
       const auto f = distance_covered / distance;
       squadron.x += dx * f;
       squadron.y += dy * f;

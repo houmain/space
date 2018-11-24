@@ -64,11 +64,10 @@ export class GalaxyFactory {
                     for (let f = 0; f < fighterCount; f++) {
                         let fighter = galaxyObjectFactory.buildFighter();
                         fighter.setPosition(planet.x, planet.y);
-                        fighter.orbitingAngle = f * 360 / fighterCount;
                         fighter.squadron = squadron;
-                        fighter.orbitingDistance = Fighter.FIGHTER_ORBITING_DISTANCE_PLANET;
                         squadron.fighters.push(fighter);
                     }
+                    this.updateSquadronRanks(squadron);
 
                     planet.squadrons.add(squadron.id, squadron);
                 });
@@ -89,11 +88,10 @@ export class GalaxyFactory {
             for (let f = 0; f < fighterCount; f++) {
                 let fighter = galaxyObjectFactory.buildFighter();
                 fighter.setPosition(squadron.x, squadron.y);
-                fighter.orbitingAngle = f * 360 / fighterCount;
                 fighter.squadron = squadron;
-                fighter.orbitingDistance = Fighter.FIGHTER_ORBITING_DISTANCE_PLANET;
                 squadron.fighters.push(fighter);
             }
+            this.updateSquadronRanks(squadron);
         });
 
         factions.forEach(faction => {
@@ -109,5 +107,11 @@ export class GalaxyFactory {
         });
 
         return galaxy;
+    }
+
+    private static updateSquadronRanks(squadron: Squadron) {
+        squadron.fighters.forEach((fighter, index) => {
+            fighter.squadronRank = index;
+        });
     }
 }

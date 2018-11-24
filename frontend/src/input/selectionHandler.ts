@@ -372,7 +372,9 @@ export class InputHandler {
             let squadron = this.findOwnSquadron(planet);
             if (squadron) {
                 let numFighters = Math.max(1, Math.floor(squadron.fighters.length * this._sendRate));
-                this._clientMessageSender.sendSquadron(planet.id, this._targetPlanet.id, numFighters);
+                if (numFighters > 0) {
+                    this._clientMessageSender.sendSquadron(planet.id, this._targetPlanet.id, numFighters);
+                }
             }
         });
     }

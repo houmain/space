@@ -123,16 +123,11 @@ export class Squadron {
 }
 
 export class Fighter {
-
-    static readonly FIGHTER_ORBITING_DISTANCE_PLANET = 30;
-    static readonly FIGHTER_ORBITING_DISTANCE_MOVING = 10;
-
     private _x: number = 0;
     private _y: number = 0;
     private _sprite: Phaser.GameObjects.Sprite = null;
-    orbitingAngle: number;
-    orbitingDistance: number;
     squadron: Squadron;
+    squadronRank: number = 0;
 
     public constructor() {
         Fighter.reset(this);
@@ -167,8 +162,6 @@ export class Fighter {
         fighter._x = 0;
         fighter._y = 0;
         fighter._sprite = null;
-        fighter.orbitingAngle = 0;
-        fighter.orbitingDistance = Fighter.FIGHTER_ORBITING_DISTANCE_PLANET;
         fighter.squadron = null;
     }
 }
