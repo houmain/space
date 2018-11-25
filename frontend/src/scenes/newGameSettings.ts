@@ -2,7 +2,7 @@ import { GuiScene } from './guiScene';
 import { Scenes } from './scenes';
 import { NinePatch } from '@koreez/phaser3-ninepatch';
 import { RoundButton } from '../view/gui/roundButton';
-import { CommunicationHandler, MessageGameCreated, ServerMessageType } from '../communication/communicationInterfaces';
+import { CommunicationHandler, MessageGameCreated, ServerMessageType, MessagePlayerJoined } from '../communication/communicationInterfaces';
 import { CommunicationHandlerMock } from '../communication/mock/communicationHandlerMock';
 import { CommunicationHandlerWebSocket, SpaceGameConfig } from '../communication/communicationHandler';
 import { ClientMessageSender } from '../communication/clientMessageSender';
@@ -68,6 +68,7 @@ export class NewGameSettingsScene extends GuiScene {
 
 			// create communicationHandler
 			this._serverMessageQueue.subscribe<MessageGameCreated>(ServerMessageType.GAME_CREATED, this.onGameCreated.bind(this));
+			this._serverMessageQueue.subscribe<MessagePlayerJoined>(ServerMessageType.PLAYER_JOINED, this.onPlayerJoined.bind(this));
 			this._timeController = new GameTimeController();
 			this._serverMessageObserver = new ObservableServerMessageHandler(this._serverMessageQueue, this._timeController);
 			this._galaxyDataHandler = new GalaxyDataHandler();
@@ -117,9 +118,18 @@ export class NewGameSettingsScene extends GuiScene {
 		this._container.setPosition(window.innerWidth / 2 - box.width / 2, window.innerHeight / 2 - box.height / 2);
 	}
 
+	private _gameId: number;
+	private _playerId: number;
+
 	private onGameCreated(msg: MessageGameCreated) {
-		console.log('GameCreated');
+		console.log('GameCreated' + msg.gameId);
+		this._gameId = msg.gameId;
+
 		this._clientMessageSender.joinGame(msg.gameId);
+	}
+
+	private onPlayerJoined(msg: MessagePlayerJoined) {
+		this._playerId = msg.factionId;
 
 		this.goToPlayerSettingsScene();
 	}
@@ -128,7 +138,9 @@ export class NewGameSettingsScene extends GuiScene {
 		this.scene.start(Scenes.PLAYER_SETTINGS, {
 			serverMessageQueue: this._serverMessageQueue,
 			timeController: this._timeController,
-			clientMessageSender: this._clientMessageSender
+			clientMessageSender: this._clientMessageSender,
+			gameId: this._gameId,
+			playerId: this._playerId
 		});
 	}
 

@@ -14,6 +14,7 @@ export interface CommunicationHandler {
 export enum ClientMessageType {
     CREATE_GAME = 'createGame',
     JOIN_GAME = 'joinGame',
+    PLAYER_INFO = 'playerInfo',
     PLAYER_READY = 'playerReady',
     SEND_SQUADRON = 'sendSquadron'
 }
@@ -29,7 +30,10 @@ export interface CreateGameMessage extends ClientMessage {
 
 export interface JoinGameMessage extends ClientMessage {
     gameId: number;
-    playerId: number;
+}
+
+export interface PlayerInfoMessage extends ClientMessage {
+    factionId: number;
     name: string;
     avatar: string;
     faction: string;
@@ -37,7 +41,7 @@ export interface JoinGameMessage extends ClientMessage {
 }
 
 export interface PlayerReadyMessage extends ClientMessage {
-    playerId: number;
+    factionId: number;
 }
 
 export interface MessageStartGame extends ServerMessage {
@@ -57,6 +61,7 @@ export enum ServerMessageType {
     // LOBBY
     GAME_CREATED = 'gameCreated',
     PLAYER_JOINED = 'playerJoined',
+    PLAYER_INFO = 'playerInfo',
     PLAYER_READY = 'playerReady',
     START_GAME = 'startGame',
 
@@ -83,7 +88,10 @@ export interface MessageGameCreated extends ServerMessage {
 }
 
 export interface MessagePlayerJoined extends ServerMessage {
-    gameId: number;
+    factionId: number;
+}
+
+export interface MessagePlayerInfo extends ServerMessage {
     factionId: number;
     name: string;
     avatar: string;
@@ -92,7 +100,7 @@ export interface MessagePlayerJoined extends ServerMessage {
 }
 
 export interface MessagePlayerReady extends ServerMessage {
-    playerId: number;
+    factionId: number;
 }
 
 export interface MessageGameJoined extends ServerMessage {

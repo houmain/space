@@ -2,7 +2,7 @@ import { GuiScene } from './guiScene';
 import { Scenes } from './scenes';
 import { GameTimeController } from '../logic/controller/gameTimeController';
 import { ServerMessageQueue } from '../communication/messageHandler';
-import { ServerMessageType, MessagePlayerJoined, MessageStartGame } from '../communication/communicationInterfaces';
+import { ServerMessageType, MessagePlayerJoined, MessageStartGame, MessagePlayerInfo } from '../communication/communicationInterfaces';
 import { NinePatch } from '@koreez/phaser3-ninepatch';
 import { TextResources, Texts } from '../localization/textResources';
 import { Assets } from '../view/assets';
@@ -15,10 +15,10 @@ class PlayerBox extends Phaser.GameObjects.Container {
 	private _name: Phaser.GameObjects.BitmapText;
 	private _avatar: Phaser.GameObjects.Sprite;
 
-	public constructor(scene: Phaser.Scene) {
+	public constructor(scene: Phaser.Scene, msg: MessagePlayerInfo) {
 		super(scene);
 
-		let fontSize = 60;
+		let fontSize = 40;
 
 		let box = new NinePatch(scene, 0, 0, 300, 300, 'infoBox', null, {
 			top: 16,
@@ -31,10 +31,10 @@ class PlayerBox extends Phaser.GameObjects.Container {
 		scene.add.existing(box);
 
 		let nameLabel = scene.add.bitmapText(20, 200, 'font_8', TextResources.getText(Texts.PLAYER_SETTINGS.NAME) + ':', fontSize);
-		this._name = scene.add.bitmapText(200, 200, 'font_8', 'Berni', fontSize);
-		let colorLabel = scene.add.bitmapText(20, 300, 'font_8', TextResources.getText(Texts.PLAYER_SETTINGS.COLOR) + ':', fontSize);
+		this._name = scene.add.bitmapText(200, 200, 'font_8', msg.name, fontSize);
+		let colorLabel = scene.add.bitmapText(20, 240, 'font_8', TextResources.getText(Texts.PLAYER_SETTINGS.COLOR) + ':', fontSize);
 
-		this._avatar = scene.add.sprite(box.width - 100, 100, Assets.ATLAS.FACTIONS, 'faction01');
+		this._avatar = scene.add.sprite(box.width - 100, 100, Assets.ATLAS.FACTIONS, msg.avatar);
 
 		this.add(box);
 		this.add(nameLabel);
@@ -77,15 +77,18 @@ export class LobbyScene extends GuiScene {
 			this._clientMessageSender.sendReady();
 		};
 
-		this._serverMessageQueue.subscribe<MessagePlayerJoined>(ServerMessageType.PLAYER_JOINED, this.onPlayerJoined.bind(this));
+		this._serverMessageQueue.subscribe<MessagePlayerInfo>(ServerMessageType.PLAYER_INFO, this.onPlayerInfo.bind(this));
 		this._serverMessageQueue.subscribe<MessageStartGame>(ServerMessageType.START_GAME, this.onStartGame.bind(this));
 	}
+	private ctr = 0;
+	private onPlayerInfo(msg: MessagePlayerInfo) {
+		console.log('PlayerInforeceived' + msg.factionId);
 
-	private onPlayerJoined(msg: MessagePlayerJoined) {
-		console.log('PlayerJoined' + msg.factionId);
-
-		let box = new PlayerBox(this);
+		let box = new PlayerBox(this, msg);
 		this._container.add(box);
+
+		box.setPosition(-600 + this.ctr * 400, -200);
+		this.ctr++;
 	}
 
 

@@ -1,4 +1,4 @@
-import { MessageGameJoined, MessagePlayerJoined, ServerMessageType, SendSquadron, MessageSquadronSent, MessageSquadronAttacks, MessageSquadronDestroyed, MessageFighterDestroyed, MessagePlanetConquered, MessageFighterCreated, MessageSquadronsMerged, MessageGameCreated, JoinGameMessage, PlayerReadyMessage, MessagePlayerReady } from '../communicationInterfaces';
+import { MessageGameJoined, MessagePlayerJoined, ServerMessageType, SendSquadron, MessageSquadronSent, MessageSquadronAttacks, MessageSquadronDestroyed, MessageFighterDestroyed, MessagePlanetConquered, MessageFighterCreated, MessageSquadronsMerged, MessageGameCreated, JoinGameMessage, PlayerReadyMessage, MessagePlayerReady, MessagePlayerInfo, PlayerInfoMessage } from '../communicationInterfaces';
 import { DebugInfo } from '../../common/debug';
 
 export class MockMessageBuilder {
@@ -11,12 +11,19 @@ export class MockMessageBuilder {
 		};
 	}
 
-	public static createMessagePlayerJoined(factionId: number, msg: JoinGameMessage): MessagePlayerJoined {
+	public static createMessagePlayerJoined(factionId: number): MessagePlayerJoined {
 		DebugInfo.info('[MOCK] Created MessagePlayerJoined');
 		return {
 			event: ServerMessageType.PLAYER_JOINED,
-			gameId: msg.gameId,
-			factionId: factionId,
+			factionId: factionId
+		};
+	}
+
+	public static createMessagePlayerInfo(msg: PlayerInfoMessage): MessagePlayerInfo {
+		DebugInfo.info('[MOCK] Created MessagePlayerInfo');
+		return {
+			event: ServerMessageType.PLAYER_INFO,
+			factionId: msg.factionId,
 			avatar: msg.avatar,
 			color: msg.color,
 			faction: msg.faction,
@@ -28,7 +35,7 @@ export class MockMessageBuilder {
 		DebugInfo.info('[MOCK] Created MessagePlayerReady');
 		return {
 			event: ServerMessageType.PLAYER_READY,
-			playerId: msg.playerId
+			factionId: msg.factionId
 		};
 	}
 

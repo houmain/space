@@ -106,6 +106,8 @@ export class PlayerSettingsScene extends GuiScene {
 	private _timeController: GameTimeController;
 	private _clientMessageSender: ClientMessageSender;
 
+	private _gameId: number;
+
 	public constructor() {
 		super(Scenes.PLAYER_SETTINGS);
 	}
@@ -114,6 +116,7 @@ export class PlayerSettingsScene extends GuiScene {
 		this._serverMessageQueue = data.serverMessageQueue;
 		this._timeController = data.timeController;
 		this._clientMessageSender = data.clientMessageSender;
+		this._gameId = data.gameId;
 	}
 
 	public create() {
@@ -130,7 +133,14 @@ export class PlayerSettingsScene extends GuiScene {
 		let createButton = new RoundButton(this);
 		createButton.setPosition(800, 800);
 		createButton.onClick = () => {
-			//	this._clientMessageSender.sendPlayerInfo();
+
+			this._clientMessageSender.sendPlayerInfo(this._gameId, {
+				avatar: 'faction01',
+				name: 'Berni',
+				color: '0xff0000',
+				factionIcon: 'faction01'
+			});
+
 			this.goToLobby();
 		};
 

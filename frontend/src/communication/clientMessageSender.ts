@@ -1,6 +1,13 @@
-import { CommunicationHandler, JoinGameMessage, ClientMessageType, SendSquadron, ClientMessage, CreateGameMessage, PlayerReadyMessage } from './communicationInterfaces';
+import { CommunicationHandler, JoinGameMessage, ClientMessageType, SendSquadron, ClientMessage, CreateGameMessage, PlayerReadyMessage, PlayerInfoMessage } from './communicationInterfaces';
 import { printCallstack } from '../common/error';
 import { NewGameSettings } from '../scenes/newGameSettings';
+
+export interface PlayerInfo {
+	avatar: string;
+	color: string;
+	name: string;
+	factionIcon: string;
+}
 
 export class ClientMessageSender {
 
@@ -23,12 +30,20 @@ export class ClientMessageSender {
 	public joinGame(gameId: number) {
 		let msg: JoinGameMessage = {
 			action: ClientMessageType.JOIN_GAME,
-			gameId: gameId,
-			avatar: 'faction01',
-			color: '0xff0000',
-			name: 'berni',
-			faction: 'faction1',
-			playerId: 0
+			gameId: gameId
+		};
+
+		this.send(msg);
+	}
+
+	public sendPlayerInfo(factionId: number, playerInfo: PlayerInfo) {
+		let msg: PlayerInfoMessage = {
+			action: ClientMessageType.PLAYER_INFO,
+			factionId: factionId,
+			avatar: playerInfo.avatar,
+			color: playerInfo.color,
+			name: playerInfo.name,
+			faction: playerInfo.factionIcon
 		};
 
 		this.send(msg);
@@ -37,7 +52,7 @@ export class ClientMessageSender {
 	public sendReady() {
 		this.send<PlayerReadyMessage>({
 			action: ClientMessageType.PLAYER_READY,
-			playerId: 0
+			factionId: 0
 		});
 	}
 
