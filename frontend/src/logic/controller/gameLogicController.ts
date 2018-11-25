@@ -125,7 +125,13 @@ export class GameLogicController {
 		let sourceSquadron = planet.squadrons.get(msg.sourceSquadronId);
 		Assert.isNotNull(sourceSquadron, 'Squadron must not null');
 
-		let sentFighters: Fighter[] = sourceSquadron.fighters.splice(sourceSquadron.fighters.length - msg.fighterCount, msg.fighterCount);
+		// take every second fighter
+		let sentFighters: Fighter[] = []
+		for (let i = 0; i < msg.fighterCount; i++) {
+			let fighter = sourceSquadron.fighters.splice(
+				i % (sourceSquadron.fighters.length - 1), 1)[0];
+			sentFighters.push(fighter);
+		}
 
 		sentFighters.forEach(figher => {
 			figher.squadron = sentSquadron;

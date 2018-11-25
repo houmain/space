@@ -106,7 +106,7 @@ export class GameSceneUpdater {
 		let normalX = -dirY;
 		let normalY = dirX;
 
-		let row = 0;
+		let row = -3;
 		let rowSize = 0;
 		let column = 0;
 		squadron.fighters.forEach(fighter => {
@@ -119,7 +119,7 @@ export class GameSceneUpdater {
 			if (column > rowSize) {
 				column = 0;
 				row++;
-				if (rowSize < 6)
+				if (rowSize < 5)
 					rowSize++;
 			}
 
