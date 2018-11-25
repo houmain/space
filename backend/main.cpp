@@ -1,9 +1,10 @@
 
 #include <csignal>
+#include <atomic>
 #include "server/Server.h"
 
 namespace {
-  bool g_interrupted = false;
+  std::atomic<bool> g_interrupted;
 
   void open_browser(int port) {
     auto command = "http://127.0.0.1:" + std::to_string(port);
@@ -15,7 +16,7 @@ namespace {
 } // namespace
 
 int main(int argc, char *argv[]) {
-  signal(SIGINT, [](int) { g_interrupted = true; });
+  std::signal(SIGINT, [](int) { g_interrupted.store(true); });
 
   auto settings = server::Settings{ };
 
@@ -27,11 +28,11 @@ int main(int argc, char *argv[]) {
   };
 
   settings.keep_running =
-      []() { return !g_interrupted; };
+      []() { return !g_interrupted.load(); };
 
   // TODO: parse commandline
 
   server::run(settings);
 
-  return (g_interrupted ? 0 : 1);
+  return (g_interrupted.load() ? 0 : 1);
 }

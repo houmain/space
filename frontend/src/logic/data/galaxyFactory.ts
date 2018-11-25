@@ -67,7 +67,6 @@ export class GalaxyFactory {
                         fighter.squadron = squadron;
                         squadron.fighters.push(fighter);
                     }
-                    this.updateSquadronRanks(squadron);
 
                     planet.squadrons.add(squadron.id, squadron);
                 });
@@ -91,7 +90,6 @@ export class GalaxyFactory {
                 fighter.squadron = squadron;
                 squadron.fighters.push(fighter);
             }
-            this.updateSquadronRanks(squadron);
         });
 
         factions.forEach(faction => {
@@ -107,11 +105,5 @@ export class GalaxyFactory {
         });
 
         return galaxy;
-    }
-
-    private static updateSquadronRanks(squadron: Squadron) {
-        squadron.fighters.forEach((fighter, index) => {
-            fighter.squadronRank = index;
-        });
     }
 }

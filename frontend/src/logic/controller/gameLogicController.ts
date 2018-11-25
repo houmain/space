@@ -7,8 +7,9 @@ import { Assert, DebugInfo } from '../../common/debug';
 import { GameEventNotifier, GameEvent, EventPlayerJoined, GameEventType, EventFighterCreated, EventSquadronCreated, EventSquadronDestroyed, EventFighterDestroyed, EventPlanetConquered, EventFactionDestroyed, EventSquadronAttacksPlanet, EventFactionWon } from '../event/eventInterfaces';
 import { GalaxyObjectFactory } from '../data/galaxyObjectFactory';
 import { GalaxyFactory } from '../data/galaxyFactory';
-import { JSONDebugger } from '../../common/utils';
+import { JSONDebugger, SeedableRng } from '../../common/utils';
 import { PlanetUtils } from '../utils/utils';
+import { ArrayUtils } from '../../common/utils';
 
 export class GameLogicController {
 
@@ -82,7 +83,6 @@ export class GameLogicController {
 			fighter.setPosition(squadron.planet.x, squadron.planet.y);
 			fighter.squadron = squadron;
 			squadron.fighters.push(fighter);
-			this.updateSquadronRanks(squadron);
 
 			if (squadron.faction) {
 				squadron.faction.numFighters++;
@@ -137,8 +137,6 @@ export class GameLogicController {
 			figher.squadron = sentSquadron;
 		});
 		sentSquadron.fighters.push(...sentFighters);
-		this.updateSquadronRanks(sourceSquadron);
-		this.updateSquadronRanks(sentSquadron);
 
 		DebugInfo.info(`Sending squadron. Now ${this._galaxyDataHandler.movingSquadrons.length} moving squadrons.`);
 	}
@@ -150,6 +148,8 @@ export class GameLogicController {
 		squadron.faction = faction;
 		squadron.planet = targetPlanet;
 		squadron.setPositon(x, y);
+		squadron.fightersX = x;
+		squadron.fightersY = y;
 
 		DebugInfo.info(JSONDebugger.stringify(squadron));
 
@@ -161,12 +161,6 @@ export class GameLogicController {
 		return squadron;
 	}
 
-	private updateSquadronRanks(squadron: Squadron) {
-		squadron.fighters.forEach((fighter, index) => {
-			fighter.squadronRank = index;
-		});
-	}
-
 	private onSquadronsMerged(msg: MessageSquadronsMerged) {
 
 		let sourceSquadron = this._galaxyDataHandler.movingSquadrons.get(msg.squadronId);
@@ -174,7 +168,6 @@ export class GameLogicController {
 		let targetSquadron = planet.squadrons.get(msg.intoSquadronId);
 
 		this.handOverFighters(sourceSquadron, targetSquadron);
-		this.updateSquadronRanks(targetSquadron);
 
 		Assert.equals(targetSquadron.fighters.length, msg.fighterCount, `Game::squadronsMerged: Incorrect Fighter count client: ${targetSquadron.fighters.length} server: ${msg.fighterCount}`);
 		this._galaxyDataHandler.movingSquadrons.delete(sourceSquadron.id);
@@ -241,6 +234,7 @@ export class GameLogicController {
 		}
 
 		let fighters: Fighter[] = sourceSquadron.fighters.splice(0, sourceSquadron.fighters.length);
+		fighters = ArrayUtils.shuffle(fighters, new SeedableRng(1));
 		fighters.forEach(fighter => {
 			fighter.squadron = targetSquadron;
 		});
@@ -258,7 +252,8 @@ export class GameLogicController {
 				return;
 			}
 
-			let fighters = squadron.fighters.splice(squadron.fighters.length - 1);
+			let fighters = squadron.fighters.splice(
+				Math.floor(Math.random() * squadron.fighters.length), 1);
 
 			let destroyedFighter = fighters[0];
 

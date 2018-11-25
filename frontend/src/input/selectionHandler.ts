@@ -40,7 +40,7 @@ class SendArrow {
 
 const DOUBLE_CLICK_MS = 400;
 const SEND_TIMEOUT = 0.8;
-const SEND_RATE_INITIAL = 0.25;
+const SEND_RATE_INITIAL = 0.0;
 const SEND_RATE_INCREMENT = 0.25;
 
 enum InputState {

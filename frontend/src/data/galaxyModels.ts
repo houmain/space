@@ -78,6 +78,8 @@ export class Squadron {
     private _sprite: Phaser.GameObjects.Sprite = null;
     faction: Faction;
     fighters: Fighter[] = [];
+    fightersX: number = 0;
+    fightersY: number = 0;
     planet: Planet;
     speed: number = 0;
 
@@ -127,7 +129,6 @@ export class Fighter {
     private _y: number = 0;
     private _sprite: Phaser.GameObjects.Sprite = null;
     squadron: Squadron;
-    squadronRank: number = 0;
 
     public constructor() {
         Fighter.reset(this);

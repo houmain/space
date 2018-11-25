@@ -51,9 +51,7 @@ export class GameSceneUpdater {
 			squadrons.forEach(squadron => {
 				squadron.setPositon(planet.x, planet.y);
 
-				squadron.fighters.forEach(fighter => {
-					this.updateOrbitingFighter(fighter, timeSinceStart, timeSinceLastFrame);
-				});
+				this.updateOrbitingFighters(squadron, timeSinceStart, timeSinceLastFrame);
 			});
 		});
 
@@ -74,53 +72,62 @@ export class GameSceneUpdater {
 		});
 	}
 
-	private updateOrbitingFighter(fighter: Fighter, timeSinceStart: number, timeSinceLastFrame: number) {
-		let FIGHTER_VELOCITY = 50;
+	private updateOrbitingFighters(squadron: Squadron, timeSinceStart: number, timeSinceLastFrame: number) {
+		let FIGHTER_VELOCITY = 30;
 		let ORBITING_DISTANCE = 30;
-		let ORBITING_SPEED = 1;
+		let ORBITING_SPEED = -0.2;
 
-		let angle = 6.28 * fighter.squadronRank / fighter.squadron.fighters.length + timeSinceStart * ORBITING_SPEED;
-		let targetX = fighter.squadron.x + Math.cos(angle) * ORBITING_DISTANCE;
-		let targetY = fighter.squadron.y + Math.sin(angle) * ORBITING_DISTANCE;
+		squadron.fighters.forEach((fighter, index) => {
+			let angle = 6.28 * index / squadron.fighters.length + timeSinceStart * ORBITING_SPEED;
+			let targetX = squadron.x + Math.cos(angle) * ORBITING_DISTANCE;
+			let targetY = squadron.y + Math.sin(angle) * ORBITING_DISTANCE;
 
-		let range: Phaser.Math.Vector2 = new Phaser.Math.Vector2(targetX - fighter.x, targetY - fighter.y);
-		let speed = FIGHTER_VELOCITY * timeSinceLastFrame;
-		let distance = range.length();
-		if (distance > speed) {
-			range = range.normalize().scale(speed);
-		}
+			let range: Phaser.Math.Vector2 = new Phaser.Math.Vector2(targetX - fighter.x, targetY - fighter.y);
+			let speed = FIGHTER_VELOCITY * timeSinceLastFrame;
+			let distance = range.length();
+			if (distance > speed) {
+				range = range.normalize().scale(speed);
+			}
 
-		fighter.setPosition(fighter.x + range.x, fighter.y + range.y);
+			fighter.setPosition(fighter.x + range.x, fighter.y + range.y);
+		});
 	}
 
 	private updateMovingFighters(squadron: Squadron, timeSinceStart: number, timeSinceLastFrame: number) {
-		let FIGHTER_VELOCITY = 60;
+		let SQUADRON_AHEAD = 30;
+		let FIGHTER_VELOCITY = squadron.speed * 1.15;
 
-		let dirX = squadron.x - squadron.planet.x;
-		let dirY = squadron.y - squadron.planet.y;
+		let dirX = squadron.fightersX - squadron.x;
+		let dirY = squadron.fightersY - squadron.y;
 		let distance = Math.sqrt(dirX * dirX + dirY * dirY);
 		if (distance > 0) {
 			dirX /= distance;
 			dirY /= distance;
+			if (distance > SQUADRON_AHEAD) {
+				squadron.fightersX = squadron.x + dirX * SQUADRON_AHEAD;
+				squadron.fightersY = squadron.y + dirY * SQUADRON_AHEAD;
+			}
 		}
 		let normalX = -dirY;
 		let normalY = dirX;
 
-		let row = -3;
+		let sx = 5;
+		let sy = 3;
+		let row = 0;
 		let rowSize = 0;
 		let column = 0;
 		squadron.fighters.forEach(fighter => {
-			let targetX = fighter.squadron.x;
-			let targetY = fighter.squadron.y;
-			targetX += dirX * row * 5 + normalX * (column - rowSize / 2) * 5;
-			targetY += dirY * row * 5 + normalY * (column - rowSize / 2) * 5;
+			let targetX = squadron.fightersX;
+			let targetY = squadron.fightersY;
+			targetX += dirX * row * sx + normalX * (column - rowSize / 2) * sy;
+			targetY += dirY * row * sx + normalY * (column - rowSize / 2) * sy;
 
 			column++;
 			if (column > rowSize) {
 				column = 0;
 				row++;
-				if (rowSize < 5)
-					rowSize++;
+				if (rowSize < 7)
+					rowSize += 3;
 			}
 
 			let range: Phaser.Math.Vector2 = new Phaser.Math.Vector2(targetX - fighter.x, targetY - fighter.y);
