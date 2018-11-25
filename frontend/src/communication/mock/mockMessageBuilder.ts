@@ -1,12 +1,34 @@
-import { MessageGameJoined, MessagePlayerJoined, ServerMessageType, SendSquadron, MessageSquadronSent, MessageSquadronAttacks, MessageSquadronDestroyed, MessageFighterDestroyed, MessagePlanetConquered, MessageFighterCreated, MessageSquadronsMerged, MessageGameCreated } from '../communicationInterfaces';
+import { MessageGameJoined, MessagePlayerJoined, ServerMessageType, SendSquadron, MessageSquadronSent, MessageSquadronAttacks, MessageSquadronDestroyed, MessageFighterDestroyed, MessagePlanetConquered, MessageFighterCreated, MessageSquadronsMerged, MessageGameCreated, JoinGameMessage, PlayerReadyMessage, MessagePlayerReady } from '../communicationInterfaces';
 import { DebugInfo } from '../../common/debug';
 
 export class MockMessageBuilder {
 
-	public static createMessageGameCreated(): MessageGameCreated {
+	public static createMessageGameCreated(gameId: number): MessageGameCreated {
+		DebugInfo.info('[MOCK] Created MessageGameCreated');
 		return {
 			event: ServerMessageType.GAME_CREATED,
-			gameId: 1
+			gameId: gameId
+		};
+	}
+
+	public static createMessagePlayerJoined(factionId: number, msg: JoinGameMessage): MessagePlayerJoined {
+		DebugInfo.info('[MOCK] Created MessagePlayerJoined');
+		return {
+			event: ServerMessageType.PLAYER_JOINED,
+			gameId: msg.gameId,
+			factionId: factionId,
+			avatar: msg.avatar,
+			color: msg.color,
+			faction: msg.faction,
+			name: msg.name
+		};
+	}
+
+	public static createMessagePlayerReady(msg: PlayerReadyMessage): MessagePlayerReady {
+		DebugInfo.info('[MOCK] Created MessagePlayerReady');
+		return {
+			event: ServerMessageType.PLAYER_READY,
+			playerId: msg.playerId
 		};
 	}
 
@@ -28,14 +50,6 @@ export class MockMessageBuilder {
 		}
 
 		return JSON.parse(joinMsg);
-	}
-
-	public static createMessagePlayerJoined(): MessagePlayerJoined {
-		DebugInfo.info('[MOCK] Created MessagePlayerJoined');
-		return {
-			event: ServerMessageType.PLAYER_JOINED,
-			factionId: 1
-		};
 	}
 
 	public static createMessageSquadronSent(clientMessage: SendSquadron, factionId: number, sourceSquadronId: number, newSquadronId: number): MessageSquadronSent {

@@ -1,12 +1,10 @@
-import { MessageGameJoined, ServerMessageType, MessageFighterCreated, ClientMessage, ClientMessageType, MessagePlayerJoined, SendSquadron, MessageSquadronSent, MessageFighterDestroyed, MessageSquadronAttacks, MessageSquadronDestroyed, JoinGameMessage, ServerMessage, CreateGameMessage, SendPlayerInfoMessage, PlayerIsReadyMessage } from '../communicationInterfaces';
+import { ClientMessage, ClientMessageType, SendSquadron, JoinGameMessage, ServerMessage, CreateGameMessage, PlayerReadyMessage } from '../communicationInterfaces';
 import { GalaxyDataHandler } from '../../logic/data/galaxyDataHandler';
 import { CommunicationHandlerMock } from './communicationHandlerMock';
 import { DebugInfo } from '../../common/debug';
 import { MockMessageBuilder } from './mockMessageBuilder';
 import { Planet } from '../../data/galaxyModels';
 import { PlanetUtils } from '../../logic/utils/utils';
-import { ServerMessageQueue } from '../messageHandler';
-import { PlayerJoinedInfoMessage } from '../../view/gameInfo';
 
 class IdGenerator {
 
@@ -38,11 +36,8 @@ export class GameServerMock {
 			case ClientMessageType.JOIN_GAME:
 				this.onJoinGame(clientMessage as JoinGameMessage);
 				break;
-			case ClientMessageType.SEND_PLAYER_INFO:
-				this.onReceivedPlayerInfo(clientMessage as SendPlayerInfoMessage);
-				break;
 			case ClientMessageType.PLAYER_READY:
-				this.onReceivedPlayerReady(clientMessage as PlayerIsReadyMessage);
+				this.onReceivedPlayerReady(clientMessage as PlayerReadyMessage);
 				break;
 			case ClientMessageType.SEND_SQUADRON:
 				this.onSendSquadron(clientMessage as SendSquadron);
@@ -66,27 +61,44 @@ export class GameServerMock {
 	}
 
 	private onCreateGame(msg: CreateGameMessage) {
-		DebugInfo.info(`Received createMessage`);
+		DebugInfo.info(`Received createMessage num Factions ` + msg.numFactions);
 
 		setTimeout(() => {
-			this.sendToClient(MockMessageBuilder.createMessageGameCreated());
+			this.sendToClient(MockMessageBuilder.createMessageGameCreated(this._idGenerator.getNextId()));
 		}, 500);
 	}
 
 	private onJoinGame(msg: JoinGameMessage) {
 		DebugInfo.info(`Received joinMessage, game id: ${msg.gameId}`);
 
-		this.sendToClient(MockMessageBuilder.createMessageGameJoined(), 500, () => {  // TODO remove, send info with start game
+		setTimeout(() => {
+			this.sendToClient(MockMessageBuilder.createMessagePlayerJoined(this._idGenerator.getNextId(), msg));
+		}, 500);
+
+		// create ai players
+		let numAIPlayers = 3;
+
+		for (let a = 0; a < numAIPlayers; a++) {
+			setTimeout(() => {
+				this.sendToClient(MockMessageBuilder.createMessagePlayerJoined(this._idGenerator.getNextId(), msg));
+			}, 1500 * a);
+		}
+
+		/*this.sendToClient(MockMessageBuilder.createMessageGameJoined(), 500, () => {  // TODO remove, send info with start game
 			this.sendToClient(MockMessageBuilder.createMessagePlayerJoined());
-		});
+		});*/
 	}
 
-	private onReceivedPlayerInfo(msg: SendPlayerInfoMessage) {
-		DebugInfo.info(`Received player info message` + msg.name);
-	}
-
-	private onReceivedPlayerReady(msg: PlayerIsReadyMessage) {
+	private onReceivedPlayerReady(msg: PlayerReadyMessage) {
 		DebugInfo.info(`Received player ready message` + msg.playerId);
+
+		setTimeout(() => {
+			this.sendToClient(MockMessageBuilder.createMessagePlayerReady(msg));
+		}, 500);
+
+		// send player infos for ai players
+
+		// if all players ready send start game
 
 		// todo send start game if all players are ready
 		//this.sendToClient(MockMessageBuilder.createMessagePlayerJoined());

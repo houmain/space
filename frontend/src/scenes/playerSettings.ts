@@ -130,7 +130,7 @@ export class PlayerSettingsScene extends GuiScene {
 		let createButton = new RoundButton(this);
 		createButton.setPosition(800, 800);
 		createButton.onClick = () => {
-			this._clientMessageSender.sendPlayerInfo();
+			//	this._clientMessageSender.sendPlayerInfo();
 			this.goToLobby();
 		};
 

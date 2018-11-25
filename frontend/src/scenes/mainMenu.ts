@@ -66,7 +66,7 @@ export class MainMenuScene extends GuiScene {
 		};
 		this.add.existing(gameButton);
 
-		let multiplayerGameButton = new MainMenuButton(this, TextResources.getText(Texts.MAIN_MENU.PLAY).toUpperCase());
+		let multiplayerGameButton = new MainMenuButton(this, 'LOBBY TEST');
 		multiplayerGameButton.setPosition(this.sys.canvas.width / 2 - 350, this.sys.canvas.height / 2);
 		multiplayerGameButton.setScale(0.9);
 		multiplayerGameButton.setAlpha(0.9);

@@ -14,7 +14,6 @@ export interface CommunicationHandler {
 export enum ClientMessageType {
     CREATE_GAME = 'createGame',
     JOIN_GAME = 'joinGame',
-    SEND_PLAYER_INFO = 'sendPlayerInfo',
     PLAYER_READY = 'playerReady',
     SEND_SQUADRON = 'sendSquadron'
 }
@@ -30,10 +29,6 @@ export interface CreateGameMessage extends ClientMessage {
 
 export interface JoinGameMessage extends ClientMessage {
     gameId: number;
-}
-
-export interface SendPlayerInfoMessage extends ClientMessage {
-    gameId: number;
     playerId: number;
     name: string;
     avatar: string;
@@ -41,8 +36,15 @@ export interface SendPlayerInfoMessage extends ClientMessage {
     color: string;
 }
 
-export interface PlayerIsReadyMessage extends ClientMessage {
+export interface PlayerReadyMessage extends ClientMessage {
     playerId: number;
+}
+
+export interface MessageStartGame extends ServerMessage {
+    lanets: PlanetInfo[];
+    factions: FactionInfo[];
+    squadrons: SquadronInfo[];
+    factionId: number;
 }
 
 export interface SendSquadron extends ClientMessage {
@@ -52,10 +54,15 @@ export interface SendSquadron extends ClientMessage {
 }
 
 export enum ServerMessageType {
+    // LOBBY
     GAME_CREATED = 'gameCreated',
-    GAME_JOINED = 'gameJoined',
     PLAYER_JOINED = 'playerJoined',
+    PLAYER_READY = 'playerReady',
     START_GAME = 'startGame',
+
+    GAME_JOINED = 'gameJoined',    // remove, replaced by start game
+
+    // GAME
     GAME_UPDATED = 'gameUpdated',
     FIGHTER_CREATED = 'fighterCreated',
     SQUADRON_SENT = 'squadronSent',
@@ -73,6 +80,19 @@ export interface ServerMessage {
 }
 export interface MessageGameCreated extends ServerMessage {
     gameId: number;
+}
+
+export interface MessagePlayerJoined extends ServerMessage {
+    gameId: number;
+    factionId: number;
+    name: string;
+    avatar: string;
+    faction: string;
+    color: string;
+}
+
+export interface MessagePlayerReady extends ServerMessage {
+    playerId: number;
 }
 
 export interface MessageGameJoined extends ServerMessage {
@@ -106,14 +126,6 @@ export interface SquadronInfo {
     squadronId: number;
     fighterCount: number;
     factionId: number;
-}
-
-export interface MessagePlayerJoined extends ServerMessage {
-    factionId: number;
-}
-
-export interface MessageStartGame extends ServerMessage {
-
 }
 
 export interface MessageGameUpdated extends ServerMessage {
