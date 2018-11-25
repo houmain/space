@@ -4,7 +4,11 @@ import { ObservableServerMessageHandler } from '../../communication/messageHandl
 export class GameTimeController {
 
     private _serverTimeSinceStart: number = 0;
-    private _timeSinceLastServerTimeUpdate: number = 0;
+    private _lastServerTimeUpdate: number = 0;
+    private _lastClientTimeUpdate: number = 0;
+
+    public timeSinceStart: number = 0;
+    public timeSinceLastFrame: number = 0;
 
     public constructor() { //serverMessageObserver: ObservableServerMessageHandler
         //     serverMessageObserver.subscribe<MessageGameUpdated>(ServerMessageType.GAME_UPDATED,
@@ -13,14 +17,19 @@ export class GameTimeController {
 
     public updateServerTime(msg: MessageGameUpdated) {
         this._serverTimeSinceStart = msg.time;
-        this._timeSinceLastServerTimeUpdate = 0;
+        this._lastServerTimeUpdate = Date.now();
     }
 
-    public addLocalElapsedTime(timeElapsed: number) {
-        this._timeSinceLastServerTimeUpdate += (timeElapsed * 0.001);
+    public get synchronized() {
+        return (this._lastServerTimeUpdate !== 0);
     }
 
-    public get timeSinceStart() {
-        return this._serverTimeSinceStart + this._timeSinceLastServerTimeUpdate;
+    public updateFrameTime() {
+        let now = Date.now();
+        this.timeSinceLastFrame =
+            (now - this._lastClientTimeUpdate) / 1000.0;
+        this._lastClientTimeUpdate = now;
+        this.timeSinceStart =
+            this._serverTimeSinceStart + (now - this._lastServerTimeUpdate) / 1000.0;
     }
 }

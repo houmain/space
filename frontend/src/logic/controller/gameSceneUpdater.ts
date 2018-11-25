@@ -38,7 +38,6 @@ export class GameSceneUpdater {
 	}
 
 	public update(timeSinceStart: number, timeSinceLastFrame: number) {
-
 		let planets = this._planets.list;
 		planets.forEach(planet => {
 			let angle = planet.initialAngle + planet.angularVelocity * timeSinceStart;
@@ -64,7 +63,7 @@ export class GameSceneUpdater {
 			const dy: number = squadron.planet.y - squadron.y;
 			const distance: number = Math.sqrt(dx * dx + dy * dy);
 
-			const distanceCovered: number = timeSinceLastFrame * 0.001 * squadron.speed;
+			const distanceCovered: number = timeSinceLastFrame * squadron.speed;
 
 			if (distanceCovered < distance) {
 				const f: number = distanceCovered / distance;
@@ -76,7 +75,7 @@ export class GameSceneUpdater {
 	}
 
 	private updateOrbitingFighter(fighter: Fighter, timeSinceStart: number, timeSinceLastFrame: number) {
-		let FIGHTER_VELOCITY = 0.05;
+		let FIGHTER_VELOCITY = 50;
 		let ORBITING_DISTANCE = 30;
 		let ORBITING_SPEED = 1;
 
@@ -95,7 +94,7 @@ export class GameSceneUpdater {
 	}
 
 	private updateMovingFighters(squadron: Squadron, timeSinceStart: number, timeSinceLastFrame: number) {
-		let FIGHTER_VELOCITY = 0.06;
+		let FIGHTER_VELOCITY = 60;
 
 		let dirX = squadron.x - squadron.planet.x;
 		let dirY = squadron.y - squadron.planet.y;

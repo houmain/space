@@ -104,13 +104,16 @@ export class GameScene extends Phaser.Scene {
 	public update(timeSinceStart: number, timeSinceLastFrame: number) {
 		this._serverMessageQueue.handleMessages();
 
-		this._timeController.addLocalElapsedTime(timeSinceLastFrame);
+		if (!this._timeController.synchronized)
+			return;
+		this._timeController.updateFrameTime();
 
-		this._gameSceneUpdater.update(this._timeController.timeSinceStart, timeSinceLastFrame);
+		this._gameSceneUpdater.update(this._timeController.timeSinceStart,
+			this._timeController.timeSinceLastFrame);
 
 		this._gameRenderer.render();
 
-		this._inputHandler.update(timeSinceLastFrame);
+		this._inputHandler.update(this._timeController.timeSinceLastFrame);
 	}
 
 	public shutdown() {

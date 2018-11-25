@@ -38,8 +38,8 @@ class SendArrow {
  *
  */
 
-const DOUBLE_CLICK_TIME = 400;
-const SEND_TIMEOUT = 800;
+const DOUBLE_CLICK_MS = 400;
+const SEND_TIMEOUT = 0.8;
 const SEND_RATE_INITIAL = 0.25;
 const SEND_RATE_INCREMENT = 0.25;
 
@@ -110,7 +110,7 @@ export class InputHandler {
             }
         }
 
-        if (pointer.downTime - this._lastDownTime < DOUBLE_CLICK_TIME) {
+        if (pointer.downTime - this._lastDownTime < DOUBLE_CLICK_MS) {
             this._state = InputState.DraggingSelectionRect;
             this.startSelectionRect(pointer.x, pointer.y);
         }
