@@ -13,7 +13,7 @@ export class GalaxyFactory {
         let factionMap: { [id: number]: Faction; } = {};
         let factionColors: number[] = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00];
 
-        let avatars: string[] = ['faction01', 'faction02', 'faction03', 'faction04', 'faction05'];
+        let avatars: string[] = ['faction01.png', 'faction02.png', 'faction03.png', 'faction04.png', 'faction05.png'];
 
         let factions: Faction[] = [];
         factionInfos.forEach((factionInfo, index) => {

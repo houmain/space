@@ -32,7 +32,7 @@ class PlayerSettingsBox extends Phaser.GameObjects.Container {
 		this._name = scene.add.bitmapText(200, 200, 'font_8', 'Berni', fontSize);
 		let colorLabel = scene.add.bitmapText(20, 300, 'font_8', TextResources.getText(Texts.PLAYER_SETTINGS.COLOR) + ':', fontSize);
 
-		this._avatar = scene.add.sprite(box.width - 100, 100, Assets.ATLAS.AVATARS, 'faction01');
+		this._avatar = scene.add.sprite(box.width - 100, 100, Assets.ATLAS.AVATARS, 'faction01.png');
 
 		this.add(box);
 		this.add(nameLabel);
@@ -64,7 +64,7 @@ class AvatarsBox extends Phaser.GameObjects.Container {
 		let avatarWidth = 110;
 		let avatarHeight = 110;
 		let padding = 20;
-		let avatars = ['faction01', 'faction02', 'faction03', 'faction04', 'faction05'];
+		let avatars = ['faction01.png', 'faction02.png', 'faction03.png', 'faction04.png', 'faction05.png'];
 		for (let a = 0; a < avatars.length; a++) {
 			let x = column * avatarWidth + column * padding;
 			let y = row * avatarHeight + row * padding;
@@ -137,10 +137,10 @@ export class PlayerSettingsScene extends GuiScene {
 		createButton.onClick = () => {
 
 			this._clientMessageSender.sendPlayerInfo(this._factionId, {
-				avatar: 'faction01',
+				avatar: 'faction01.png',
 				name: 'Berni',
 				color: '0xff0000',
-				factionIcon: 'faction01',
+				factionIcon: 'faction01.png',
 			});
 
 			this.goToLobby();

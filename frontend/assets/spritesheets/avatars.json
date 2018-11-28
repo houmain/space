@@ -24,33 +24,9 @@
         "y": 0.5
       }
     },
-    "faction03.png": {
-      "frame": {
-        "x": 131,
-        "y": 1,
-        "w": 124,
-        "h": 128
-      },
-      "rotated": true,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 124,
-        "h": 128
-      },
-      "sourceSize": {
-        "w": 128,
-        "h": 128
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
     "faction05.png": {
       "frame": {
-        "x": 261,
+        "x": 131,
         "y": 1,
         "w": 128,
         "h": 121
@@ -74,7 +50,7 @@
     },
     "faction04.png": {
       "frame": {
-        "x": 391,
+        "x": 261,
         "y": 1,
         "w": 125,
         "h": 116
@@ -96,14 +72,38 @@
         "y": 0.5
       }
     },
+    "faction03.png": {
+      "frame": {
+        "x": 388,
+        "y": 1,
+        "w": 124,
+        "h": 128
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 124,
+        "h": 128
+      },
+      "sourceSize": {
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
     "faction02.png": {
       "frame": {
-        "x": 518,
-        "y": 1,
+        "x": 261,
+        "y": 119,
         "w": 118,
         "h": 123
       },
-      "rotated": true,
+      "rotated": false,
       "trimmed": true,
       "spriteSourceSize": {
         "x": 0,
@@ -122,12 +122,12 @@
     },
     "faction06.png": {
       "frame": {
-        "x": 391,
-        "y": 119,
+        "x": 131,
+        "y": 124,
         "w": 115,
         "h": 121
       },
-      "rotated": true,
+      "rotated": false,
       "trimmed": true,
       "spriteSourceSize": {
         "x": 0,
@@ -151,8 +151,8 @@
     "image": "avatars.png",
     "format": "RGBA8888",
     "size": {
-      "w": 642,
-      "h": 235
+      "w": 513,
+      "h": 246
     },
     "scale": 1
   }
