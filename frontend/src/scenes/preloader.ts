@@ -86,6 +86,7 @@ export class Preloader extends Phaser.Scene {
 
         this.load.atlas(Assets.ATLAS.HUD, './spritesheets/game_gui.png', './spritesheets/game_gui.json');
         this.load.atlas(Assets.ATLAS.FACTIONS, './spritesheets/factions.png', './spritesheets/factions.json');
+        this.load.atlas(Assets.ATLAS.AVATARS, './spritesheets/avatars.png', './spritesheets/avatars.json');
 
         // Test TODO
         this.load.image('infoBox', './images/infoBox.png');

@@ -5,6 +5,7 @@ class TextureAtlasList {
 	public readonly GAME: string = 'atlasGame';
 	public readonly PLANETS: string = 'atlasPlanets';
 	public readonly FACTIONS: string = 'atlasFactions';
+	public readonly AVATARS: string = 'atlasAvatars';
 }
 
 export class Assets {

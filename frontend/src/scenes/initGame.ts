@@ -62,6 +62,7 @@ export class InitGameScene extends GuiScene {
 		this.load.atlas(Assets.ATLAS.GAME, './spritesheets/game.png', './spritesheets/game.json');
 		this.load.atlas(Assets.ATLAS.PLANETS, './spritesheets/planets.png', './spritesheets/planets.json');
 		this.load.atlas(Assets.ATLAS.FACTIONS, './spritesheets/factions.png', './spritesheets/factions.json');
+		this.load.atlas(Assets.ATLAS.AVATARS, './spritesheets/avatars.png', './spritesheets/avatars.json');
 
 		// fonts
 		this.load.bitmapFont('gameHudCounter', './fonts/font_counter_-export.png', './fonts/font_counter_-export.xml');

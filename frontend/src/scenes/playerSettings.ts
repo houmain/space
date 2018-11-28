@@ -32,7 +32,7 @@ class PlayerSettingsBox extends Phaser.GameObjects.Container {
 		this._name = scene.add.bitmapText(200, 200, 'font_8', 'Berni', fontSize);
 		let colorLabel = scene.add.bitmapText(20, 300, 'font_8', TextResources.getText(Texts.PLAYER_SETTINGS.COLOR) + ':', fontSize);
 
-		this._avatar = scene.add.sprite(box.width - 100, 100, Assets.ATLAS.FACTIONS, 'faction01');
+		this._avatar = scene.add.sprite(box.width - 100, 100, Assets.ATLAS.AVATARS, 'faction01');
 
 		this.add(box);
 		this.add(nameLabel);
@@ -77,7 +77,7 @@ class AvatarsBox extends Phaser.GameObjects.Container {
 				y = row * avatarHeight + row * padding;
 			}
 
-			let avatar = scene.add.sprite(x, y, Assets.ATLAS.FACTIONS, avatars[a]);
+			let avatar = scene.add.sprite(x, y, Assets.ATLAS.AVATARS, avatars[a]);
 			avatar.setOrigin(0, 0);
 			avatar.setInteractive();
 			this.add(avatar);

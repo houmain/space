@@ -1,19 +1,19 @@
 {
   "frames": {
-    "Tex_badges_03.png": {
+    "faction01.png": {
       "frame": {
         "x": 1,
         "y": 1,
         "w": 128,
-        "h": 124
+        "h": 127
       },
       "rotated": false,
       "trimmed": true,
       "spriteSourceSize": {
         "x": 0,
-        "y": 2,
+        "y": 1,
         "w": 128,
-        "h": 124
+        "h": 127
       },
       "sourceSize": {
         "w": 128,
@@ -24,20 +24,20 @@
         "y": 0.5
       }
     },
-    "Tex_badges_06.png": {
+    "faction03.png": {
       "frame": {
         "x": 131,
         "y": 1,
-        "w": 128,
-        "h": 110
+        "w": 124,
+        "h": 128
       },
-      "rotated": false,
+      "rotated": true,
       "trimmed": true,
       "spriteSourceSize": {
         "x": 0,
-        "y": 9,
-        "w": 128,
-        "h": 110
+        "y": 0,
+        "w": 124,
+        "h": 128
       },
       "sourceSize": {
         "w": 128,
@@ -48,68 +48,20 @@
         "y": 0.5
       }
     },
-    "Tex_badges_04.png": {
+    "faction05.png": {
       "frame": {
         "x": 261,
         "y": 1,
-        "w": 109,
-        "h": 128
-      },
-      "rotated": true,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 9,
-        "y": 0,
-        "w": 109,
-        "h": 128
-      },
-      "sourceSize": {
         "w": 128,
-        "h": 128
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "Tex_badges_05.png": {
-      "frame": {
-        "x": 391,
-        "y": 1,
-        "w": 100,
-        "h": 128
-      },
-      "rotated": true,
-      "trimmed": true,
-      "spriteSourceSize": {
-        "x": 14,
-        "y": 0,
-        "w": 100,
-        "h": 128
-      },
-      "sourceSize": {
-        "w": 128,
-        "h": 128
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "Tex_badges_02.png": {
-      "frame": {
-        "x": 521,
-        "y": 1,
-        "w": 128,
-        "h": 60
+        "h": 121
       },
       "rotated": false,
       "trimmed": true,
       "spriteSourceSize": {
         "x": 0,
-        "y": 34,
+        "y": 7,
         "w": 128,
-        "h": 60
+        "h": 121
       },
       "sourceSize": {
         "w": 128,
@@ -120,20 +72,68 @@
         "y": 0.5
       }
     },
-    "Tex_badges_01.png": {
+    "faction04.png": {
       "frame": {
-        "x": 651,
+        "x": 391,
         "y": 1,
-        "w": 126,
-        "h": 119
+        "w": 125,
+        "h": 116
       },
       "rotated": false,
       "trimmed": true,
       "spriteSourceSize": {
-        "x": 1,
-        "y": 4,
-        "w": 126,
-        "h": 119
+        "x": 0,
+        "y": 12,
+        "w": 125,
+        "h": 116
+      },
+      "sourceSize": {
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "faction02.png": {
+      "frame": {
+        "x": 518,
+        "y": 1,
+        "w": 118,
+        "h": 123
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 5,
+        "w": 118,
+        "h": 123
+      },
+      "sourceSize": {
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "faction06.png": {
+      "frame": {
+        "x": 391,
+        "y": 119,
+        "w": 115,
+        "h": 121
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 7,
+        "w": 115,
+        "h": 121
       },
       "sourceSize": {
         "w": 128,
@@ -148,11 +148,11 @@
   "meta": {
     "app": "http://free-tex-packer.com/",
     "version": "0.3.3",
-    "image": "factions.png",
+    "image": "avatars.png",
     "format": "RGBA8888",
     "size": {
-      "w": 778,
-      "h": 126
+      "w": 642,
+      "h": 235
     },
     "scale": 1
   }

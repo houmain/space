@@ -34,7 +34,7 @@ class PlayerBox extends Phaser.GameObjects.Container {
 		this._name = scene.add.bitmapText(200, 200, 'font_8', msg.name, fontSize);
 		let colorLabel = scene.add.bitmapText(20, 240, 'font_8', TextResources.getText(Texts.PLAYER_SETTINGS.COLOR) + ':', fontSize);
 
-		this._avatar = scene.add.sprite(box.width - 100, 100, Assets.ATLAS.FACTIONS, msg.avatar);
+		this._avatar = scene.add.sprite(box.width - 100, 100, Assets.ATLAS.AVATARS, msg.avatar);
 
 		this.add(box);
 		this.add(nameLabel);

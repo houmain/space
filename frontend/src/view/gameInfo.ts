@@ -109,7 +109,7 @@ class GameInfoMessageBuilder {
         let textMarginLeft = 20;
         let textMarginTop = 10;
 
-        let factionImage = this._scene.add.sprite(10, 10, Assets.ATLAS.FACTIONS, msg.faction.avatar);
+        let factionImage = this._scene.add.sprite(10, 10, Assets.ATLAS.AVATARS, msg.faction.avatar);
         factionImage.setOrigin(1, 0);
         factionImage.setPosition(infoBox.width - 20, 20);
 
