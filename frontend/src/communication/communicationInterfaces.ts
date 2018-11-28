@@ -1,5 +1,4 @@
 import { SpaceGameConfig } from './communicationHandler';
-import { ServerMessageHandler } from './messageHandler';
 
 export interface CommunicationHandler {
 
@@ -13,6 +12,7 @@ export interface CommunicationHandler {
 
 export enum ClientMessageType {
     CREATE_GAME = 'createGame',
+    AVAILABLE_GAME_SESSIONS = 'availableGameSessions',
     JOIN_GAME = 'joinGame',
     PLAYER_INFO = 'playerInfo',
     PLAYER_READY = 'playerReady',
@@ -21,6 +21,9 @@ export enum ClientMessageType {
 
 export interface ClientMessage {
     action: string;
+}
+
+export interface GetAvailableGameSessions extends ClientMessage {
 }
 
 export interface CreateGameMessage extends ClientMessage {
@@ -60,6 +63,7 @@ export interface SendSquadron extends ClientMessage {
 export enum ServerMessageType {
     // LOBBY
     GAME_CREATED = 'gameCreated',
+    AVAILABLE_SESSIONS = 'availableSessions',
     PLAYER_JOINED = 'playerJoined',
     PLAYER_INFO = 'playerInfo',
     PLAYER_READY = 'playerReady',
@@ -83,6 +87,11 @@ export enum ServerMessageType {
 export interface ServerMessage {
     event: string;
 }
+
+export interface MessageAvailableGameSessions extends ServerMessage {
+    sessions: SessionInfo[];
+}
+
 export interface MessageGameCreated extends ServerMessage {
     gameId: number;
 }
@@ -108,6 +117,13 @@ export interface MessageGameJoined extends ServerMessage {
     factions: FactionInfo[];
     squadrons: SquadronInfo[];
     factionId: number;
+}
+
+export interface SessionInfo {
+    gameId: number;
+    name: string;
+    maxPlayers: number;
+    numPlayers: number;
 }
 
 export interface PlanetInfo {

@@ -4,7 +4,7 @@ import { GuiScene } from './guiScene';
 import { Texts, TextResources } from '../localization/textResources';
 import { MainMenuButton } from '../view/gui/mainMenuButton';
 import { NinePatch } from '@koreez/phaser3-ninepatch';
-import { BitmapText } from '../view/gui/bitmapText';
+import { BitmapText } from '../view/gui/text/bitmapText';
 import { SceneEvents } from '../logic/event/eventInterfaces';
 
 export class InfoBoxNew {

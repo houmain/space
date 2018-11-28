@@ -107,6 +107,7 @@ export class PlayerSettingsScene extends GuiScene {
 	private _clientMessageSender: ClientMessageSender;
 
 	private _gameId: number;
+	private _factionId: number;
 
 	public constructor() {
 		super(Scenes.PLAYER_SETTINGS);
@@ -117,6 +118,7 @@ export class PlayerSettingsScene extends GuiScene {
 		this._timeController = data.timeController;
 		this._clientMessageSender = data.clientMessageSender;
 		this._gameId = data.gameId;
+		this._factionId = data.factionId;
 	}
 
 	public create() {
@@ -134,11 +136,11 @@ export class PlayerSettingsScene extends GuiScene {
 		createButton.setPosition(800, 800);
 		createButton.onClick = () => {
 
-			this._clientMessageSender.sendPlayerInfo(this._gameId, {
+			this._clientMessageSender.sendPlayerInfo(this._factionId, {
 				avatar: 'faction01',
 				name: 'Berni',
 				color: '0xff0000',
-				factionIcon: 'faction01'
+				factionIcon: 'faction01',
 			});
 
 			this.goToLobby();
@@ -153,7 +155,8 @@ export class PlayerSettingsScene extends GuiScene {
 		this.scene.start(Scenes.LOBBY, {
 			serverMessageQueue: this._serverMessageQueue,
 			timeController: this._timeController,
-			clientMessageSender: this._clientMessageSender
+			clientMessageSender: this._clientMessageSender,
+			factionId: this._factionId
 		});
 	}
 }

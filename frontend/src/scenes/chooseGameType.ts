@@ -21,7 +21,7 @@ export class ChooseGameTypeScene extends GuiScene {
 		let joinGame = new MainMenuButton(this, TextResources.getText(Texts.CHOOSE_GAME_TYPE.JOIN_GAME).toUpperCase());
 		joinGame.setPosition(this.sys.canvas.width / 2 + 260, this.sys.canvas.height / 2);
 		joinGame.onClick = () => {
-
+			this.scene.start(Scenes.SELECT_EXISTING_GAME);
 		};
 		this.add.existing(joinGame);
 	}

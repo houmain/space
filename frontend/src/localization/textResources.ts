@@ -2,6 +2,7 @@ import { DebugInfo } from '../common/debug';
 
 class TextResourcesCommon {
 	public readonly CANCEL = 'common.cancel';
+	public readonly SERVER = 'common.server';
 }
 
 class TextResourcesMenu {
@@ -20,9 +21,15 @@ class TextResourcesChooseGameType {
 class TextResourcesNewGameSettings {
 	public readonly TITLE = 'newGameSettings.title';
 	public readonly CREATE = 'newGameSettings.create';
-	public readonly SERVER = 'newGameSettings.server';
 	public readonly NUM_PLANETS = 'newGameSettings.numPlanets';
 	public readonly NUM_FACTIONS = 'newGameSettings.numFactions';
+}
+
+class TextResourcesSelectGame {
+	public readonly TITLE = 'selectGame.title';
+	public readonly SESSIONS = 'selectGame.sessions';
+	public readonly CONNECT = 'selectGame.connect';
+	public readonly JOIN = 'selectGame.join';
 }
 
 class TextResourcesPlayerSettings {
@@ -72,6 +79,7 @@ export class Texts {
 	public static readonly COMMON: TextResourcesCommon = new TextResourcesCommon();
 	public static readonly MAIN_MENU: TextResourcesMenu = new TextResourcesMenu();
 	public static readonly CHOOSE_GAME_TYPE: TextResourcesChooseGameType = new TextResourcesChooseGameType();
+	public static readonly SELECT_GAME: TextResourcesSelectGame = new TextResourcesSelectGame();
 	public static readonly NEW_GAME_SETTINGS: TextResourcesNewGameSettings = new TextResourcesNewGameSettings();
 	public static readonly PLAYER_SETTINGS: TextResourcesPlayerSettings = new TextResourcesPlayerSettings();
 	public static readonly LOBBY: TextResourcesLobby = new TextResourcesLobby();
@@ -86,6 +94,7 @@ export class TextResources {
 	public static initialize() {
 
 		TextResources._resources[Texts.COMMON.CANCEL] = 'cancel';
+		TextResources._resources[Texts.COMMON.SERVER] = 'Server';
 
 		TextResources._resources[Texts.MAIN_MENU.TITLE] = 'main menu';
 		TextResources._resources[Texts.MAIN_MENU.PLAY] = 'play';
@@ -98,9 +107,14 @@ export class TextResources {
 
 		TextResources._resources[Texts.NEW_GAME_SETTINGS.TITLE] = 'New Game settings';
 		TextResources._resources[Texts.NEW_GAME_SETTINGS.CREATE] = 'Create';
-		TextResources._resources[Texts.NEW_GAME_SETTINGS.SERVER] = 'Server';
+
 		TextResources._resources[Texts.NEW_GAME_SETTINGS.NUM_FACTIONS] = '# factions';
 		TextResources._resources[Texts.NEW_GAME_SETTINGS.NUM_PLANETS] = '# planets';
+
+		TextResources._resources[Texts.SELECT_GAME.TITLE] = 'Select game';
+		TextResources._resources[Texts.SELECT_GAME.SESSIONS] = 'Sessions';
+		TextResources._resources[Texts.SELECT_GAME.CONNECT] = 'Connect';
+		TextResources._resources[Texts.SELECT_GAME.JOIN] = 'Join';
 
 		TextResources._resources[Texts.PLAYER_SETTINGS.TITLE] = 'Player settings';
 		TextResources._resources[Texts.PLAYER_SETTINGS.NAME] = 'Name';

@@ -1,4 +1,4 @@
-import { ClientMessage, ClientMessageType, SendSquadron, JoinGameMessage, ServerMessage, CreateGameMessage, PlayerReadyMessage, MessagePlayerInfo, PlayerInfoMessage } from '../communicationInterfaces';
+import { ClientMessage, ClientMessageType, SendSquadron, JoinGameMessage, ServerMessage, CreateGameMessage, PlayerReadyMessage, MessagePlayerInfo, PlayerInfoMessage, ServerMessageType, GetAvailableGameSessions } from '../communicationInterfaces';
 import { GalaxyDataHandler } from '../../logic/data/galaxyDataHandler';
 import { CommunicationHandlerMock } from './communicationHandlerMock';
 import { DebugInfo } from '../../common/debug';
@@ -32,6 +32,9 @@ export class GameServerMock {
 		switch (clientMessage.action) {
 			case ClientMessageType.CREATE_GAME:
 				this.onCreateGame(clientMessage as CreateGameMessage);
+				break;
+			case ClientMessageType.AVAILABLE_GAME_SESSIONS:
+				this.onAvailableGameSessions(clientMessage as GetAvailableGameSessions);
 				break;
 			case ClientMessageType.JOIN_GAME:
 				this.onJoinGame(clientMessage as JoinGameMessage);
@@ -71,17 +74,30 @@ export class GameServerMock {
 		}, 500);
 	}
 
+	private onAvailableGameSessions(msg: GetAvailableGameSessions) {
+		DebugInfo.info(`Received availableGameSessions`);
+
+		setTimeout(() => {
+			this.sendToClient(MockMessageBuilder.createAvailableGameSessions());
+		}, 500);
+	}
+
+	private _localPlayerId: number = 0;
+
 	private onJoinGame(msg: JoinGameMessage) {
 		DebugInfo.info(`Received joinMessage, game id: ${msg.gameId}`);
 
 		setTimeout(() => {
-			this.sendToClient(MockMessageBuilder.createMessagePlayerJoined(this._idGenerator.getNextId()));
+			this._localPlayerId = this._idGenerator.getNextId();
+			this.sendToClient(MockMessageBuilder.createMessagePlayerJoined(this._localPlayerId));
 		}, 500);
 
 		/*this.sendToClient(MockMessageBuilder.createMessageGameJoined(), 500, () => {  // TODO remove, send info with start game
 			this.sendToClient(MockMessageBuilder.createMessagePlayerJoined());
 		});*/
 	}
+	private _numAIPlayers = 3;
+	private _aiPlayerIds: number[] = [];
 
 	private onPlayerInfo(msg: PlayerInfoMessage) {
 
@@ -90,12 +106,13 @@ export class GameServerMock {
 		}, 1300);
 
 		// create ai players
-		let numAIPlayers = 3;
 
-		for (let a = 0; a < numAIPlayers; a++) {
+
+		for (let a = 0; a < this._numAIPlayers; a++) {
 			setTimeout(() => {
+				this._aiPlayerIds.push(this._idGenerator.getNextId());
 				this.sendToClient(MockMessageBuilder.createMessagePlayerInfo(
-					this.createJoinGameMessageForAiPlayer('faction0' + (a + 2), 'Faction#' + (a + 2), this._idGenerator.getNextId())));
+					this.createJoinGameMessageForAiPlayer('faction0' + (a + 2), 'Faction#' + (a + 2), this._aiPlayerIds[this._aiPlayerIds.length - 1])));
 			}, 2000 + 1500 * a);
 		}
 	}
@@ -118,12 +135,21 @@ export class GameServerMock {
 			this.sendToClient(MockMessageBuilder.createMessagePlayerReady(msg));
 		}, 500);
 
-		// send player infos for ai players
-
 		// if all players ready send start game
+		for (let a = 0; a < this._numAIPlayers; a++) {
+			let id = this._aiPlayerIds[a];
+			setTimeout(() => {
+				this.sendToClient(MockMessageBuilder.createMessagePlayerReady({
+					action: ServerMessageType.PLAYER_READY,
+					factionId: id
+				}));
+			}, 2000 + 500 * a);
+		}
 
 		// todo send start game if all players are ready
-		//this.sendToClient(MockMessageBuilder.createMessagePlayerJoined());
+		setTimeout(() => {
+			this.sendToClient(MockMessageBuilder.createMessageStartGame());
+		}, 5000);
 	}
 
 	private onSendSquadron(msg: SendSquadron) {

@@ -17,7 +17,7 @@ export class NewGameSettings {
 	numFactions: number;
 }
 
-export class NewGameSettingsScene extends GuiScene {
+export class NewGameSettingsScene extends GuiScene { // todo rename to CreateNewGame
 
 	private _container: Phaser.GameObjects.Container;
 
@@ -55,7 +55,7 @@ export class NewGameSettingsScene extends GuiScene {
 
 		let fontSize = 60;
 		// server
-		let serverLabel = this.add.bitmapText(40, 100, 'font_8', TextResources.getText(Texts.NEW_GAME_SETTINGS.SERVER), fontSize);
+		let serverLabel = this.add.bitmapText(40, 100, 'font_8', TextResources.getText(Texts.COMMON.SERVER), fontSize);
 		this._server = this.add.bitmapText(510, 100, 'font_8', 'ws://127.0.0.1:9995/', fontSize);
 		let numPlanetsLabel = this.add.bitmapText(40, 150, 'font_8', TextResources.getText(Texts.NEW_GAME_SETTINGS.NUM_PLANETS), fontSize);
 		this._numPlanets = this.add.bitmapText(510, 150, 'font_8', '4', fontSize);
@@ -119,7 +119,7 @@ export class NewGameSettingsScene extends GuiScene {
 	}
 
 	private _gameId: number;
-	private _playerId: number;
+	private _factionId: number;
 
 	private onGameCreated(msg: MessageGameCreated) {
 		console.log('GameCreated' + msg.gameId);
@@ -129,7 +129,7 @@ export class NewGameSettingsScene extends GuiScene {
 	}
 
 	private onPlayerJoined(msg: MessagePlayerJoined) {
-		this._playerId = msg.factionId;
+		this._factionId = msg.factionId;
 
 		this.goToPlayerSettingsScene();
 	}
@@ -140,7 +140,7 @@ export class NewGameSettingsScene extends GuiScene {
 			timeController: this._timeController,
 			clientMessageSender: this._clientMessageSender,
 			gameId: this._gameId,
-			playerId: this._playerId
+			factionId: this._factionId
 		});
 	}
 

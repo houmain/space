@@ -96,6 +96,9 @@ export class Preloader extends Phaser.Scene {
         this.load.image('cancelButton', './images/cancel_button.png');
         this.load.image('playIcon', './images/play_icon.png');
         this.load.image('cancelIcon', './images/cancel_icon.png');
+        this.load.image('button', './images/button.png');
+        this.load.image('textfield', './images/textfield.png');
+        this.load.image('textfieldFocus', './images/textfield_focus.png');
 
     }
 

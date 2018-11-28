@@ -2,7 +2,7 @@ import { GameEventObserver, EventPlayerJoined, GameEventType, EventPlanetConquer
 import { StringUtils } from '../common/utils';
 import { TextResources, Texts } from '../localization/textResources';
 import { NinePatch } from '@koreez/phaser3-ninepatch';
-import { BitmapText } from './gui/bitmapText';
+import { BitmapText } from './gui/text/bitmapText';
 import { Player } from '../data/gameData';
 import { Planet, Faction } from '../data/galaxyModels';
 import { Assets } from './assets';

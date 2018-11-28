@@ -19,6 +19,7 @@ import { ChooseGameTypeScene } from './scenes/chooseGameType';
 import { NewGameSettingsScene } from './scenes/newGameSettings';
 import { LobbyScene } from './scenes/lobby';
 import { PlayerSettingsScene } from './scenes/playerSettings';
+import { SelectExistingGameScene } from './scenes/selectExistingGame';
 
 export class SpaceGame extends Phaser.Game {
 
@@ -36,6 +37,7 @@ export class SpaceGame extends Phaser.Game {
         this.scene.add(Scenes.MAIN_MENU, new MainMenuScene());
         this.scene.add(Scenes.CHOOSE_GAME_TYPE, new ChooseGameTypeScene());
         this.scene.add(Scenes.NEW_GAME_SETTINGS, new NewGameSettingsScene());
+        this.scene.add(Scenes.SELECT_EXISTING_GAME, new SelectExistingGameScene());
         this.scene.add(Scenes.PLAYER_SETTINGS, new PlayerSettingsScene());
         this.scene.add(Scenes.LOBBY, new LobbyScene());
         this.scene.add(Scenes.BOT_MENU, new BotMenuScene());

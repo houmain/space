@@ -22,6 +22,8 @@ export abstract class GuiScene extends Phaser.Scene {
 				title = TextResources.getText(Texts.INIT_GAME.TITLE); break;
 			case Scenes.CHOOSE_GAME_TYPE:
 				title = TextResources.getText(Texts.CHOOSE_GAME_TYPE.TITLE); break;
+			case Scenes.SELECT_EXISTING_GAME:
+				title = TextResources.getText(Texts.SELECT_GAME.TITLE); break;
 			case Scenes.NEW_GAME_SETTINGS:
 				title = TextResources.getText(Texts.NEW_GAME_SETTINGS.TITLE); break;
 			case Scenes.PLAYER_SETTINGS:

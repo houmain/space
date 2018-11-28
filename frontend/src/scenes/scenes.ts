@@ -7,6 +7,7 @@ export enum Scenes {
 
 	CHOOSE_GAME_TYPE = 'chooseGameType',
 	NEW_GAME_SETTINGS = 'newGameSettings',
+	SELECT_EXISTING_GAME = 'selectExistingGame',
 	PLAYER_SETTINGS = 'playerSettings',
 
 	LOBBY = 'lobby',
