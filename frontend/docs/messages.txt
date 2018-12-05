@@ -17,4 +17,3 @@ setupPlayer (name, avatar, factionId, color, ready) ->
     <- gameStarted (factions, planets, ...)
 
 sendSquadron ->
-
