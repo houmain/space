@@ -24,18 +24,33 @@ void GameManager::thread_func() {
     std::this_thread::sleep_for(std::chrono::milliseconds(250));
 
     auto lock = std::lock_guard(m_games_mutex);
-    for (auto& game : m_games)
-      game->update();
+    for (auto it = m_games.begin(); it != m_games.end(); )
+      if (auto game = it->second.lock()) {
+        game->update();
+        ++it;
+      }
+      else {
+        it = m_games.erase(it);
+      }
   }
+}
+
+IGamePtr GameManager::create_game(const json::Value& value) {
+  auto lock = std::lock_guard(m_games_mutex);
+
+  auto game = ::create_game(m_next_game_id);
+
+  m_games[m_next_game_id] = game;
+  m_next_game_id++;
+
+  return game;
 }
 
 IGamePtr GameManager::get_game(const json::Value& value) {
   auto lock = std::lock_guard(m_games_mutex);
 
-  // TODO: add some more logic to select game
-  if (m_games.empty())
-    m_games.push_back(create_game());
-  return m_games.front();
+  auto game_id = json::get_int(value, "gameId");
+  return IGamePtr(m_games.at(game_id));
 }
 
 } // namespace

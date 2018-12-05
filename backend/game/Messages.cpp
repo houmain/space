@@ -3,14 +3,15 @@
 
 namespace game {
 
-std::string build_game_joined_message(const std::vector<Faction>& factions,
+std::string build_game_started_message(
+    const std::vector<Faction>& factions,
     const std::vector<Planet>& planets,
     const std::vector<Squadron>& moving_squadrons,
     const Faction& faction) {
   return json::build_message([&](json::Writer& writer) {
     writer.StartObject();
     writer.Key("event");
-    writer.String("gameJoined");
+    writer.String("gameStarted");
 
     writer.Key("factions");
     writer.StartArray();

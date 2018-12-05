@@ -4,8 +4,10 @@
 #include <functional>
 #include "Json.h"
 
+using GameId = int;
 using IClientPtr = std::unique_ptr<struct IClient>;
 using IGamePtr = std::shared_ptr<struct IGame>;
+using IWeakGamePtr = std::weak_ptr<struct IGame>;
 using SendFunction = std::function<void(std::string)>;
 
 struct Interface {
@@ -28,4 +30,4 @@ struct IGame : Interface {
 };
 
 IClientPtr create_client(SendFunction send);
-IGamePtr create_game();
+IGamePtr create_game(GameId game_id);

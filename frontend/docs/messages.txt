@@ -1,0 +1,19 @@
+
+createGame ->
+    <- gameJoined (gameId, playerId)
+
+joinGame (gameId, [playerId]) ->
+    <- gameJoined (gameId, playerId)
+
+sendChatMessage (message)
+    <- chatMessageReceived (playerId, message)
+
+setupGame (numPlanets, numFactions)
+    <- gameSetupUpdated (...)
+
+setupPlayer (name, avatar, factionId, color, ready) ->
+    <- playerSetupUpdated (playerId, ...)
+
+    <- gameStarted (factions, planets, ...)
+
+sendSquadron ->

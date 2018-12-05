@@ -15,15 +15,16 @@ namespace {
   }
 } // namespace
 
-Game::Game()
-  : m_random(std::random_device()()),
+Game::Game(GameId game_id, const Setup& setup)
+  : m_game_id(game_id),
+    m_random(std::random_device()()),
     m_start_time(Clock::now()),
     m_last_update_time(Clock::now()) {
 
   m_rules.squadron_speed = 30.0;
   m_rules.fight_duration = 10.0;
 
-  for (auto i = 0; i < 4; ++i) {
+  for (auto i = 0; i < setup.num_factions; ++i) {
     auto& faction = m_factions.emplace_back();
     faction.id = i + 1;
     faction.name = "Faction #" + std::to_string(faction.id);
@@ -33,7 +34,7 @@ Game::Game()
   m_planets.reserve(50);
   auto& sun = m_planets.emplace_back();
   sun.id = next_planet_id++;
-  for (auto i = 0; i < 4; ++i) {
+  for (auto i = 0; i < setup.num_planets; ++i) {
     auto& planet = m_planets.emplace_back();
     planet.id = next_planet_id++;
     planet.parent = &sun;
@@ -74,7 +75,7 @@ void Game::on_client_joined(IClient* client) {
   m_clients[client] = faction;
   faction->client = client;
 
-  client->send(build_game_joined_message(
+  client->send(build_game_started_message(
     m_factions, m_planets, m_moving_squadrons, *faction));
 
   broadcast(build_player_joined_message(*faction));
@@ -97,7 +98,7 @@ void Game::on_message_received(IClient* client, const json::Value& value) {
   auto& faction = *it->second;
 
   const auto action = json::get_string(value, "action");
-  if (action == SendSquadron::action())
+  if (action == SendSquadron::action)
     return send_squadron(faction, value);
 
   throw Exception("invalid action");
@@ -342,6 +343,6 @@ void Game::broadcast(std::string_view message) {
 
 } // namespace
 
-std::shared_ptr<IGame> create_game() {
-  return std::make_shared<game::Game>();
+std::shared_ptr<IGame> create_game(GameId id) {
+  return std::make_shared<game::Game>(id, game::Setup{ });
 }

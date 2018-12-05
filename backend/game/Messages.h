@@ -4,7 +4,8 @@
 
 namespace game {
 
-std::string build_game_joined_message(const std::vector<Faction>& factions,
+std::string build_game_started_message(
+  const std::vector<Faction>& factions,
   const std::vector<Planet>& planets,
   const std::vector<Squadron>& moving_squadrons,
   const Faction& faction);
@@ -24,8 +25,25 @@ std::string build_planet_conquered_message(const Squadron& squadron);
 std::string build_faction_destroyed_message(const Faction& faction);
 std::string build_faction_won_message(const Faction& faction);
 
+struct SetupGame {
+  static constexpr auto action = "setupGame";
+  int num_factions;
+  int num_planets;
+};
+SetupGame parse_setup_game_message(const json::Value& value);
+
+struct SetupPlayer {
+  static constexpr auto action = "setupPlayer";
+  std::string name;
+  std::string avatar;
+  std::string color;
+  FactionId faction_id;
+  bool ready;
+};
+SetupGame parse_setup_player_message(const json::Value& value);
+
 struct SendSquadron {
-  static auto action() { return "sendSquadron"; }
+  static constexpr auto action = "sendSquadron";
   PlanetId source_planet_id;
   PlanetId target_planet_id;
   int fighter_count;

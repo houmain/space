@@ -22,6 +22,9 @@ void Client::on_received(std::string_view message) {
     const auto value = json::parse(message);
     const auto action = json::get_string(value, "action");
 
+    if (action == "createGame")
+      return create_game(value);
+
     if (action == "joinGame")
       return join_game(value);
 
@@ -36,6 +39,13 @@ void Client::on_received(std::string_view message) {
   catch (const std::exception& ex) {
     send(ex.what());
   }
+}
+
+void Client::create_game(const json::Value& value) {
+  leave_game();
+
+  m_game = GameManager::instance().create_game(value);
+  m_game->on_client_joined(this);
 }
 
 void Client::join_game(const json::Value& value) {

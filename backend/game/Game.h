@@ -6,13 +6,18 @@
 
 namespace game {
 
+struct Setup {
+  int num_factions;
+  int num_planets;
+};
+
 class Game final : public IGame {
 public:
   struct Exception : std::runtime_error {
     using runtime_error::runtime_error;
   };
 
-  Game();
+  Game(GameId game_id, const Setup& setup);
   void on_client_joined(IClient* client) override;
   void on_client_left(IClient* client) override;
   void on_message_received(IClient* client, const json::Value& value) override;
@@ -36,8 +41,10 @@ private:
   bool faction_has_squadron(const Faction& faction) const;
   const Faction* find_last_faction() const;
 
+  const GameId m_game_id;
   std::mt19937 m_random;
-  Rules m_rules;
+  Setup m_setup{ };
+  Rules m_rules{ };
   std::vector<Faction> m_factions;
   std::vector<Planet> m_planets;
   std::vector<Squadron> m_moving_squadrons;
