@@ -125,7 +125,7 @@ export class GameServerMock {
 			avatar: avatar,
 			factionId: factionId,
 			name: name
-		}
+		};
 	}
 
 	private onReceivedPlayerReady(msg: PlayerReadyMessage) {

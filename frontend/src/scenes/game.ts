@@ -45,9 +45,6 @@ export class GameScene extends Phaser.Scene {
 	}
 
 	public create() {
-
-		//this._timeController = new GameTimeController(this._serverMessageObserver);
-
 		this._camera = this.cameras.main;
 		this._camera.setBounds(-1024, -1024, 2048, 2048);
 		this._camera.centerToBounds();
@@ -104,8 +101,10 @@ export class GameScene extends Phaser.Scene {
 	public update(timeSinceStart: number, timeSinceLastFrame: number) {
 		this._serverMessageQueue.handleMessages();
 
-		if (!this._timeController.synchronized)
+		if (!this._timeController.synchronized) {
 			return;
+		}
+
 		this._timeController.updateFrameTime();
 
 		this._gameSceneUpdater.update(this._timeController.timeSinceStart,

@@ -98,7 +98,7 @@ export class LobbyScene extends GuiScene {
 		console.log('PlayerInforeceived' + msg.factionId);
 
 		let box = new PlayerBox(this, msg, msg.factionId === this._factionId, () => {
-			this._clientMessageSender.sendReady()
+			this._clientMessageSender.sendReady();
 		});
 		this._container.add(box);
 

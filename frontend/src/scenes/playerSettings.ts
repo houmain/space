@@ -7,6 +7,7 @@ import { NinePatch } from '@koreez/phaser3-ninepatch';
 import { ServerMessageQueue } from '../communication/messageHandler';
 import { GameTimeController } from '../logic/controller/gameTimeController';
 import { ClientMessageSender } from '../communication/clientMessageSender';
+import { DebugInfo } from '../common/debug';
 
 class PlayerSettingsBox extends Phaser.GameObjects.Container {
 
@@ -40,11 +41,43 @@ class PlayerSettingsBox extends Phaser.GameObjects.Container {
 		this.add(colorLabel);
 		this.add(this._avatar);
 	}
+
+	public changeAvatarImage(frame: string) {
+		this._avatar.setFrame(frame);
+	}
 }
+
+class ClickImage extends Phaser.GameObjects.Sprite {
+
+	public onClick: (objectId: string) => void;
+
+	public constructor(scene: Phaser.Scene, x: number, y: number, texture: string, frame?: string) {
+		super(scene, x, y, texture, frame);
+		//this.setTint(0x7c9cd2);
+		this.setAlpha(0.3);
+		this.setInteractive();
+
+		this.on('pointerover', function () {
+			//	this.setTint(0xffffff);
+			this.setAlpha(1);
+		});
+
+		this.on('pointerout', function () {
+			//	this.setTint(0x7c9cd2);
+			this.setAlpha(0.3);
+		});
+
+		this.on('pointerdown', function () {
+			this.onClick(this.name);
+		});
+	}
+}
+
+interface ChangeAvatarImageFunction { (sprite: string): void; }
 
 class AvatarsBox extends Phaser.GameObjects.Container {
 
-	public constructor(scene: Phaser.Scene) {
+	public constructor(scene: Phaser.Scene, changeAvatarImage: ChangeAvatarImageFunction) {
 		super(scene);
 
 		let box = new NinePatch(scene, 0, 0, 400, 600, 'infoBox', null, {
@@ -77,21 +110,31 @@ class AvatarsBox extends Phaser.GameObjects.Container {
 				y = row * avatarHeight + row * padding;
 			}
 
-			let avatar = scene.add.sprite(x, y, Assets.ATLAS.AVATARS, avatars[a]);
+			let avatar = new ClickImage(scene, x, y, Assets.ATLAS.AVATARS, avatars[a]);
 			avatar.setOrigin(0, 0);
-			avatar.setInteractive();
+			avatar.setName(avatars[a]);
+			avatar.onClick = (name: string) => {
+				DebugInfo.info('name' + name);
+				changeAvatarImage(name);
+			};
+			//	avatar.setInteractive();
 			this.add(avatar);
 
 			column++;
 		}
+		/*
+				scene.input.on('pointerover', function (event, gameObjects) {
+					gameObjects[0].setTint(0xff0000);
+				});
 
-		scene.input.on('pointerover', function (event, gameObjects) {
-			gameObjects[0].setTint(0xff0000);
-		});
+				scene.input.on('pointerout', function (event, gameObjects) {
+					gameObjects[0].clearTint();
+				});
 
-		scene.input.on('pointerout', function (event, gameObjects) {
-			gameObjects[0].clearTint();
-		});
+				scene.input.on('pointerdown', function (event, gameObjects) {
+					DebugInfo.info((gameObjects[0] as Phaser.GameObjects.Sprite).name);
+					changeAvatarImage((gameObjects[0] as Phaser.GameObjects.Sprite).name);
+				});*/
 	}
 }
 
@@ -129,7 +172,7 @@ export class PlayerSettingsScene extends GuiScene {
 		this._playerSettingsBox = new PlayerSettingsBox(this);
 		this._playerSettingsBox.setPosition(200, 200);
 
-		this._avatarsBox = new AvatarsBox(this);
+		this._avatarsBox = new AvatarsBox(this, this._playerSettingsBox.changeAvatarImage.bind(this._playerSettingsBox));
 		this._avatarsBox.setPosition(800, 200);
 
 		let createButton = new RoundButton(this);
@@ -137,10 +180,10 @@ export class PlayerSettingsScene extends GuiScene {
 		createButton.onClick = () => {
 
 			this._clientMessageSender.sendPlayerInfo(this._factionId, {
-				avatar: 'faction01.png',
+				avatar: 'faction01',
 				name: 'Berni',
 				color: '0xff0000',
-				factionIcon: 'faction01.png',
+				factionIcon: 'faction01',
 			});
 
 			this.goToLobby();

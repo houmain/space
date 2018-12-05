@@ -58,7 +58,7 @@ export class NewGameSettingsScene extends GuiScene { // todo rename to CreateNew
 		let serverLabel = this.add.bitmapText(40, 100, 'font_8', TextResources.getText(Texts.COMMON.SERVER), fontSize);
 		this._server = this.add.bitmapText(510, 100, 'font_8', 'ws://127.0.0.1:9995/', fontSize);
 		let numPlanetsLabel = this.add.bitmapText(40, 150, 'font_8', TextResources.getText(Texts.NEW_GAME_SETTINGS.NUM_PLANETS), fontSize);
-		this._numPlanets = this.add.bitmapText(510, 150, 'font_8', '4', fontSize);
+		this._numPlanets = this.add.bitmapText(510, 150, 'font_8', '3', fontSize);
 		let numFactionsLabel = this.add.bitmapText(40, 200, 'font_8', TextResources.getText(Texts.NEW_GAME_SETTINGS.NUM_FACTIONS), fontSize);
 		this._numFactions = this.add.bitmapText(510, 200, 'font_8', '3', fontSize);
 

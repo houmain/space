@@ -8,7 +8,7 @@ export class GuiFactory {
 	public static buildTextButton(scene: Phaser.Scene, x: number, y: number, text: string, config: TextButtonConfig): TextButton {
 		let textButton = new TextButton(scene, x, y, text);
 
-		let box = null;//
+		let box = null;
 		if (config.ninePatch) {
 			box = new NinePatch(scene, 0, 0, config.width, config.height, config.texture, config.frame, {
 				top: config.ninePatch.top,

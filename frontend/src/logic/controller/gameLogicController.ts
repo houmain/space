@@ -27,18 +27,6 @@ export class GameLogicController {
 		this._gameEventNotifier = gameEventNotifier;
 
 		this._galaxyObjectfactory = new GalaxyObjectFactory();
-		/*
-				serverMessageObserver.subscribe<MessageGameJoined>(ServerMessageType.GAME_JOINED, this.onGameJoined.bind(this));
-				serverMessageObserver.subscribe<MessagePlayerJoined>(ServerMessageType.PLAYER_JOINED, this.onPlayerJoined.bind(this));
-				serverMessageObserver.subscribe<MessageFighterCreated>(ServerMessageType.FIGHTER_CREATED, this.onFighterCreated.bind(this));
-				serverMessageObserver.subscribe<MessageSquadronSent>(ServerMessageType.SQUADRON_SENT, this.onSquadronSent.bind(this));
-				serverMessageObserver.subscribe<MessageSquadronsMerged>(ServerMessageType.SQUADRONS_MERGED, this.onSquadronsMerged.bind(this));
-				serverMessageObserver.subscribe<MessageSquadronAttacks>(ServerMessageType.SQUADRON_ATTACKS, this.onSquadronAttacksPlanet.bind(this));
-				serverMessageObserver.subscribe<MessageFighterDestroyed>(ServerMessageType.FIGHTER_DESTROYED, this.onFighterDestroyed.bind(this));
-				serverMessageObserver.subscribe<MessagePlanetConquered>(ServerMessageType.PLANET_CONQUERED, this.onPlanetConquered.bind(this));
-				serverMessageObserver.subscribe<MessageSquadronDestroyed>(ServerMessageType.SQUADRON_DESTROYED, this.onSquadronDestroyed.bind(this));
-				serverMessageObserver.subscribe<MessageFactionDestroyed>(ServerMessageType.FACTION_DESTROYED, this.onFactionDestroyed.bind(this));
-				serverMessageObserver.subscribe<MessageFactionWon>(ServerMessageType.FACTION_WON, this.onFactionWon.bind(this));*/
 
 		serverMessageQueue.subscribe<MessageGameJoined>(ServerMessageType.GAME_JOINED, this.onGameJoined.bind(this));
 		serverMessageQueue.subscribe<MessagePlayerJoined>(ServerMessageType.PLAYER_JOINED, this.onPlayerJoined.bind(this));
@@ -126,7 +114,7 @@ export class GameLogicController {
 		Assert.isNotNull(sourceSquadron, 'Squadron must not null');
 
 		// take every second fighter
-		let sentFighters: Fighter[] = []
+		let sentFighters: Fighter[] = [];
 		for (let i = 0; i < msg.fighterCount; i++) {
 			let fighter = sourceSquadron.fighters.splice(
 				i % (sourceSquadron.fighters.length - 1), 1)[0];

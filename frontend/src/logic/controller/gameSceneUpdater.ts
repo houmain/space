@@ -126,8 +126,9 @@ export class GameSceneUpdater {
 			if (column > rowSize) {
 				column = 0;
 				row++;
-				if (rowSize < 7)
+				if (rowSize < 7) {
 					rowSize += 3;
+				}
 			}
 
 			let range: Phaser.Math.Vector2 = new Phaser.Math.Vector2(targetX - fighter.x, targetY - fighter.y);

@@ -1,5 +1,4 @@
-import { MessageGameUpdated, ServerMessageType } from '../../communication/communicationInterfaces';
-import { ObservableServerMessageHandler } from '../../communication/messageHandler';
+import { MessageGameUpdated } from '../../communication/communicationInterfaces';
 
 export class GameTimeController {
 
@@ -9,11 +8,6 @@ export class GameTimeController {
 
     public timeSinceStart: number = 0;
     public timeSinceLastFrame: number = 0;
-
-    public constructor() { //serverMessageObserver: ObservableServerMessageHandler
-        //     serverMessageObserver.subscribe<MessageGameUpdated>(ServerMessageType.GAME_UPDATED,
-        //        this.updateServerTime.bind(this));
-    }
 
     public updateServerTime(msg: MessageGameUpdated) {
         this._serverTimeSinceStart = msg.time;

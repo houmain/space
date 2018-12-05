@@ -10,7 +10,7 @@ export interface GuiBoxConfig {
 		bottom: number;
 		left: number;
 		right: number;
-	}
+	};
 }
 
 export class GuiBox extends Phaser.GameObjects.Container {

@@ -101,7 +101,7 @@ export class InputHandler {
 
         if (this._state === InputState.Sending) {
             let planet = this.planetUnderCursor(this._currentMouseX, this._currentMouseY);
-            if (planet == this._targetPlanet) {
+            if (planet === this._targetPlanet) {
                 this.increaseSending();
                 return;
             }
@@ -304,8 +304,9 @@ export class InputHandler {
     private updateTargetPlanet() {
         this._targetPlanet = null;
         let planet = this.planetUnderCursor(this._currentMouseX, this._currentMouseY);
-        if (planet && !this.isPlanetSelected(planet))
+        if (planet && !this.isPlanetSelected(planet)) {
             this._targetPlanet = planet;
+        }
     }
 
     private updateSendArrows(opacity: number) {

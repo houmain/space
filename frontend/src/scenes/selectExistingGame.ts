@@ -81,7 +81,6 @@ export class SelectExistingGameScene extends GuiScene {
 		this._communicationHandler.onConnected = () => {
 			DebugInfo.debug('Connected to server ' + this._server.text);
 
-
 			this._clientMessageSender = new ClientMessageSender(this._communicationHandler);
 			this._clientMessageSender.getAvailableGameSessions();
 
@@ -101,7 +100,7 @@ export class SelectExistingGameScene extends GuiScene {
 			let joinButton = GuiFactory.buildTextButton(this, 800, 210 + index * 100, TextResources.getText(Texts.SELECT_GAME.JOIN), GuiConfig.TEXT_BUTTON);
 			joinButton.onClickListener = () => {
 				this.joinSession(session.gameId);
-			}
+			};
 			this._container.add(joinButton);
 		});
 	}
@@ -127,7 +126,6 @@ export class SelectExistingGameScene extends GuiScene {
 			factionId: this._factionId
 		});
 	}
-
 
 	public update() {
 		this._serverMessageQueue.handleMessages();

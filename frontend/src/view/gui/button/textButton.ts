@@ -12,7 +12,7 @@ export interface TextButtonConfig {
 		bottom: number;
 		left: number;
 		right: number;
-	}
+	};
 }
 
 export class TextButton extends Phaser.GameObjects.Container {
