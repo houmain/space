@@ -2,11 +2,12 @@ import { TextButton, TextButtonConfig } from './button/textButton';
 import { NinePatch } from '@koreez/phaser3-ninepatch';
 import { BitmapText, BitmapTextConfig } from './text/bitmapText';
 import { GuiBoxConfig, GuiBox } from './box/guibox';
+import { IconButton, IconButtonConfig } from './button/iconButton';
 
 export class GuiFactory {
 
 	public static buildTextButton(scene: Phaser.Scene, x: number, y: number, text: string, config: TextButtonConfig): TextButton {
-		let textButton = new TextButton(scene, x, y, text);
+		let textButton = new TextButton(scene, x, y);
 
 		let box = null;
 		if (config.ninePatch) {
@@ -33,11 +34,48 @@ export class GuiFactory {
 		});
 		textButton.add(box);
 
-		let label = scene.add.bitmapText(box.width / 2, box.height / 2 - 10, config.fontName, text, config.fontSize);
+		let label = scene.add.bitmapText(box.width / 2, box.height / 2, config.fontName, text, config.fontSize);
 		label.setOrigin(0.5, 0.5);
+		if (config.textOffset) {
+			label.setPosition(label.x + config.textOffset.left, label.y + config.textOffset.top);
+		}
 		textButton.add(label);
 
 		return textButton;
+	}
+
+	public static buildIconButton(scene: Phaser.Scene, x: number, y: number, config: IconButtonConfig): IconButton {
+		let iconButton = new IconButton(scene, x, y);
+
+		let box = scene.add.image(0, 0, config.texture, config.frame);
+		box.setOrigin(0, 0);
+		box.setInteractive();
+		if (config.width) {
+			box.displayWidth = config.width;
+		}
+		if (config.height) {
+			box.displayHeight = config.height;
+		}
+
+		iconButton.add(box);
+
+		if (config.icon) {
+			let icon = scene.add.sprite(0, 0, config.icon.texture, config.icon.frame);
+			icon.setOrigin(0, 0);
+			iconButton.add(icon);
+		}
+
+		box.on('pointerover', function () {
+			box.setTint(0xcccccc);
+		});
+		box.on('pointerout', function () {
+			box.clearTint();
+		});
+		box.on('pointerdown', () => {
+			iconButton.onClick();
+		});
+
+		return iconButton;
 	}
 
 	public static buildBitmapText(scene: Phaser.Scene, x: number, y: number, text: string, config?: BitmapTextConfig): BitmapText {

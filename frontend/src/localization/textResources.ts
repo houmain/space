@@ -3,6 +3,8 @@ import { DebugInfo } from '../common/debug';
 class TextResourcesCommon {
 	public readonly CANCEL = 'common.cancel';
 	public readonly SERVER = 'common.server';
+	public readonly MAIN_MENU = 'common.mainMenu';
+	public readonly BACK = 'common.back';
 }
 
 class TextResourcesMenu {
@@ -14,6 +16,7 @@ class TextResourcesMenu {
 
 class TextResourcesChooseGameType {
 	public readonly TITLE = 'chooseGameType.title';
+	public readonly HEADER = 'chooseGameType.header';
 	public readonly CREATE_NEW_GAME = 'menu.createNewGame';
 	public readonly JOIN_GAME = 'menu.joinGame';
 }
@@ -95,6 +98,8 @@ export class TextResources {
 
 		TextResources._resources[Texts.COMMON.CANCEL] = 'cancel';
 		TextResources._resources[Texts.COMMON.SERVER] = 'Server';
+		TextResources._resources[Texts.COMMON.MAIN_MENU] = 'Main Menu';
+		TextResources._resources[Texts.COMMON.BACK] = 'Back';
 
 		TextResources._resources[Texts.MAIN_MENU.TITLE] = 'main menu';
 		TextResources._resources[Texts.MAIN_MENU.PLAY] = 'play';
@@ -102,8 +107,9 @@ export class TextResources {
 		TextResources._resources[Texts.MAIN_MENU.QUIT] = 'quit';
 
 		TextResources._resources[Texts.CHOOSE_GAME_TYPE.TITLE] = 'Choose game type';
-		TextResources._resources[Texts.CHOOSE_GAME_TYPE.CREATE_NEW_GAME] = 'Create new game';
-		TextResources._resources[Texts.CHOOSE_GAME_TYPE.JOIN_GAME] = 'Join existing game';
+		TextResources._resources[Texts.CHOOSE_GAME_TYPE.HEADER] = 'Select game';
+		TextResources._resources[Texts.CHOOSE_GAME_TYPE.CREATE_NEW_GAME] = 'create new';
+		TextResources._resources[Texts.CHOOSE_GAME_TYPE.JOIN_GAME] = 'join existing';
 
 		TextResources._resources[Texts.NEW_GAME_SETTINGS.TITLE] = 'New Game settings';
 		TextResources._resources[Texts.NEW_GAME_SETTINGS.CREATE] = 'Create';

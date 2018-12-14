@@ -8,6 +8,8 @@ export class MainMenuButton extends Phaser.GameObjects.Container {
 
 	public onClick: Function = null;
 
+	private _bounds: Phaser.Geom.Rectangle;
+
 	public constructor(scene: Phaser.Scene, label: string) {
 		super(scene, 0, 0);
 
@@ -78,5 +80,15 @@ export class MainMenuButton extends Phaser.GameObjects.Container {
 			//	background.setTint(0xffffff);
 			background.setScale(1);
 		});
+
+		this._bounds = this.getBounds();
+	}
+
+	public get width(): number {
+		return this._bounds.width;
+	}
+
+	public get height(): number {
+		return this._bounds.height;
 	}
 }

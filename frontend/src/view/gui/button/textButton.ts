@@ -1,4 +1,4 @@
-import { NinePatch } from '@koreez/phaser3-ninepatch';
+import { GuiButton } from './iconButton';
 
 export interface TextButtonConfig {
 	width: number;
@@ -13,23 +13,12 @@ export interface TextButtonConfig {
 		left: number;
 		right: number;
 	};
+	textOffset?: {
+		left: number;
+		top: number;
+	};
 }
 
-export class TextButton extends Phaser.GameObjects.Container {
+export class TextButton extends GuiButton {
 
-	public constructor(scene: Phaser.Scene, x: number, y: number, text: string) {
-		super(scene, x, y);
-	}
-
-	private _onClick: Function;
-
-	public set onClickListener(func: Function) {
-		this._onClick = func;
-	}
-
-	public onClick() {
-		if (this._onClick) {
-			this._onClick();
-		}
-	}
 }

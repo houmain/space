@@ -100,7 +100,9 @@ export class Preloader extends Phaser.Scene {
         this.load.image('button', './images/button.png');
         this.load.image('textfield', './images/textfield.png');
         this.load.image('textfieldFocus', './images/textfield_focus.png');
-
+        this.load.image('rightNavigation', './images/right_navigation.png');
+        this.load.image('leftNavigation', './images/left_navigation.png');
+        this.load.image('menuIcon', './images/menu_icon.png');
     }
 
     public create() {
