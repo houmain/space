@@ -1,16 +1,29 @@
 #pragma once
 
 #include <map>
-#include "Interfaces.h"
+#include "../Interfaces.h"
 
 namespace game {
+
+using GameId = interfaces::GameId;
+using Client = interfaces::Client;
 
 using FactionId = int;
 using PlanetId = int;
 using SquadronId = int;
+
+class Game;
+class Setup;
+class Logic;
+class Player;
+
 struct Faction;
 struct Planet;
 struct Squadron;
+
+struct Exception : std::runtime_error {
+  using runtime_error::runtime_error;
+};
 
 struct Rules {
   double squadron_speed;
@@ -20,7 +33,7 @@ struct Rules {
 struct Faction {
   FactionId id;
   std::string name;
-  IClient* client;
+  interfaces::Client* client;
 
   int max_upkeep;
   int current_upkeep;

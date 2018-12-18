@@ -6,7 +6,7 @@
 namespace {
   std::atomic<bool> g_interrupted;
 
-  void open_browser(int port) {
+  [[maybe_unused]] void open_browser(int port) {
     auto command = "http://127.0.0.1:" + std::to_string(port);
 #if defined(__linux)
     command = "xdg-open '" + command + "'";

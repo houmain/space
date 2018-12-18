@@ -1,10 +1,11 @@
 
+#include <iostream>
 #include <algorithm>
 #include <vector>
 #include <mutex>
 #include <deque>
 #include <libwebsockets.h>
-#include "Interfaces.h"
+#include "../Interfaces.h"
 
 namespace {
   class WebsocketSession;
@@ -23,9 +24,11 @@ namespace {
     void on_websocket_receive(const char* data, size_t size);
 
   private:
+    using Client = interfaces::Client;
+
     lws* const m_wsi;
     lws_context* const m_context;
-    std::unique_ptr<IClient> m_client;
+    std::unique_ptr<Client> m_client;
 
     std::string m_receive_buffer;
 
@@ -40,7 +43,7 @@ namespace {
 
     auto send = [this](std::string&& message) { this->send(std::move(message)); };
 
-    m_client = create_client(std::move(send));
+    m_client = interfaces::create_client(std::move(send));
     g_sessions.push_back(this);
   }
 
@@ -140,7 +143,7 @@ namespace {
       return 0;
     }
     catch (const std::exception& ex) {
-      lwsl_err("exception: %s\n", ex.what());
+      std::cerr << "exception: " << ex.what() << std::endl;
       lws_close_reason(wsi,
         LWS_CLOSE_STATUS_PROTOCOL_ERR, nullptr, 0);
       return -1;

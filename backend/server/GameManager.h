@@ -5,28 +5,35 @@
 #include <map>
 #include <thread>
 #include <vector>
-#include "Interfaces.h"
+#include <variant>
+#include "../Interfaces.h"
 
 namespace server {
 
-class GameManager {
+class GameManager final {
 public:
+  using GameId = interfaces::GameId;
+  using GamePtr = std::shared_ptr<interfaces::Game>;
+
   static GameManager& instance();
 
-  IGamePtr create_game(const json::Value& value);
-  IGamePtr get_game(const json::Value& value);
+  GamePtr create_game();
+  GamePtr get_game(GameId game_id);
 
 private:
+  using WeakGamePtr = std::weak_ptr<interfaces::Game>;
+
   GameManager();
   ~GameManager();
 
-  void thread_func();
+  void thread_func() noexcept;
+  void update() noexcept;
 
   std::atomic<bool> m_stop{ };
   std::thread m_thread;
   std::mutex m_games_mutex;
   GameId m_next_game_id{ 1 };
-  std::map<GameId, IWeakGamePtr> m_games;
+  std::map<GameId, WeakGamePtr> m_games;
 };
 
 } // namespace

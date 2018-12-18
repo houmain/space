@@ -278,6 +278,23 @@ std::string build_faction_won_message(const Faction& faction) {
   });
 }
 
+SetupGame parse_setup_game_message(const json::Value& value) {
+  return {
+    json::get_int(value, "numFactions"),
+    json::get_int(value, "numPlanets"),
+  };
+}
+
+SetupPlayer parse_setup_player_message(const json::Value& value) {
+  return {
+    std::string(json::get_string(value, "name")),
+    std::string(json::get_string(value, "avatar")),
+    std::string(json::get_string(value, "color")),
+    json::get_int(value, "factionId"),
+    json::get_bool(value, "ready"),
+  };
+}
+
 SendSquadron parse_send_squadron_message(const json::Value& value) {
   return {
     json::get_int(value, "sourcePlanetId"),

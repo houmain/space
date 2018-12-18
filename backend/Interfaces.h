@@ -4,10 +4,9 @@
 #include <functional>
 #include "Json.h"
 
+namespace interfaces {
+
 using GameId = int;
-using IClientPtr = std::unique_ptr<struct IClient>;
-using IGamePtr = std::shared_ptr<struct IGame>;
-using IWeakGamePtr = std::weak_ptr<struct IGame>;
 using SendFunction = std::function<void(std::string)>;
 
 struct Interface {
@@ -17,17 +16,20 @@ struct Interface {
   virtual ~Interface() = default;
 };
 
-struct IClient : Interface {
+struct Client : Interface {
   virtual void send(std::string message) = 0;
   virtual void on_received(std::string_view message) = 0;
 };
 
-struct IGame : Interface {
-  virtual void on_client_joined(IClient* client) = 0;
-  virtual void on_client_left(IClient* client) = 0;
-  virtual void on_message_received(IClient* client, const json::Value& value) = 0;
+struct Game : Interface {
+  virtual void on_client_joined(Client& client) = 0;
+  virtual void on_client_left(Client& client) = 0;
+  virtual void on_message_received(Client& client,
+    const json::Value& value) = 0;
   virtual void update() = 0;
 };
 
-IClientPtr create_client(SendFunction send);
-IGamePtr create_game(GameId game_id);
+std::unique_ptr<Client> create_client(SendFunction send);
+std::shared_ptr<Game> create_game(GameId game_id);
+
+} // namespace

@@ -1,7 +1,7 @@
 
 #include "Client.h"
 #include "GameManager.h"
-#include "Interfaces.h"
+#include "../Interfaces.h"
 
 namespace server {
 
@@ -34,34 +34,36 @@ void Client::on_received(std::string_view message) {
     if (!m_game)
       throw Exception("invalid action, no game joined");
 
-    m_game->on_message_received(this, value);
+    m_game->on_message_received(*this, value);
   }
   catch (const std::exception& ex) {
     send(ex.what());
   }
 }
 
-void Client::create_game(const json::Value& value) {
+void Client::create_game([[maybe_unused]] const json::Value& value) {
   leave_game();
 
-  m_game = GameManager::instance().create_game(value);
-  m_game->on_client_joined(this);
+  m_game = GameManager::instance().create_game();
+  m_game->on_client_joined(*this);
 }
 
 void Client::join_game(const json::Value& value) {
   leave_game();
 
-  m_game = GameManager::instance().get_game(value);
-  m_game->on_client_joined(this);
+  auto game_id = json::get_int(value, "gameId");
+  m_game = GameManager::instance().get_game(game_id);
+  m_game->on_client_joined(*this);
 }
 
 void Client::leave_game() {
   if (auto game = std::exchange(m_game, nullptr))
-    game->on_client_left(this);
+    game->on_client_left(*this);
 }
 
 } // namespace
 
-std::unique_ptr<IClient> create_client(SendFunction send) {
+std::unique_ptr<interfaces::Client> interfaces::create_client(SendFunction send) {
   return std::make_unique<server::Client>(std::move(send));
 }
+

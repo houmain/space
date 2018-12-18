@@ -1,6 +1,6 @@
 
 #include <mutex>
-#include "rapidjson/error/en.h"
+#include "libs/rapidjson/error/en.h"
 #include "Json.h"
 
 namespace json {
@@ -21,6 +21,13 @@ Document parse(std::string_view message) {
     throw Exception(rapidjson::GetParseError_En(
                       document.GetParseError()));
   return document;
+}
+
+bool get_bool(const Value& message, const char* name) {
+  auto it = (message.IsObject() ? message.FindMember(name) : message.MemberEnd());
+  if (it == message.MemberEnd() || !it->value.IsBool())
+    throw Exception("bool '" + std::string(name) + "' expected");
+  return it->value.GetBool();
 }
 
 int get_int(const Value& message, const char* name) {

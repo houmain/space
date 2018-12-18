@@ -1,6 +1,7 @@
-
+﻿
+#include <iostream>
 #include "GameManager.h"
-#include "Interfaces.h"
+#include "../Interfaces.h"
 
 namespace server {
 
@@ -19,38 +20,41 @@ GameManager::~GameManager() {
     m_thread.join();
 }
 
-void GameManager::thread_func() {
-  while (!m_stop.load()) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(250));
-
-    auto lock = std::lock_guard(m_games_mutex);
-    for (auto it = m_games.begin(); it != m_games.end(); )
-      if (auto game = it->second.lock()) {
-        game->update();
-        ++it;
-      }
-      else {
-        it = m_games.erase(it);
-      }
-  }
-}
-
-IGamePtr GameManager::create_game(const json::Value& value) {
+auto GameManager::create_game() -> GamePtr {
   auto lock = std::lock_guard(m_games_mutex);
-
-  auto game = ::create_game(m_next_game_id);
-
+  auto game = interfaces::create_game(m_next_game_id);
   m_games[m_next_game_id] = game;
   m_next_game_id++;
-
   return game;
 }
 
-IGamePtr GameManager::get_game(const json::Value& value) {
+auto GameManager::get_game(GameId game_id) -> GamePtr {
   auto lock = std::lock_guard(m_games_mutex);
+  return GamePtr(m_games.at(game_id));
+}
 
-  auto game_id = json::get_int(value, "gameId");
-  return IGamePtr(m_games.at(game_id));
+void GameManager::thread_func() noexcept {
+  while (!m_stop.load()) {
+    update();
+    std::this_thread::sleep_for(std::chrono::milliseconds(250));
+  }
+}
+
+void GameManager::update() noexcept {
+  auto lock = std::lock_guard(m_games_mutex);
+  for (auto it = m_games.begin(); it != m_games.end(); ) {
+    try {
+      if (auto game = it->second.lock()) {
+        game->update();
+        ++it;
+        continue;
+      }
+    }
+    catch (const std::exception& ex) {
+      std::cerr << "unhandled exception: " << ex.what() << std::endl;
+    }
+    it = m_games.erase(it);
+  }
 }
 
 } // namespace

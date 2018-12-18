@@ -1,14 +1,17 @@
 #pragma once
 
-#include "Interfaces.h"
+#include <variant>
+#include "../Interfaces.h"
 
 namespace server {
 
-class Client final : public IClient {
+struct Exception : std::runtime_error {
+  using runtime_error::runtime_error;
+};
+
+class Client final : public interfaces::Client {
 public:
-  struct Exception : std::runtime_error {
-    using runtime_error::runtime_error;
-  };
+  using SendFunction = interfaces::SendFunction;
 
   explicit Client(SendFunction send);
   ~Client() override;
@@ -17,12 +20,14 @@ public:
   void on_received(std::string_view message) override;
 
 private:
+  using GamePtr = std::shared_ptr<interfaces::Game>;
+
   void create_game(const json::Value& value);
   void join_game(const json::Value& value);
   void leave_game();
 
-  const SendFunction m_send;
-  IGamePtr m_game;
+  const interfaces::SendFunction m_send;
+  GamePtr m_game;
 };
 
 } // namespace

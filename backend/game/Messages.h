@@ -30,7 +30,6 @@ struct SetupGame {
   int num_factions;
   int num_planets;
 };
-SetupGame parse_setup_game_message(const json::Value& value);
 
 struct SetupPlayer {
   static constexpr auto action = "setupPlayer";
@@ -40,7 +39,6 @@ struct SetupPlayer {
   FactionId faction_id;
   bool ready;
 };
-SetupGame parse_setup_player_message(const json::Value& value);
 
 struct SendSquadron {
   static constexpr auto action = "sendSquadron";
@@ -48,6 +46,9 @@ struct SendSquadron {
   PlanetId target_planet_id;
   int fighter_count;
 };
+
+SetupGame parse_setup_game_message(const json::Value& value);
+SetupPlayer parse_setup_player_message(const json::Value& value);
 SendSquadron parse_send_squadron_message(const json::Value& value);
 
 } // namespace
