@@ -1,11 +1,11 @@
-import { TextButton, TextButtonConfig } from './button/textButton';
+import { TextButton } from './button/textButton';
 import { NinePatch } from '@koreez/phaser3-ninepatch';
-import { BitmapText, BitmapTextConfig } from './text/bitmapText';
+import { BitmapText } from './text/bitmapText';
 import { GuiBoxConfig, GuiBox } from './box/guibox';
-import { IconButton, IconButtonConfig } from './button/iconButton';
+import { IconButton } from './button/iconButton';
+import { BitmapTextConfig, IconButtonConfig, TextButtonConfig } from './guiConfigInterfaces';
 
-export class GuiFactory {
-
+class ButtonFactory {
 	public static buildTextButton(scene: Phaser.Scene, x: number, y: number, text: string, config: TextButtonConfig): TextButton {
 		let textButton = new TextButton(scene, x, y);
 
@@ -76,6 +76,17 @@ export class GuiFactory {
 		});
 
 		return iconButton;
+	}
+}
+
+export class GuiFactory {
+
+	public static buildTextButton(scene: Phaser.Scene, x: number, y: number, text: string, config: TextButtonConfig): TextButton {
+		return ButtonFactory.buildTextButton(scene, x, y, text, config);
+	}
+
+	public static buildIconButton(scene: Phaser.Scene, x: number, y: number, config: IconButtonConfig): IconButton {
+		return ButtonFactory.buildIconButton(scene, x, y, config);
 	}
 
 	public static buildBitmapText(scene: Phaser.Scene, x: number, y: number, text: string, config?: BitmapTextConfig): BitmapText {

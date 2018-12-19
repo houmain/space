@@ -6,7 +6,8 @@ export enum Scenes {
 	MAIN_MENU = 'mainMenu',
 
 	CHOOSE_GAME_TYPE = 'chooseGameType',
-	NEW_GAME_SETTINGS = 'newGameSettings',
+	NEW_GAME_SETTINGS = 'newGameSettings', // todo remove
+	CREATE_NEW_GAME = 'createNewGame',
 	SELECT_EXISTING_GAME = 'selectExistingGame',
 	PLAYER_SETTINGS = 'playerSettings',
 

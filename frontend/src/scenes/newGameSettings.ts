@@ -11,13 +11,73 @@ import { ObservableServerMessageHandler, ServerMessageQueue } from '../communica
 import { GalaxyDataHandler } from '../logic/data/galaxyDataHandler';
 import { Texts, TextResources } from '../localization/textResources';
 import { GameTimeController } from '../logic/controller/gameTimeController';
+import { GuiHelper } from './chooseGameType';
+import { GuiConfig } from '../view/gui/guiConfig';
+import { GuiFactory } from '../view/gui/guiFactory';
 
 export class NewGameSettings {
 	numPlanets: number;
 	numFactions: number;
 }
 
-export class NewGameSettingsScene extends GuiScene { // todo rename to CreateNewGame
+export class Slider extends Phaser.GameObjects.Container {
+
+	public constructor(scene: Phaser.Scene, x: number, y: number, label: string) {
+		super(scene, x, y);
+
+		let background = scene.add.sprite(0, 0, 'settingsentry');
+		background.setOrigin(0, 0);
+		this.add(background);
+
+		let text = GuiFactory.buildBitmapText(scene, 25, 20, 'Factions', GuiConfig.LABELS.HEADER_2);
+		text.setOrigin(0, 0);
+		this.add(text);
+	}
+}
+
+export class CreateNewGameScene extends GuiScene {
+
+	private _container: Phaser.GameObjects.Container;
+
+	public constructor() {
+		super(Scenes.CREATE_NEW_GAME);
+	}
+
+	public create() {
+		super.create();
+
+		this._container = this.add.container(0, 0);
+
+		let box = new NinePatch(this, 0, 0, 1200, 500, 'settingsBox', null, {
+			top: 60,
+			bottom: 30,
+			left: 60,
+			right: 124
+		});
+		box.setOrigin(0, 0);
+		box.setAlpha(0.5);
+		this.add.existing(box);
+
+		this._container.add(box);
+
+		let header = this.add.bitmapText(30, 30, GuiConfig.LABELS.HEADER_2.fontName, TextResources.getText(Texts.CREATE_NEW_GAME.TITLE), GuiConfig.LABELS.HEADER_2.fontSize);
+		header.setOrigin(0, 0);
+		this._container.add(header);
+
+		/*
+		let numPlanets = this.add.sprite(30, 100, 'settingsentry');
+		numPlanets.setOrigin(0, 0);
+		this._container.add(numPlanets);*/
+		let numPlanets = new Slider(this, 30, 100, 'Num Factions');
+		this._container.add(numPlanets);
+
+		this._container.setPosition(window.innerWidth / 2 - box.width / 2, window.innerHeight / 2 - box.height / 2);
+
+		new GuiHelper().addMainMenuButton(this);
+	}
+}
+
+export class NewGameSettingsScene extends GuiScene { // todo remove
 
 	private _container: Phaser.GameObjects.Container;
 
@@ -116,6 +176,8 @@ export class NewGameSettingsScene extends GuiScene { // todo rename to CreateNew
 		this._container.add(createButton);
 
 		this._container.setPosition(window.innerWidth / 2 - box.width / 2, window.innerHeight / 2 - box.height / 2);
+
+		new GuiHelper().addMainMenuButton(this);
 	}
 
 	private _gameId: number;

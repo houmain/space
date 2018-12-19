@@ -1,10 +1,3 @@
-export interface BitmapTextConfig {
-	fontName: string;
-	fontSize: number;
-	width?: number;
-	height?: number;
-}
-
 export class BitmapText extends Phaser.GameObjects.BitmapText {
 
 	public setWordWrapWidth(wordWrapWidth: number) {

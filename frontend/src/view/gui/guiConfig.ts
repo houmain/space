@@ -1,7 +1,5 @@
-import { TextButtonConfig } from './button/textButton';
 import { GuiBoxConfig } from './box/guibox';
-import { BitmapTextConfig } from './text/bitmapText';
-import { IconButtonConfig } from './button/iconButton';
+import { SliderConfig, BitmapTextConfig, IconButtonConfig, TextButtonConfig } from './guiConfigInterfaces';
 
 class Buttons {
 
@@ -22,9 +20,30 @@ class Buttons {
 	};
 }
 
+export class Labels {
+	public HEADER_1: BitmapTextConfig = {
+		fontName: 'font_8',
+		fontSize: 140,
+	};
+
+	public HEADER_2: BitmapTextConfig = {
+		fontName: 'font_8',
+		fontSize: 70,
+	};
+}
+
+class Sliders {
+	/*
+		public SETTINGS: SliderConfig = {
+			label: Labels.HEADER_1,
+			value: Labels.HEADER_1
+		};*/
+}
+
 export class GuiConfig {
 
 	public static readonly BUTTONS: Buttons = new Buttons();
+	public static readonly LABELS: Labels = new Labels();
 
 	public static readonly TEXT_BUTTON: TextButtonConfig = {
 		width: 240,
@@ -55,10 +74,5 @@ export class GuiConfig {
 	public static GUI_HEADER: BitmapTextConfig = {
 		fontName: 'font_8',
 		fontSize: 40,
-	};
-
-	public static TEXT_HEADER_1: BitmapTextConfig = {
-		fontName: 'font_8',
-		fontSize: 140,
 	};
 }

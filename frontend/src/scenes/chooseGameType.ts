@@ -18,14 +18,14 @@ export class ChooseGameTypeScene extends GuiScene {
 
 		this._container = this.add.container(0, 0);
 
-		let header = this.add.bitmapText(0, 0, GuiConfig.TEXT_HEADER_1.fontName, TextResources.getText(Texts.CHOOSE_GAME_TYPE.HEADER), GuiConfig.TEXT_HEADER_1.fontSize);
+		let header = this.add.bitmapText(0, 0, GuiConfig.LABELS.HEADER_1.fontName, TextResources.getText(Texts.CHOOSE_GAME_TYPE.HEADER), GuiConfig.LABELS.HEADER_1.fontSize);
 		header.setOrigin(0.5, 0.5);
 		this._container.add(header);
 
 		let createNewGame = new MainMenuButton(this, TextResources.getText(Texts.CHOOSE_GAME_TYPE.CREATE_NEW_GAME).toUpperCase());
 		createNewGame.setPosition(-200, 300);
 		createNewGame.onClick = () => {
-			this.scene.start(Scenes.NEW_GAME_SETTINGS);
+			this.scene.start(Scenes.CREATE_NEW_GAME);
 		};
 		this._container.add(createNewGame);
 
@@ -45,10 +45,17 @@ export class ChooseGameTypeScene extends GuiScene {
 		};
 		this.add.existing(backButton);
 
-		let mainMenuButton = GuiFactory.buildIconButton(this, window.innerWidth - 250, 0, GuiConfig.BUTTONS.MAIN_MENU);
+		new GuiHelper().addMainMenuButton(this);
+	}
+}
+
+export class GuiHelper {
+
+	public addMainMenuButton(scene: Phaser.Scene) {
+		let mainMenuButton = GuiFactory.buildIconButton(scene, window.innerWidth - 250, 0, GuiConfig.BUTTONS.MAIN_MENU);
 		mainMenuButton.onClick = () => {
-			this.scene.start(Scenes.MAIN_MENU);
+			scene.scene.start(Scenes.MAIN_MENU);
 		};
-		this.add.existing(mainMenuButton);
+		scene.add.existing(mainMenuButton);
 	}
 }
