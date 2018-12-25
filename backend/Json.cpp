@@ -23,25 +23,43 @@ Document parse(std::string_view message) {
   return document;
 }
 
-bool get_bool(const Value& message, const char* name) {
+std::optional<bool> try_get_bool(const Value& message, const char* name) {
   auto it = (message.IsObject() ? message.FindMember(name) : message.MemberEnd());
   if (it == message.MemberEnd() || !it->value.IsBool())
-    throw Exception("bool '" + std::string(name) + "' expected");
+    return std::nullopt;
   return it->value.GetBool();
 }
 
-int get_int(const Value& message, const char* name) {
+bool get_bool(const Value& message, const char* name) {
+  if (auto optional = try_get_bool(message, name))
+    return *optional;
+  throw Exception("bool '" + std::string(name) + "' expected");
+}
+
+std::optional<int> try_get_int(const Value& message, const char* name) {
   auto it = (message.IsObject() ? message.FindMember(name) : message.MemberEnd());
   if (it == message.MemberEnd() || !it->value.IsInt())
-    throw Exception("int '" + std::string(name) + "' expected");
+    return std::nullopt;
   return it->value.GetInt();
 }
 
-std::string_view get_string(const Value& message, const char* name) {
+int get_int(const Value& message, const char* name) {
+  if (auto optional = try_get_bool(message, name))
+    return *optional;
+  throw Exception("int '" + std::string(name) + "' expected");
+}
+
+std::optional<std::string_view> try_get_string(const Value& message, const char* name) {
   auto it = (message.IsObject() ? message.FindMember(name) : message.MemberEnd());
   if (it == message.MemberEnd() || !it->value.IsString())
-    throw Exception("string '" + std::string(name) + "' expected");
+    return std::nullopt;;
   return std::string_view(it->value.GetString());
+}
+
+std::string_view get_string(const Value& message, const char* name) {
+  if (auto optional = try_get_string(message, name))
+    return *optional;
+  throw Exception("string '" + std::string(name) + "' expected");
 }
 
 std::vector<int> get_int_list(const Value& message, const char* name) {
@@ -55,7 +73,7 @@ std::vector<int> get_int_list(const Value& message, const char* name) {
   return result;
 }
 
-std::string build_message(const std::function<void(Writer&)>& write) {
+std::string build_string(const std::function<void(Writer&)>& write) {
   static std::mutex s_mutex;
   static auto s_buffer = rapidjson::StringBuffer();
   static auto s_writer = Writer(s_buffer);

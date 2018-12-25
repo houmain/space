@@ -1,8 +1,8 @@
 
+#include "Server.h"
 #include <cstring>
 #include <array>
 #include <libwebsockets.h>
-#include "Server.h"
 
 namespace server {
 

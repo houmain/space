@@ -1,16 +1,17 @@
 
 #include "Client.h"
-#include "GameManager.h"
 #include "../Interfaces.h"
 
 namespace server {
 
-Client::Client(SendFunction send)
+Client::Client(interfaces::SendFunction send)
   : m_send(std::move(send)) {
+
+  interfaces::get_game_manager().on_client_joined(*this);
 }
 
 Client::~Client() {
-  leave_game();
+  interfaces::get_game_manager().on_client_left(*this);
 }
 
 void Client::send(std::string message) {
@@ -20,45 +21,11 @@ void Client::send(std::string message) {
 void Client::on_received(std::string_view message) {
   try {
     const auto value = json::parse(message);
-    const auto action = json::get_string(value, "action");
-
-    if (action == "createGame")
-      return create_game(value);
-
-    if (action == "joinGame")
-      return join_game(value);
-
-    if (action == "leaveGame")
-      return leave_game();
-
-    if (!m_game)
-      throw Exception("invalid action, no game joined");
-
-    m_game->on_message_received(*this, value);
+    interfaces::get_game_manager().on_message_received(*this, value);
   }
   catch (const std::exception& ex) {
     send(ex.what());
   }
-}
-
-void Client::create_game([[maybe_unused]] const json::Value& value) {
-  leave_game();
-
-  m_game = GameManager::instance().create_game();
-  m_game->on_client_joined(*this);
-}
-
-void Client::join_game(const json::Value& value) {
-  leave_game();
-
-  auto game_id = json::get_int(value, "gameId");
-  m_game = GameManager::instance().get_game(game_id);
-  m_game->on_client_joined(*this);
-}
-
-void Client::leave_game() {
-  if (auto game = std::exchange(m_game, nullptr))
-    game->on_client_left(*this);
 }
 
 } // namespace

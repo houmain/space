@@ -1,7 +1,7 @@
 
+#include "server/Server.h"
 #include <csignal>
 #include <atomic>
-#include "server/Server.h"
 
 namespace {
   std::atomic<bool> g_interrupted;

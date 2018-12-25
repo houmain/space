@@ -1,10 +1,10 @@
 
-#include <cassert>
-#include <cmath>
 #include "Logic.h"
 #include "Messages.h"
 #include "Setup.h"
 #include "Game.h"
+#include <cassert>
+#include <cmath>
 
 namespace game {
 
@@ -17,12 +17,15 @@ namespace {
   }
 } // namespace
 
-Logic::Logic(Game& game)
-  : m_game(game),
+Logic::Logic(Game* game)
+  : m_game(*game),
     m_random(std::random_device()()) {
+
+  start();
 }
 
-void Logic::start(const Setup& setup) {
+void Logic::start() {
+  const auto& setup = m_game.setup();
   m_rules.squadron_speed = 30.0;
   m_rules.fight_duration = 10.0;
 
@@ -61,6 +64,9 @@ void Logic::start(const Setup& setup) {
       moon.squadrons.push_back(create_squadron(moon, 3));
     }
   }
+
+  broadcast(messages::build_game_started(
+    m_factions, m_planets, m_moving_squadrons));
 }
 
 void Logic::update() {
@@ -71,7 +77,7 @@ void Logic::update() {
       std::chrono::duration<double>>(now - m_start_time).count();
   m_last_update_time = now;
 
-  broadcast(build_game_updated_message(time_since_start));
+  broadcast(messages::build_game_updated(time_since_start));
 
   update_faction_upkeep();
   update_planet_positions(time_since_start);
@@ -124,7 +130,7 @@ void Logic::update_planet_production(double time_elapsed) {
         auto& squadron = *find_planet_squadron(planet, planet.faction);
         squadron.fighter_count += 1;
         planet.production_progress = 0.0;
-        broadcast(build_fighter_created_message(squadron));
+        broadcast(messages::build_fighter_created(squadron));
       }
     }
 }
@@ -156,12 +162,12 @@ void Logic::on_squadron_arrived(Squadron& squadron) {
   if (auto comrades = find_planet_squadron(planet, squadron.faction)) {
     // merge with comrades
     comrades->fighter_count += std::exchange(squadron.fighter_count, 0);
-    broadcast(build_squadrons_merged_message(squadron, *comrades));
+    broadcast(messages::build_squadrons_merged(squadron, *comrades));
   }
   else {
     // add to list of squadrons conquering planet
     planet.squadrons.push_back(squadron);
-    broadcast(build_squadron_attacks_message(squadron));
+    broadcast(messages::build_squadron_attacks(squadron));
   }
 }
 
@@ -214,7 +220,7 @@ void Logic::destroy_random_fighter(Planet& planet) {
   assert(&squadron != &by_squadron);
 
   squadron.fighter_count -= 1;
-  broadcast(build_fighter_destroyed_message(squadron, by_squadron));
+  broadcast(messages::build_fighter_destroyed(squadron, by_squadron));
 
   if (squadron.fighter_count == 0)
     on_squadron_destroyed(squadron, by_squadron);
@@ -226,24 +232,24 @@ void Logic::on_squadron_destroyed(Squadron& squadron,
 
   if (squadron.faction == planet.faction) {
     // defender destroyed, update planet faction
-    broadcast(build_planet_conquered_message(by_squadron));
+    broadcast(messages::build_planet_conquered(by_squadron));
     planet.faction = by_squadron.faction;
   }
 
   const auto faction = squadron.faction;
-  broadcast(build_squadron_destroyed_message(squadron));
+  broadcast(messages::build_squadron_destroyed(squadron));
   planet.squadrons.erase(begin(planet.squadrons) +
     std::distance(planet.squadrons.data(), &squadron));
 
   if (faction && !faction_has_squadron(*faction)) {
-    broadcast(build_faction_destroyed_message(*faction));
+    broadcast(messages::build_faction_destroyed(*faction));
     if (auto last_faction = find_last_faction())
-      broadcast(build_faction_won_message(*last_faction));
+      broadcast(messages::build_faction_won(*last_faction));
   }
 }
 
-void Logic::send_squadron(FactionId factionId, const SendSquadron& message) {
-  auto& faction = m_factions.at(static_cast<size_t>(factionId - 1));
+void Logic::send_squadron(FactionId faction_id, const messages::SendSquadron& message) {
+  auto& faction = m_factions.at(static_cast<size_t>(faction_id - 1));
   auto& source_planet = m_planets.at(
     static_cast<size_t>(message.source_planet_id - 1));
   auto& target_planet = m_planets.at(
@@ -259,7 +265,7 @@ void Logic::send_squadron(FactionId factionId, const SendSquadron& message) {
     squadron.x = source_planet.x;
     squadron.y = source_planet.y;
     m_moving_squadrons.push_back(squadron);
-    broadcast(build_squadron_sent_message(*source_squadron, squadron));
+    broadcast(messages::build_squadron_sent(*source_squadron, squadron));
   }
 }
 

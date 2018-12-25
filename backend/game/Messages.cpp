@@ -1,14 +1,195 @@
 
 #include "Messages.h"
+#include "Player.h"
+#include "Game.h"
 
-namespace game {
+namespace game::messages {
 
-std::string build_game_started_message(
+CreateGame parse_create_game(const json::Value& value) {
+  return {
+    json::get_string(value, "name"),
+    json::get_string(value, "password"),
+    json::get_int(value, "maxPlayers"),
+    json::get_string(value, "clientId"),
+  };
+}
+
+JoinGame parse_join_game(const json::Value& value) {
+  return {
+    json::get_int(value, "gameId"),
+    json::get_string(value, "password"),
+    json::get_string(value, "clientId"),
+  };
+}
+
+SetupGame parse_setup_game(const json::Value& value) {
+  return {
+    json::try_get_int(value, "numFactions"),
+    json::try_get_int(value, "numPlanets"),
+  };
+}
+
+SetupPlayer parse_setup_player(const json::Value& value) {
+  return {
+    json::try_get_string(value, "name"),
+    json::try_get_string(value, "avatar"),
+    json::try_get_string(value, "color"),
+    json::try_get_int(value, "factionId"),
+    json::try_get_bool(value, "ready"),
+  };
+}
+
+ChatMessage parse_chat_message(const json::Value& value) {
+  return {
+    json::get_int(value, "playerId"),
+    std::string(json::get_string(value, "message")),
+  };
+}
+
+SendSquadron parse_send_squadron(const json::Value& value) {
+  return {
+    json::get_int(value, "sourcePlanetId"),
+    json::get_int(value, "targetPlanetId"),
+    json::get_int(value, "fighterCount"),
+  };
+}
+
+std::string build_game_list(const std::vector<const Game*>& games) {
+  return json::build_string([&](json::Writer& writer) {
+    writer.StartObject();
+    writer.Key("event");
+    writer.String("gameList");
+    writer.Key("games");
+    writer.StartArray();
+    for (const auto game : games) {
+      writer.StartObject();
+      writer.Key("gameId");
+      writer.Int(game->game_id());
+      writer.Key("name");
+      writer.String(game->name());
+      writer.Key("maxPlayers");
+      writer.Int(game->max_players());
+      writer.Key("numPlayers");
+      writer.Int(game->num_players());
+      writer.EndObject();
+    }
+    writer.EndArray();
+    writer.EndObject();
+  });
+}
+
+std::string build_chat_message(const ChatMessage& message) {
+  return json::build_string([&](json::Writer& writer) {
+    writer.StartObject();
+    writer.Key("event");
+    writer.String("chatMessage");
+    writer.Key("playerId");
+    writer.Int(message.player_id);
+    writer.Key("message");
+    writer.String(message.message);
+    writer.EndObject();
+  });
+}
+
+std::string build_game_joined(const Player& player) {
+  return json::build_string([&](json::Writer& writer) {
+    writer.StartObject();
+    writer.Key("event");
+    writer.String("gameJoined");
+    writer.Key("gameId");
+    writer.Int(player.game().game_id());
+    writer.Key("playerId");
+    writer.Int(player.player_id());
+    writer.EndObject();
+  });
+}
+
+std::string build_game_left(const Player& player) {
+  return json::build_string([&](json::Writer& writer) {
+    writer.StartObject();
+    writer.Key("event");
+    writer.String("gameLeft");
+    writer.Key("gameId");
+    writer.Int(player.game().game_id());
+    writer.Key("playerId");
+    writer.Int(player.player_id());
+    writer.EndObject();
+  });
+}
+
+std::string build_player_joined(const Player& player) {
+  return json::build_string([&](json::Writer& writer) {
+    writer.StartObject();
+    writer.Key("event");
+    writer.String("playerJoined");
+    writer.Key("playerId");
+    writer.Int(player.player_id());
+    writer.EndObject();
+  });
+}
+
+std::string build_player_left(const Player& player) {
+  return json::build_string([&](json::Writer& writer) {
+    writer.StartObject();
+    writer.Key("event");
+    writer.String("playerLeft");
+    writer.Key("playerId");
+    writer.Int(player.player_id());
+    writer.EndObject();
+  });
+}
+
+std::string build_player_setup_updated(const SetupPlayer& setup) {
+  return json::build_string([&](json::Writer& writer) {
+    writer.StartObject();
+    writer.Key("event");
+    writer.String("playerSetupUpdated");
+    if (setup.name) {
+      writer.Key("name");
+      writer.String(setup.name->data()); // TODO: check for string_view support
+    }
+    if (setup.avatar) {
+      writer.Key("avatar");
+      writer.String(setup.avatar->data()); // TODO: check for string_view support
+    }
+    if (setup.color) {
+      writer.Key("color");
+      writer.String(setup.color->data()); // TODO: check for string_view support
+    }
+    if (setup.faction_id) {
+      writer.Key("factionId");
+      writer.Int(*setup.faction_id);
+    }
+    if (setup.ready) {
+      writer.Key("ready");
+      writer.Bool(*setup.ready);
+    }
+    writer.EndObject();
+  });
+}
+
+std::string build_game_setup_updated(const SetupGame& setup) {
+  return json::build_string([&](json::Writer& writer) {
+    writer.StartObject();
+    writer.Key("event");
+    writer.String("gameSetupUpdated");
+    if (setup.num_factions) {
+      writer.Key("numFactions");
+      writer.Int(*setup.num_factions);
+    }
+    if (setup.num_planets) {
+      writer.Key("numPlanets");
+      writer.Int(*setup.num_planets);
+    }
+    writer.EndObject();
+  });
+}
+
+std::string build_game_started(
     const std::vector<Faction>& factions,
     const std::vector<Planet>& planets,
-    const std::vector<Squadron>& moving_squadrons,
-    const Faction& faction) {
-  return json::build_message([&](json::Writer& writer) {
+    const std::vector<Squadron>& moving_squadrons) {
+  return json::build_string([&](json::Writer& writer) {
     writer.StartObject();
     writer.Key("event");
     writer.String("gameStarted");
@@ -98,15 +279,12 @@ std::string build_game_started_message(
     }
     writer.EndArray();
 
-    writer.Key("factionId");
-    writer.Int(faction.id);
-
     writer.EndObject();
   });
 }
 
-std::string build_game_updated_message(double time_since_start) {
-  return json::build_message([&](json::Writer& writer) {
+std::string build_game_updated(double time_since_start) {
+  return json::build_string([&](json::Writer& writer) {
     writer.StartObject();
     writer.Key("event");
     writer.String("gameUpdated");
@@ -116,30 +294,8 @@ std::string build_game_updated_message(double time_since_start) {
   });
 }
 
-std::string build_player_joined_message(const Faction& faction) {
-  return json::build_message([&](json::Writer& writer) {
-    writer.StartObject();
-    writer.Key("event");
-    writer.String("playerJoined");
-    writer.Key("factionId");
-    writer.Int(faction.id);
-    writer.EndObject();
-  });
-}
-
-std::string build_player_left_message(const Faction& faction) {
-  return json::build_message([&](json::Writer& writer) {
-    writer.StartObject();
-    writer.Key("event");
-    writer.String("playerLeft");
-    writer.Key("factionId");
-    writer.Int(faction.id);
-    writer.EndObject();
-  });
-}
-
-std::string build_fighter_created_message(const Squadron& squadron) {
-  return json::build_message([&](json::Writer& writer) {
+std::string build_fighter_created(const Squadron& squadron) {
+  return json::build_string([&](json::Writer& writer) {
     writer.StartObject();
     writer.Key("event");
     writer.String("fighterCreated");
@@ -153,9 +309,9 @@ std::string build_fighter_created_message(const Squadron& squadron) {
   });
 }
 
-std::string build_fighter_destroyed_message(const Squadron& squadron,
+std::string build_fighter_destroyed(const Squadron& squadron,
     const Squadron& by_squadron) {
-  return json::build_message([&](json::Writer& writer) {
+  return json::build_string([&](json::Writer& writer) {
     writer.StartObject();
     writer.Key("event");
     writer.String("fighterDestroyed");
@@ -171,9 +327,9 @@ std::string build_fighter_destroyed_message(const Squadron& squadron,
   });
 }
 
-std::string build_squadron_sent_message(const Squadron& source_squadron,
+std::string build_squadron_sent(const Squadron& source_squadron,
     const Squadron& squadron) {
-  return json::build_message([&](json::Writer& writer) {
+  return json::build_string([&](json::Writer& writer) {
     writer.StartObject();
     writer.Key("event");
     writer.String("squadronSent");
@@ -195,9 +351,9 @@ std::string build_squadron_sent_message(const Squadron& source_squadron,
   });
 }
 
-std::string build_squadrons_merged_message(const Squadron& squadron,
+std::string build_squadrons_merged(const Squadron& squadron,
     const Squadron& into_squadron) {
-  return json::build_message([&](json::Writer& writer) {
+  return json::build_string([&](json::Writer& writer) {
     writer.StartObject();
     writer.Key("event");
     writer.String("squadronsMerged");
@@ -213,8 +369,8 @@ std::string build_squadrons_merged_message(const Squadron& squadron,
   });
 }
 
-std::string build_squadron_attacks_message(const Squadron& squadron) {
-  return json::build_message([&](json::Writer& writer) {
+std::string build_squadron_attacks(const Squadron& squadron) {
+  return json::build_string([&](json::Writer& writer) {
     writer.StartObject();
     writer.Key("event");
     writer.String("squadronAttacks");
@@ -226,8 +382,8 @@ std::string build_squadron_attacks_message(const Squadron& squadron) {
   });
 }
 
-std::string build_squadron_destroyed_message(const Squadron& squadron) {
-  return json::build_message([&](json::Writer& writer) {
+std::string build_squadron_destroyed(const Squadron& squadron) {
+  return json::build_string([&](json::Writer& writer) {
     writer.StartObject();
     writer.Key("event");
     writer.String("squadronDestroyed");
@@ -239,8 +395,8 @@ std::string build_squadron_destroyed_message(const Squadron& squadron) {
   });
 }
 
-std::string build_planet_conquered_message(const Squadron& squadron) {
-  return json::build_message([&](json::Writer& writer) {
+std::string build_planet_conquered(const Squadron& squadron) {
+  return json::build_string([&](json::Writer& writer) {
     writer.StartObject();
     writer.Key("event");
     writer.String("planetConquered");
@@ -256,8 +412,8 @@ std::string build_planet_conquered_message(const Squadron& squadron) {
   });
 }
 
-std::string build_faction_destroyed_message(const Faction& faction) {
-  return json::build_message([&](json::Writer& writer) {
+std::string build_faction_destroyed(const Faction& faction) {
+  return json::build_string([&](json::Writer& writer) {
     writer.StartObject();
     writer.Key("event");
     writer.String("factionDestroyed");
@@ -267,8 +423,8 @@ std::string build_faction_destroyed_message(const Faction& faction) {
   });
 }
 
-std::string build_faction_won_message(const Faction& faction) {
-  return json::build_message([&](json::Writer& writer) {
+std::string build_faction_won(const Faction& faction) {
+  return json::build_string([&](json::Writer& writer) {
     writer.StartObject();
     writer.Key("event");
     writer.String("factionWon");
@@ -276,31 +432,6 @@ std::string build_faction_won_message(const Faction& faction) {
     writer.Int(faction.id);
     writer.EndObject();
   });
-}
-
-SetupGame parse_setup_game_message(const json::Value& value) {
-  return {
-    json::get_int(value, "numFactions"),
-    json::get_int(value, "numPlanets"),
-  };
-}
-
-SetupPlayer parse_setup_player_message(const json::Value& value) {
-  return {
-    std::string(json::get_string(value, "name")),
-    std::string(json::get_string(value, "avatar")),
-    std::string(json::get_string(value, "color")),
-    json::get_int(value, "factionId"),
-    json::get_bool(value, "ready"),
-  };
-}
-
-SendSquadron parse_send_squadron_message(const json::Value& value) {
-  return {
-    json::get_int(value, "sourcePlanetId"),
-    json::get_int(value, "targetPlanetId"),
-    json::get_int(value, "fighterCount"),
-  };
 }
 
 } // namespace

@@ -1,19 +1,29 @@
 
-createGame ->
-    <- gameJoined (gameId, playerId)
+requestGameList ->
+    <- gameList (gameId, name, numPlayers, maxPlayers)+
 
-joinGame (gameId, [playerId]) ->
+createGame (clientId, name, password, maxPlayers) ->
     <- gameJoined (gameId, playerId)
+    <= playerJoined (playerId)
 
-sendChatMessage (message)
-    <- chatMessageReceived (playerId, message)
+joinGame (clientId, gameId, password) ->
+    <- gameJoined (gameId, playerId)
+    <= playerJoined (playerId)
+
+leaveGame ->
+    <- gameLeft
+    <= playerLeft (playerId)
+
+chatMessage (message)
+    <= chatMessage (playerId, message)
 
 setupGame (numPlanets, numFactions)
-    <- gameSetupUpdated (...)
+    <= gameSetupUpdated (...)
 
 setupPlayer (name, avatar, factionId, color, ready) ->
-    <- playerSetupUpdated (playerId, ...)
+    <= playerSetupUpdated (playerId, ...)
 
-    <- gameStarted (factions, planets, ...)
+    <= gameStarted (factions, planets, ...)
 
-sendSquadron ->
+sendSquadron (...) ->
+    <= squadronSent (...)

@@ -6,12 +6,14 @@ namespace game {
 
 class Setup final {
 public:
-  void setup(const SetupGame& setup);
+  explicit Setup(Game* game);
+  void setup(const messages::SetupGame& setup);
 
   int num_factions() const { return m_num_factions; }
   int num_planets() const { return m_num_planets; }
 
 private:
+  Game& m_game;
   int m_num_factions{ };
   int m_num_planets{ };
 };

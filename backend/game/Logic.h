@@ -1,21 +1,21 @@
 #pragma once
 
+#include "Messages.h"
 #include <chrono>
 #include <random>
-#include "Messages.h"
 
 namespace game {
 
 class Logic {
 public:
-  explicit Logic(Game& game);
-  void start(const Setup& setup);
+  explicit Logic(Game* game);
   void update();
-  void send_squadron(FactionId factionId, const SendSquadron& value);
+  void send_squadron(FactionId faction_id, const messages::SendSquadron& value);
 
 private:
   using Clock = std::chrono::steady_clock;
 
+  void start();
   Squadron create_squadron(Planet& planet,
     int fighter_count, Faction* faction = nullptr);
   void broadcast(std::string_view message);

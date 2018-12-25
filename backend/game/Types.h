@@ -1,13 +1,15 @@
 #pragma once
 
-#include <map>
 #include "../Interfaces.h"
+#include <map>
 
 namespace game {
 
-using GameId = interfaces::GameId;
 using Client = interfaces::Client;
 
+using ClientId = std::string;
+using GameId = int;
+using PlayerId = int;
 using FactionId = int;
 using PlanetId = int;
 using SquadronId = int;

@@ -1,12 +1,11 @@
 #pragma once
 
+#include "Json.h"
 #include <memory>
 #include <functional>
-#include "Json.h"
 
 namespace interfaces {
 
-using GameId = int;
 using SendFunction = std::function<void(std::string)>;
 
 struct Interface {
@@ -21,15 +20,14 @@ struct Client : Interface {
   virtual void on_received(std::string_view message) = 0;
 };
 
-struct Game : Interface {
+struct GameManager : Interface {
   virtual void on_client_joined(Client& client) = 0;
   virtual void on_client_left(Client& client) = 0;
   virtual void on_message_received(Client& client,
     const json::Value& value) = 0;
-  virtual void update() = 0;
 };
 
 std::unique_ptr<Client> create_client(SendFunction send);
-std::shared_ptr<Game> create_game(GameId game_id);
+GameManager& get_game_manager();
 
 } // namespace
