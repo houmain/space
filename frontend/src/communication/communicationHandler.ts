@@ -5,7 +5,6 @@ import { Engine } from '../common/utils';
 
 export interface SpaceGameConfig {
     url: string;
-    gameId: number;
 }
 
 export class CommunicationHandlerWebSocket implements CommunicationHandler {
@@ -29,17 +28,19 @@ export class CommunicationHandlerWebSocket implements CommunicationHandler {
         return this._connectionFailed;
     }
 
-    public onConnected: Function;
-    public onDisconnected: Function;
+    public onConnected: Function = null;
+    public onDisconnected: Function = null;
 
-    public init(gameConfig: SpaceGameConfig) {
+    public connect(gameConfig: SpaceGameConfig) {
         try {
             let url = gameConfig.url;
             this._socket = new WebSocket(url, 'websocket');
 
             this._socket.onopen = () => {
+
                 this._connected = true;
                 if (this.onConnected) {
+                    console.log('call');
                     this.onConnected();
                 }
             };

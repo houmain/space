@@ -33,7 +33,7 @@ export class GameServerMock {
 			case ClientMessageType.CREATE_GAME:
 				this.onCreateGame(clientMessage as CreateGameMessage);
 				break;
-			case ClientMessageType.AVAILABLE_GAME_SESSIONS:
+			case ClientMessageType.REQUEST_GAME_LIST:
 				this.onAvailableGameSessions(clientMessage as GetAvailableGameSessions);
 				break;
 			case ClientMessageType.JOIN_GAME:
@@ -67,7 +67,7 @@ export class GameServerMock {
 	}
 
 	private onCreateGame(msg: CreateGameMessage) {
-		DebugInfo.info(`Received createMessage num Factions ` + msg.numFactions);
+		//		DebugInfo.info(`Received createMessage num Factions ` + msg.numFactions);
 
 		setTimeout(() => {
 			this.sendToClient(MockMessageBuilder.createMessageGameCreated(this._idGenerator.getNextId()));

@@ -1,6 +1,6 @@
 import { CommunicationHandler, JoinGameMessage, ClientMessageType, SendSquadron, ClientMessage, CreateGameMessage, PlayerReadyMessage, PlayerInfoMessage, GetAvailableGameSessions } from './communicationInterfaces';
 import { printCallstack } from '../common/error';
-import { NewGameSettings } from '../scenes/newGameSettings';
+import { NewGameSettings } from '../scenes/createNewGame';
 
 export interface PlayerInfo {
 	avatar: string;
@@ -19,15 +19,17 @@ export class ClientMessageSender {
 
 	public getAvailableGameSessions() {
 		this.send<GetAvailableGameSessions>({
-			action: ClientMessageType.AVAILABLE_GAME_SESSIONS
+			action: ClientMessageType.REQUEST_GAME_LIST
 		});
 	}
 
 	public createGame(settings: NewGameSettings) {
 		let msg: CreateGameMessage = {
 			action: ClientMessageType.CREATE_GAME,
-			numFactions: settings.numFactions,
-			numPlanets: settings.numPlanets
+			clientId: settings.clientId,
+			name: settings.name,
+			password: settings.password,
+			maxPlayers: settings.maxPlayers
 		};
 
 		this.send(msg);

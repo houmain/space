@@ -30,6 +30,11 @@ export class Labels {
 		fontName: 'font_8',
 		fontSize: 70,
 	};
+
+	public HEADER_3: BitmapTextConfig = {
+		fontName: 'font_8',
+		fontSize: 50,
+	};
 }
 
 class Sliders {

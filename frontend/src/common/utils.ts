@@ -112,3 +112,44 @@ export class SeedableRng implements RandomNumberGenerator {
         return this._prando.next(min, max);
     }
 }
+
+export class GuidHelper {
+    public static newGuid() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            let r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
+}
+
+export class CookieHelper {
+
+    public static setCookie(name, value, days) {
+        let expires = '';
+        if (days) {
+            let date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            expires = '; expires=' + date.toUTCString();
+        }
+        document.cookie = name + '=' + (value || '') + expires + '; path=/';
+    }
+
+    public static getCookie(name) {
+        let nameEQ = name + '=';
+        let ca = document.cookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) === ' ') {
+                c = c.substring(1, c.length);
+            }
+            if (c.indexOf(nameEQ) === 0) {
+                return c.substring(nameEQ.length, c.length);
+            }
+        }
+        return null;
+    }
+
+    public static eraseCookie(name) {
+        document.cookie = name + '=; Max-Age=-99999999;';
+    }
+}

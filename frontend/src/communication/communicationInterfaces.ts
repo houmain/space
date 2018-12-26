@@ -5,14 +5,14 @@ export interface CommunicationHandler {
     onConnected: Function;
     onDisconnected: Function;
 
-    init(gameConfig: SpaceGameConfig);
+    connect(gameConfig: SpaceGameConfig);
     send(msg: ClientMessage);
     close();
 }
 
 export enum ClientMessageType {
     CREATE_GAME = 'createGame',
-    AVAILABLE_GAME_SESSIONS = 'availableGameSessions',
+    REQUEST_GAME_LIST = 'requestGameList',
     JOIN_GAME = 'joinGame',
     PLAYER_INFO = 'playerInfo',
     PLAYER_READY = 'playerReady',
@@ -27,8 +27,10 @@ export interface GetAvailableGameSessions extends ClientMessage {
 }
 
 export interface CreateGameMessage extends ClientMessage {
-    numPlanets: number;
-    numFactions: number;
+    clientId: string;
+    name: string;
+    password?: string;
+    maxPlayers: number;
 }
 
 export interface JoinGameMessage extends ClientMessage {

@@ -21,7 +21,7 @@ export class CommunicationHandlerMock implements CommunicationHandler {
         this._gameServer = new GameServerMock(this, galaxyDataHandler);
     }
 
-    public init(gameConfig: SpaceGameConfig) {
+    public connect(gameConfig: SpaceGameConfig) {
         DebugInfo.debug('Init CommunicationHandlerMock ' + JSON.stringify(gameConfig));
     }
 

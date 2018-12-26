@@ -89,10 +89,10 @@ export class InitGameScene extends GuiScene {
 
 		this._clientMessageSender = new ClientMessageSender(this._communicationHandler);
 
-		this._communicationHandler.init(this._gameConfig);
+		this._communicationHandler.connect(this._gameConfig);
 		this._communicationHandler.onConnected = () => {
 			DebugInfo.debug('Connected to server');
-			this._clientMessageSender.joinGame(this._gameConfig.gameId);
+			//	this._clientMessageSender.joinGame(this._gameConfig.gameId);
 		};
 		this._gameEventObserver = new GameEventObserverImpl();
 

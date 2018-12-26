@@ -75,9 +75,9 @@ export class SelectExistingGameScene extends GuiScene {
 	private connectToServer() {
 		let gameConfig: SpaceGameConfig = {
 			url: this._server.text,
-			gameId: null
+			//gameId: null
 		};
-		this._communicationHandler.init(gameConfig);
+		this._communicationHandler.connect(gameConfig);
 		this._communicationHandler.onConnected = () => {
 			DebugInfo.debug('Connected to server ' + this._server.text);
 

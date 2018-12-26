@@ -121,7 +121,7 @@ export class LobbyScene extends GuiScene {
 	private startGame() {
 		let gameConfig: SpaceGameConfig = {
 			url: 'ws://127.0.0.1:9995/',
-			gameId: 1
+			//gameId: 1
 		};
 
 		this.scene.start(Scenes.INIT_GAME, {
