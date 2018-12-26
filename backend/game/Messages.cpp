@@ -8,7 +8,7 @@ namespace game::messages {
 CreateGame parse_create_game(const json::Value& value) {
   return {
     json::get_string(value, "name"),
-    json::get_string(value, "password"),
+    json::try_get_string(value, "password").value_or(""),
     json::get_int(value, "maxPlayers"),
     json::get_string(value, "clientId"),
   };
@@ -17,7 +17,7 @@ CreateGame parse_create_game(const json::Value& value) {
 JoinGame parse_join_game(const json::Value& value) {
   return {
     json::get_int(value, "gameId"),
-    json::get_string(value, "password"),
+    json::try_get_string(value, "password").value_or(""),
     json::get_string(value, "clientId"),
   };
 }

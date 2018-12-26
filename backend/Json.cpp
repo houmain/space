@@ -44,7 +44,7 @@ std::optional<int> try_get_int(const Value& message, const char* name) {
 }
 
 int get_int(const Value& message, const char* name) {
-  if (auto optional = try_get_bool(message, name))
+  if (auto optional = try_get_int(message, name))
     return *optional;
   throw Exception("int '" + std::string(name) + "' expected");
 }
@@ -52,7 +52,7 @@ int get_int(const Value& message, const char* name) {
 std::optional<std::string_view> try_get_string(const Value& message, const char* name) {
   auto it = (message.IsObject() ? message.FindMember(name) : message.MemberEnd());
   if (it == message.MemberEnd() || !it->value.IsString())
-    return std::nullopt;;
+    return std::nullopt;
   return std::string_view(it->value.GetString());
 }
 
