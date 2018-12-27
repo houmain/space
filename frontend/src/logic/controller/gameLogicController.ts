@@ -46,14 +46,14 @@ export class GameLogicController {
 	}
 
 	private onGameJoined(msg: MessageGameJoined) {
-		let galaxy = GalaxyFactory.create(this._galaxyObjectfactory, msg.factions, msg.planets, msg.squadrons);
-		this._galaxyDataHandler.init(galaxy);
-		this._player.faction = this._galaxyDataHandler.factions.get(msg.factionId);
+		//		let galaxy = GalaxyFactory.create(this._galaxyObjectfactory, msg.factions, msg.planets, msg.squadrons);
+		//		this._galaxyDataHandler.init(galaxy);
+		//		this._player.faction = this._galaxyDataHandler.factions.get(msg.factionId);
 	}
 
 	private onPlayerJoined(msg: MessagePlayerJoined) {
 
-		let faction = this._galaxyDataHandler.factions.get(msg.factionId);
+		let faction = null; //this._galaxyDataHandler.factions.get(msg.factionId);
 
 		this.notify<EventPlayerJoined>(GameEventType.PLAYER_JOINED, {
 			type: GameEventType.PLAYER_JOINED,

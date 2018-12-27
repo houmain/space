@@ -1,16 +1,20 @@
-import { MessageGameJoined, MessagePlayerJoined, ServerMessageType, SendSquadron, MessageSquadronSent, MessageSquadronAttacks, MessageSquadronDestroyed, MessageFighterDestroyed, MessagePlanetConquered, MessageFighterCreated, MessageSquadronsMerged, MessageGameCreated, JoinGameMessage, PlayerReadyMessage, MessagePlayerReady, MessagePlayerInfo, PlayerInfoMessage, MessageStartGame } from '../communicationInterfaces';
+import {
+	MessageGameJoined, MessagePlayerJoined, ServerMessageType, SendSquadron, MessageSquadronSent, MessageSquadronAttacks,
+	MessageSquadronDestroyed, MessageFighterDestroyed, MessagePlanetConquered, MessageFighterCreated, MessageSquadronsMerged
+	, PlayerReadyMessage, MessagePlayerReady, MessagePlayerInfo, MessageStartGame
+} from '../communicationInterfaces';
 import { DebugInfo } from '../../common/debug';
 
 export class MockMessageBuilder {
-
-	public static createMessageGameCreated(gameId: number): MessageGameCreated {
-		DebugInfo.info('[MOCK] Created MessageGameCreated');
-		return {
-			event: ServerMessageType.GAME_CREATED,
-			gameId: gameId
-		};
-	}
-
+	/*
+		public static createMessageGameCreated(gameId: number): MessageGameCreated {
+			DebugInfo.info('[MOCK] Created MessageGameCreated');
+			return {
+				event: ServerMessageType.GAME_CREATED,
+				gameId: gameId
+			};
+		}
+	*/
 	public static createAvailableGameSessions() {
 		DebugInfo.info('[MOCK] Created vailableGameSessions');
 		return {
@@ -29,22 +33,22 @@ export class MockMessageBuilder {
 		DebugInfo.info('[MOCK] Created MessagePlayerJoined');
 		return {
 			event: ServerMessageType.PLAYER_JOINED,
-			factionId: factionId
+			//	factionId: factionId
 		};
 	}
-
-	public static createMessagePlayerInfo(msg: PlayerInfoMessage): MessagePlayerInfo {
-		DebugInfo.info('[MOCK] Created MessagePlayerInfo');
-		return {
-			event: ServerMessageType.PLAYER_INFO,
-			factionId: msg.factionId,
-			avatar: msg.avatar,
-			color: msg.color,
-			faction: msg.faction,
-			name: msg.name
-		};
-	}
-
+	/*
+		public static createMessagePlayerInfo(msg: PlayerInfoMessage): MessagePlayerInfo {
+			DebugInfo.info('[MOCK] Created MessagePlayerInfo');
+			return {
+				event: ServerMessageType.PLAYER_INFO,
+				factionId: msg.factionId,
+				avatar: msg.avatar,
+				color: msg.color,
+				faction: msg.faction,
+				name: msg.name
+			};
+		}
+	*/
 	public static createMessagePlayerReady(msg: PlayerReadyMessage): MessagePlayerReady {
 		DebugInfo.info('[MOCK] Created MessagePlayerReady');
 		return {

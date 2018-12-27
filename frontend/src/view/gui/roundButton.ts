@@ -2,33 +2,46 @@ export class RoundButton extends Phaser.GameObjects.Container {
 
 	public onClick: Function = null;
 
+	private _background: Phaser.GameObjects.Sprite;
+
 	public constructor(scene: Phaser.Scene) {
 		super(scene, 0, 0);
 
-		let background = scene.add.sprite(0, 0, 'roundButton');
-		background.setInteractive({
-			cursor: 'pointer'
-		});
+		this._background = scene.add.sprite(0, 0, 'roundButton');
 
-		this.add(background);
+		this.add(this._background);
 		this.add(scene.add.sprite(0, 0, 'playIcon'));
 
-		background.on('pointerover', () => {
+		this._background.on('pointerover', () => {
 
 		});
-		background.on('pointerout', () => {
-			background.setScale(1);
+		this._background.on('pointerout', () => {
+			this._background.setScale(1);
 		});
 
-		background.on('pointerdown', () => {
-			background.setScale(0.9);
+		this._background.on('pointerdown', () => {
+			this._background.setScale(0.9);
 			if (this.onClick) {
 				this.onClick();
 			}
 		});
 
-		background.on('pointerup', () => {
-			background.setScale(1);
+		this._background.on('pointerup', () => {
+			this._background.setScale(1);
 		});
+
+		this.enable();
+	}
+
+	public disable() {
+		this._background.removeInteractive();
+		this._background.setAlpha(0.6);
+	}
+
+	public enable() {
+		this._background.setInteractive({
+			cursor: 'pointer'
+		});
+		this._background.setAlpha(1);
 	}
 }

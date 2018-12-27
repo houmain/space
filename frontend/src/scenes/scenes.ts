@@ -6,10 +6,16 @@ export enum Scenes {
 	MAIN_MENU = 'mainMenu',
 
 	CHOOSE_GAME_TYPE = 'chooseGameType',
-	NEW_GAME_SETTINGS = 'newGameSettings', // todo remove
+
 	CREATE_NEW_GAME = 'createNewGame',
 	SELECT_EXISTING_GAME = 'selectExistingGame',
-	PLAYER_SETTINGS = 'playerSettings',
+
+	CHOOSE_FACTION = 'chooseFaction',
+	CHOOSE_AVATAR = 'chooseAvatar',
+	CHOOSE_NAME = 'chooseName',
+
+	PLAYER_SETTINGS = 'playerSettings', // remove
+	NEW_GAME_SETTINGS = 'newGameSettings', // todo remove
 
 	LOBBY = 'lobby',
 	BOT_MENU = 'botMenu',

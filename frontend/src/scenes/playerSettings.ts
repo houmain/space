@@ -178,14 +178,14 @@ export class PlayerSettingsScene extends GuiScene {
 		let createButton = new RoundButton(this);
 		createButton.setPosition(800, 800);
 		createButton.onClick = () => {
-
-			this._clientMessageSender.sendPlayerInfo(this._factionId, {
-				avatar: 'faction01',
-				name: 'Berni',
-				color: '0xff0000',
-				factionIcon: 'faction01',
-			});
-
+			/*
+						this._clientMessageSender.sendPlayerInfo(this._factionId, {
+							avatar: 'faction01',
+							name: 'Berni',
+							color: '0xff0000',
+							factionIcon: 'faction01',
+						});
+			*/
 			this.goToLobby();
 		};
 

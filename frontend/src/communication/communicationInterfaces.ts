@@ -14,8 +14,9 @@ export enum ClientMessageType {
     CREATE_GAME = 'createGame',
     REQUEST_GAME_LIST = 'requestGameList',
     JOIN_GAME = 'joinGame',
-    PLAYER_INFO = 'playerInfo',
-    PLAYER_READY = 'playerReady',
+    SETUP_PLAYER = 'setupPlayer',
+    //PLAYER_INFO = 'playerInfo',
+    //PLAYER_READY = 'playerReady',
     SEND_SQUADRON = 'sendSquadron'
 }
 
@@ -37,6 +38,15 @@ export interface JoinGameMessage extends ClientMessage {
     gameId: number;
 }
 
+export interface SetupPlayerMessage extends ClientMessage {
+    name: string;
+    avatar: string;
+    factionId: string;
+    color: string;
+    ready: boolean;
+}
+
+/*
 export interface PlayerInfoMessage extends ClientMessage {
     factionId: number;
     name: string;
@@ -44,7 +54,7 @@ export interface PlayerInfoMessage extends ClientMessage {
     faction: string;
     color: string;
 }
-
+*/
 export interface PlayerReadyMessage extends ClientMessage {
     factionId: number;
 }
@@ -90,17 +100,28 @@ export interface ServerMessage {
     event: string;
 }
 
-export interface MessageAvailableGameSessions extends ServerMessage {
-    sessions: SessionInfo[];
-}
-
-export interface MessageGameCreated extends ServerMessage {
+export interface MessageGameJoined extends ServerMessage {
     gameId: number;
+    playerId: number;
+    /*planets: PlanetInfo[];
+    factions: FactionInfo[];
+    squadrons: SquadronInfo[];
+    factionId: number;*/
 }
 
 export interface MessagePlayerJoined extends ServerMessage {
-    factionId: number;
+    //  factionId: number;
 }
+
+export interface MessageAvailableGameSessions extends ServerMessage {
+    sessions: SessionInfo[];
+}
+/*
+export interface MessageGameCreated extends ServerMessage {
+    gameId: number;
+}
+*/
+
 
 export interface MessagePlayerInfo extends ServerMessage {
     factionId: number;
@@ -114,12 +135,6 @@ export interface MessagePlayerReady extends ServerMessage {
     factionId: number;
 }
 
-export interface MessageGameJoined extends ServerMessage {
-    planets: PlanetInfo[];
-    factions: FactionInfo[];
-    squadrons: SquadronInfo[];
-    factionId: number;
-}
 
 export interface SessionInfo {
     gameId: number;

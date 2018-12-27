@@ -2,7 +2,7 @@ import { GuiScene } from './guiScene';
 import { Scenes } from './scenes';
 import { NinePatch } from '@koreez/phaser3-ninepatch';
 import { RoundButton } from '../view/gui/roundButton';
-import { CommunicationHandler, MessageGameCreated, ServerMessageType, MessagePlayerJoined } from '../communication/communicationInterfaces';
+import { CommunicationHandler, ServerMessageType, MessagePlayerJoined } from '../communication/communicationInterfaces';
 import { CommunicationHandlerMock } from '../communication/mock/communicationHandlerMock';
 import { CommunicationHandlerWebSocket, SpaceGameConfig } from '../communication/communicationHandler';
 import { ClientMessageSender } from '../communication/clientMessageSender';
@@ -63,7 +63,7 @@ export class NewGameSettingsScene extends GuiScene { // todo remove
 		createButton.onClick = () => {
 
 			// create communicationHandler
-			this._serverMessageQueue.subscribe<MessageGameCreated>(ServerMessageType.GAME_CREATED, this.onGameCreated.bind(this));
+			//this._serverMessageQueue.subscribe<MessageGameCreated>(ServerMessageType.GAME_CREATED, this.onGameCreated.bind(this));
 			this._serverMessageQueue.subscribe<MessagePlayerJoined>(ServerMessageType.PLAYER_JOINED, this.onPlayerJoined.bind(this));
 			this._timeController = new GameTimeController();
 			this._serverMessageObserver = new ObservableServerMessageHandler(this._serverMessageQueue, this._timeController);
@@ -118,16 +118,16 @@ export class NewGameSettingsScene extends GuiScene { // todo remove
 
 	private _gameId: number;
 	private _factionId: number;
-
-	private onGameCreated(msg: MessageGameCreated) {
-		console.log('GameCreated' + msg.gameId);
-		this._gameId = msg.gameId;
-
-		this._clientMessageSender.joinGame(msg.gameId);
-	}
+	/*
+		private onGameCreated(msg: MessageGameCreated) {
+			console.log('GameCreated' + msg.gameId);
+			this._gameId = msg.gameId;
+	
+			this._clientMessageSender.joinGame(msg.gameId);
+		}*/
 
 	private onPlayerJoined(msg: MessagePlayerJoined) {
-		this._factionId = msg.factionId;
+		//	this._factionId = msg.factionId;
 
 		this.goToPlayerSettingsScene();
 	}

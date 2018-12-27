@@ -40,7 +40,6 @@ export class CommunicationHandlerWebSocket implements CommunicationHandler {
 
                 this._connected = true;
                 if (this.onConnected) {
-                    console.log('call');
                     this.onConnected();
                 }
             };

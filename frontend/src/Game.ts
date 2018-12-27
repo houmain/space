@@ -20,7 +20,9 @@ import { LobbyScene } from './scenes/lobby';
 import { PlayerSettingsScene } from './scenes/playerSettings';
 import { SelectExistingGameScene } from './scenes/selectExistingGame';
 import { CreateNewGameScene } from './scenes/createNewGame';
-
+import { ChooseFactionScene } from './scenes/chooseFaction';
+import { ChooseAvatarScene } from './scenes/chooseAvatar';
+import { ChooseNameScene } from './scenes/chooseName';
 export class SpaceGame extends Phaser.Game {
 
     private _player: Player;
@@ -36,8 +38,13 @@ export class SpaceGame extends Phaser.Game {
         this.scene.add(Scenes.PRELOADER, new Preloader());
         this.scene.add(Scenes.MAIN_MENU, new MainMenuScene());
         this.scene.add(Scenes.CHOOSE_GAME_TYPE, new ChooseGameTypeScene());
+
         this.scene.add(Scenes.CREATE_NEW_GAME, new CreateNewGameScene());
         //this.scene.add(Scenes.NEW_GAME_SETTINGS, new NewGameSettingsScene()); // TODO deprecated
+        this.scene.add(Scenes.CHOOSE_FACTION, new ChooseFactionScene());
+        this.scene.add(Scenes.CHOOSE_AVATAR, new ChooseAvatarScene());
+        this.scene.add(Scenes.CHOOSE_NAME, new ChooseNameScene());
+
         this.scene.add(Scenes.SELECT_EXISTING_GAME, new SelectExistingGameScene());
         this.scene.add(Scenes.PLAYER_SETTINGS, new PlayerSettingsScene());
         this.scene.add(Scenes.LOBBY, new LobbyScene());

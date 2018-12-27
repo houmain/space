@@ -7,7 +7,7 @@ import { NinePatch } from '@koreez/phaser3-ninepatch';
 import { TextResources, Texts } from '../localization/textResources';
 import { Assets } from '../view/assets';
 import { SpaceGameConfig } from '../communication/communicationHandler';
-import { ClientMessageSender } from '../communication/clientMessageSender';
+import { ClientMessageSender, SetupPlayerInfo } from '../communication/clientMessageSender';
 import { DebugInfo } from '../common/debug';
 
 class PlayerBox extends Phaser.GameObjects.Container {
@@ -58,6 +58,27 @@ export class LobbyScene extends GuiScene {
 	private _serverMessageQueue: ServerMessageQueue;
 	private _timeController: GameTimeController;
 	private _clientMessageSender: ClientMessageSender;
+	private _gameId: number;
+	private _playerId: number;
+
+	public constructor() {
+		super(Scenes.LOBBY);
+	}
+
+	public init(data: any) {
+		this._serverMessageQueue = data.serverMessageQueue;
+		this._timeController = data.timeController;
+		this._clientMessageSender = data.clientMessageSender;
+		this._gameId = data.gameId;
+		this._playerId = data.playerId;
+	}
+}
+
+export class LobbyScene2 extends GuiScene {
+
+	private _serverMessageQueue: ServerMessageQueue;
+	private _timeController: GameTimeController;
+	private _clientMessageSender: ClientMessageSender;
 
 	private _container: Phaser.GameObjects.Container;
 
@@ -98,7 +119,7 @@ export class LobbyScene extends GuiScene {
 		console.log('PlayerInforeceived' + msg.factionId);
 
 		let box = new PlayerBox(this, msg, msg.factionId === this._factionId, () => {
-			this._clientMessageSender.sendReady();
+			//this._clientMessageSender.sendReady();
 		});
 		this._container.add(box);
 

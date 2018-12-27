@@ -7,7 +7,7 @@ import { TextResources, Texts } from '../localization/textResources';
 import { Slider } from '../view/gui/slider';
 import { RoundButton } from '../view/gui/roundButton';
 import { ServerMessageQueue, ObservableServerMessageHandler } from '../communication/messageHandler';
-import { CommunicationHandler } from '../communication/communicationInterfaces';
+import { CommunicationHandler, MessageGameJoined, ServerMessageType, MessagePlayerJoined } from '../communication/communicationInterfaces';
 import { CommunicationHandlerMock } from '../communication/mock/communicationHandlerMock';
 import { CommunicationHandlerWebSocket, SpaceGameConfig } from '../communication/communicationHandler';
 import { GalaxyDataHandler } from '../logic/data/galaxyDataHandler';
@@ -23,12 +23,51 @@ export class NewGameSettings {
 	maxPlayers: number;
 }
 
+export class GameState {
+	private readonly _serverMessageQueue: ServerMessageQueue;
+	private readonly _timeController: GameTimeController;
+	private readonly _clientMessageSender: ClientMessageSender;
+	private _gameId: number;
+	private _playerId: number;
+
+	public constructor(clientMessageSender: ClientMessageSender, serverMessageQueue: ServerMessageQueue, timeController: GameTimeController) {
+		this._clientMessageSender = clientMessageSender;
+		this._serverMessageQueue = serverMessageQueue;
+		this._timeController = timeController;
+	}
+
+	public get serverMessageQueue(): ServerMessageQueue {
+		return this._serverMessageQueue;
+	}
+
+	public get timeController(): GameTimeController {
+		return this._timeController;
+	}
+
+	public get clientMessageSender(): ClientMessageSender {
+		return this._clientMessageSender;
+	}
+
+	public get playerId(): number {
+		return this._playerId;
+	}
+
+	public get gameId(): number {
+		return this._gameId;
+	}
+
+	public addGameInfo(gameId: number, playerId: number) {
+		this._gameId = gameId;
+		this._playerId = playerId;
+	}
+}
+
 export class CreateNewGameScene extends GuiScene {
 
-	private _container: Phaser.GameObjects.Container;
+	private _container: Phaser.GameObjects.Container = null;
 
-	private _serverMessageQueue: ServerMessageQueue;
-	private _clientMessageSender: ClientMessageSender;
+	private _gameState: GameState = null;
+	private _serverMessageQueue: ServerMessageQueue = new ServerMessageQueue();;
 
 	public constructor() {
 		super(Scenes.CREATE_NEW_GAME);
@@ -62,6 +101,7 @@ export class CreateNewGameScene extends GuiScene {
 		createButton.setPosition(800, 400);
 		createButton.onClick = () => {
 			this.createNewGame();
+			createButton.disable();
 		};
 		this._container.add(createButton);
 
@@ -71,21 +111,17 @@ export class CreateNewGameScene extends GuiScene {
 	}
 
 	private createNewGame() {
-		// todo: move to separate class
-
-		// connect to server
 		this.connectToServer(this.sendCreateGameMessage.bind(this));
-
-		// send create game message
-
-		// wait for created message and then continue to next screen
 	}
 
 	private connectToServer(onConnected: Function) {
 		DebugInfo.info('Connecting to server ....');
 
-		let communicationHandler: CommunicationHandler;
 		let timeController = new GameTimeController();
+		this._serverMessageQueue.subscribe<MessageGameJoined>(ServerMessageType.GAME_JOINED, this.onGameJoined.bind(this));
+		this._serverMessageQueue.subscribe<MessageGameJoined>(ServerMessageType.PLAYER_JOINED, this.onPlayerJoined.bind(this));
+
+		let communicationHandler: CommunicationHandler;
 		let serverMessageObserver = new ObservableServerMessageHandler(this._serverMessageQueue, timeController);
 		let mockServer = false;
 		if (mockServer) {
@@ -105,14 +141,14 @@ export class CreateNewGameScene extends GuiScene {
 		communicationHandler.connect({
 			url: 'ws://127.0.0.1:9995/'
 		});
-		this._clientMessageSender = new ClientMessageSender(communicationHandler);
-
+		let clientMessageSender = new ClientMessageSender(communicationHandler);
+		this._gameState = new GameState(clientMessageSender, this._serverMessageQueue, timeController);
 	}
 
 	private sendCreateGameMessage() {
 		DebugInfo.info('Create game message');
 
-		const CLIENT_ID_COOKIE = 'clientId'
+		const CLIENT_ID_COOKIE = 'clientId';
 
 		let clientId = CookieHelper.getCookie(CLIENT_ID_COOKIE);
 		if (!clientId) {
@@ -120,7 +156,7 @@ export class CreateNewGameScene extends GuiScene {
 			CookieHelper.setCookie(CLIENT_ID_COOKIE, clientId, 365);
 		}
 
-		this._clientMessageSender.createGame({
+		this._gameState.clientMessageSender.createGame({
 			clientId: clientId,
 			name: 'Testsession ' + ++this._gameCounter,
 			password: '',
@@ -129,4 +165,23 @@ export class CreateNewGameScene extends GuiScene {
 	}
 
 	private _gameCounter: number = 0;
+
+	private onGameJoined(msg: MessageGameJoined) {
+		// go to next scene
+		DebugInfo.info(JSON.stringify(msg));
+
+		this._gameState.addGameInfo(msg.gameId, msg.playerId);
+
+		this.scene.start(Scenes.CHOOSE_FACTION, {
+			gameState: this._gameState
+		});
+	}
+
+	private onPlayerJoined(msg: MessagePlayerJoined) {
+		DebugInfo.info(JSON.stringify(msg));
+	}
+
+	public update() {
+		this._serverMessageQueue.handleMessages();
+	}
 }

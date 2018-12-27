@@ -1,12 +1,13 @@
-import { CommunicationHandler, JoinGameMessage, ClientMessageType, SendSquadron, ClientMessage, CreateGameMessage, PlayerReadyMessage, PlayerInfoMessage, GetAvailableGameSessions } from './communicationInterfaces';
+import { CommunicationHandler, JoinGameMessage, ClientMessageType, SendSquadron, ClientMessage, CreateGameMessage, GetAvailableGameSessions, SetupPlayerMessage } from './communicationInterfaces';
 import { printCallstack } from '../common/error';
 import { NewGameSettings } from '../scenes/createNewGame';
 
-export interface PlayerInfo {
-	avatar: string;
-	color: string;
-	name: string;
-	factionIcon: string;
+export interface SetupPlayerInfo {
+	avatar?: string;
+	color?: string;
+	name?: string;
+	faction?: string;
+	ready: boolean;
 }
 
 export class ClientMessageSender {
@@ -44,26 +45,45 @@ export class ClientMessageSender {
 		this.send(msg);
 	}
 
-	public sendPlayerInfo(factionId: number, playerInfo: PlayerInfo) {
-		let msg: PlayerInfoMessage = {
-			action: ClientMessageType.PLAYER_INFO,
-			factionId: factionId,
+	public setupPlayer(playerInfo: SetupPlayerInfo) {
+		let msg: SetupPlayerMessage = {
+			action: ClientMessageType.SETUP_PLAYER,
+			name: playerInfo.name,
+			factionId: playerInfo.faction,
 			avatar: playerInfo.avatar,
 			color: playerInfo.color,
-			name: playerInfo.name,
-			faction: playerInfo.factionIcon
+			ready: playerInfo.ready
+
+			//factionId: factionId,
+			//avatar: playerInfo.avatar,
+			//color: playerInfo.color,
+			//name: playerInfo.name,
+			//faction: playerInfo.factionIcon
 		};
 
 		this.send(msg);
 	}
+	/*
+		public sendPlayerInfo(factionId: number, playerInfo: PlayerInfo) {
+			let msg: PlayerInfoMessage = {
+				action: ClientMessageType.PLAYER_INFO,
+				factionId: factionId,
+				avatar: playerInfo.avatar,
+				color: playerInfo.color,
+				name: playerInfo.name,
+				faction: playerInfo.factionIcon
+			};
 
-	public sendReady() {
-		this.send<PlayerReadyMessage>({
-			action: ClientMessageType.PLAYER_READY,
-			factionId: 0
-		});
-	}
-
+			this.send(msg);
+		}*/
+	/*
+		public sendReady() {
+			this.send<PlayerReadyMessage>({
+				action: ClientMessageType.PLAYER_READY,
+				factionId: 0
+			});
+		}
+	*/
 	public sendSquadron(sourcePlanetId: number, targetPlanetId: number, fighterCount: number) {
 		let msg: SendSquadron = {
 			action: ClientMessageType.SEND_SQUADRON,

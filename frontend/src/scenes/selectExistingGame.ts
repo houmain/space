@@ -112,7 +112,7 @@ export class SelectExistingGameScene extends GuiScene {
 
 
 	private onPlayerJoined(msg: MessagePlayerJoined) {
-		this._factionId = msg.factionId;
+		//	this._factionId = msg.factionId;
 
 		this.goToPlayerSettingsScene();
 	}
