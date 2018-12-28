@@ -2,7 +2,7 @@ import { GuiScene } from './guiScene';
 import { Scenes } from './scenes';
 import { GameTimeController } from '../logic/controller/gameTimeController';
 import { ServerMessageQueue } from '../communication/messageHandler';
-import { ServerMessageType, MessageGameJoined } from '../communication/communicationInterfaces';
+import { ServerMessageType, MessageGameJoined, MessagePlayerSetupUpdated, MessageChatMessage, ChatMessage, MessageGameSetupUpdated } from '../communication/communicationInterfaces';
 import { NinePatch } from '@koreez/phaser3-ninepatch';
 import { TextResources, Texts } from '../localization/textResources';
 import { Assets } from '../view/assets';
@@ -73,12 +73,33 @@ export class LobbyScene extends GuiScene {
 	public create() {
 		super.create();
 
-		//this._serverMessageQueue.subscribe<MessageGameJoined>(ServerMessageType.GAME_JOINED, this.onGameJoined.bind(this));
-		//this._serverMessageQueue.subscribe<MessageGameJoined>(ServerMessageType.PLAYER_JOINED, this.onPlayerJoined.bind(this));
+		this._serverMessageQueue.subscribe<MessageChatMessage>(ServerMessageType.CHAT_MESSAGE, this.onChatMessageReceived.bind(this));
+		this._serverMessageQueue.subscribe<MessagePlayerSetupUpdated>(ServerMessageType.PLAYER_SETUP_UPDATED, this.onPlayerSetupUpdated.bind(this));
+		this._serverMessageQueue.subscribe<MessageGameSetupUpdated>(ServerMessageType.GAME_SETUP_UPDATED, this.onGameSetupUpdated.bind(this));
 
-		this.sendChatMessage('test');
-		//this.sendGameSetup();
-		//this.sendPlayerReady();
+		this.time.delayedCall(100, () => {
+			this.sendChatMessage('test');
+		}, [], this);
+
+		this.time.delayedCall(300, () => {
+			this.sendGameSetup();
+		}, [], this);
+
+		this.time.delayedCall(500, () => {
+			this.sendPlayerReady();
+		}, [], this);
+	}
+
+	private onChatMessageReceived(msg: ChatMessage) {
+		DebugInfo.info('Received: ' + JSON.stringify(msg));
+	}
+
+	private onGameSetupUpdated(msg: MessageGameSetupUpdated) {
+		DebugInfo.info('Received: ' + JSON.stringify(msg));
+	}
+
+	private onPlayerSetupUpdated(msg: MessagePlayerSetupUpdated) {
+		DebugInfo.info('Received: ' + 'Received: ' + JSON.stringify(msg));
 	}
 
 	private sendChatMessage(message: string) {

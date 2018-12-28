@@ -2,6 +2,7 @@ import { ClientMessage, ClientMessageType, JoinGameMessage, SendSquadron, Commun
 import { ServerMessageHandler } from './messageHandler';
 import { printCallstack } from '../common/error';
 import { Engine } from '../common/utils';
+import { DebugInfo } from '../common/debug';
 
 export interface SpaceGameConfig {
     url: string;
@@ -58,7 +59,7 @@ export class CommunicationHandlerWebSocket implements CommunicationHandler {
                     let msg = JSON.parse(event.data);
                     this._messageHandler.handle(msg);
                 } catch (e) {
-                    console.log(JSON.stringify(event) + ' exception with ' + event.data);
+                    DebugInfo.error(JSON.stringify(event) + ' exception with ' + event.data);
                     printCallstack(e);
                 }
             };
@@ -74,7 +75,7 @@ export class CommunicationHandlerWebSocket implements CommunicationHandler {
             let jsonMessage = JSON.stringify(
                 msg
             );
-            console.log(`Sending ${jsonMessage} to server.`);
+            DebugInfo.info(`Sending ${jsonMessage} to server.`);
             this._socket.send(jsonMessage);
         } catch (e) {
             printCallstack(e);
