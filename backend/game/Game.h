@@ -3,6 +3,7 @@
 #include "Types.h"
 #include "Messages.h"
 #include <map>
+#include <deque>
 
 namespace game {
 
@@ -25,7 +26,7 @@ public:
   void broadcast(std::string_view message);
 
 private:
-  void chat_message_received(const messages::ChatMessage& message);
+  void chat_message_received(messages::ChatMessage message);
   void start_game();
 
   const GameId m_game_id;
@@ -36,6 +37,7 @@ private:
   std::unique_ptr<Logic> m_logic;
   std::vector<std::unique_ptr<Player>> m_players;
   std::map<Client*, PlayerId> m_client_player_mapping;
+  std::deque<messages::ChatMessage> m_last_chat_messages;
 };
 
 } // namespace

@@ -32,6 +32,8 @@ void Game::on_client_joined(Client& client, std::string_view client_id) {
   auto& player = **it;
   m_client_player_mapping[&client] = player.player_id();
   client.send(messages::build_game_joined(player));
+  for (const auto& message : m_last_chat_messages)
+    client.send(messages::build_chat_message(message));
   broadcast(messages::build_player_joined(player));
 }
 
@@ -50,20 +52,23 @@ void Game::on_client_left(Client& client) {
 void Game::on_message_received(Client& client, const json::Value& value) {
   const auto action = json::get_string(value, "action");
   const auto player_id = m_client_player_mapping.at(&client);
-  auto& player = m_players.at(static_cast<size_t>(player_id));
+  auto& player = *m_players.at(static_cast<size_t>(player_id));
 
   if (action == messages::SendSquadron::action)
-    return m_logic->send_squadron(player->faction_id(),
+    return m_logic->send_squadron(player.faction_id(),
       messages::parse_send_squadron(value));
 
   if (action == messages::SetupGame::action)
     return m_setup->setup(messages::parse_setup_game(value));
 
   if (action == messages::SetupPlayer::action)
-    return player->setup(messages::parse_setup_player(value));
+    return player.setup(messages::parse_setup_player(value));
 
-  if (action == messages::ChatMessage::action)
-    return chat_message_received(messages::parse_chat_message(value));
+  if (action == messages::ChatMessage::action) {
+    auto message = messages::parse_chat_message(value);
+    message.player_id = player.player_id();
+    return chat_message_received(std::move(message));
+  }
 
   throw Exception("invalid action");
 }
@@ -76,8 +81,12 @@ bool Game::is_running() const {
   return (m_logic != nullptr);
 }
 
-void Game::chat_message_received(const messages::ChatMessage& message) {
-  broadcast(build_chat_message(message));
+void Game::chat_message_received(messages::ChatMessage message) {
+  broadcast(messages::build_chat_message(message));
+
+  m_last_chat_messages.push_back(std::move(message));
+  while (m_last_chat_messages.size() > 10)
+    m_last_chat_messages.pop_front();
 }
 
 void Game::start_game() {

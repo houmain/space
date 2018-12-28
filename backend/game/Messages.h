@@ -44,8 +44,8 @@ struct SetupPlayer {
 
 struct ChatMessage {
   static constexpr auto action = "chatMessage";
-  int player_id;
   std::string message;
+  int player_id;
 };
 
 struct SendSquadron {

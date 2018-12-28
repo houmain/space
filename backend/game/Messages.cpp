@@ -40,9 +40,11 @@ SetupPlayer parse_setup_player(const json::Value& value) {
 }
 
 ChatMessage parse_chat_message(const json::Value& value) {
+  const auto max_message_size = 256;
+  const auto message = json::get_string(value, "message");
   return {
-    json::get_int(value, "playerId"),
-    std::string(json::get_string(value, "message")),
+    std::string(message.substr(0, max_message_size)),
+    0,
   };
 }
 
@@ -83,10 +85,10 @@ std::string build_chat_message(const ChatMessage& message) {
     writer.StartObject();
     writer.Key("event");
     writer.String("chatMessage");
-    writer.Key("playerId");
-    writer.Int(message.player_id);
     writer.Key("message");
     writer.String(message.message);
+    writer.Key("playerId");
+    writer.Int(message.player_id);
     writer.EndObject();
   });
 }
