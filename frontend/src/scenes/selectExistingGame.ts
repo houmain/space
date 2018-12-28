@@ -2,7 +2,7 @@ import { GuiScene } from './guiScene';
 import { Scenes } from './scenes';
 import { TextResources, Texts } from '../localization/textResources';
 import { SpaceGameConfig, CommunicationHandlerWebSocket } from '../communication/communicationHandler';
-import { CommunicationHandler, ServerMessageType, MessageAvailableGameSessions, MessagePlayerJoined } from '../communication/communicationInterfaces';
+import { CommunicationHandler, ServerMessageType, MessagePlayerJoined } from '../communication/communicationInterfaces';
 import { DebugInfo } from '../common/debug';
 import { ClientMessageSender } from '../communication/clientMessageSender';
 import { ObservableServerMessageHandler, ServerMessageQueue } from '../communication/messageHandler';
@@ -67,7 +67,7 @@ export class SelectExistingGameScene extends GuiScene {
 			this._communicationHandler = new CommunicationHandlerWebSocket(this._serverMessageObserver);
 		}
 
-		this._serverMessageQueue.subscribe<MessageAvailableGameSessions>(ServerMessageType.AVAILABLE_SESSIONS, this.onAvailableSessionsReceived.bind(this));
+		//	this._serverMessageQueue.subscribe<MessageAvailableGameSessions>(ServerMessageType.AVAILABLE_SESSIONS, this.onAvailableSessionsReceived.bind(this));
 		this._serverMessageQueue.subscribe<MessagePlayerJoined>(ServerMessageType.PLAYER_JOINED, this.onPlayerJoined.bind(this));
 		this._timeController = new GameTimeController();
 	}
@@ -82,29 +82,29 @@ export class SelectExistingGameScene extends GuiScene {
 			DebugInfo.debug('Connected to server ' + this._server.text);
 
 			this._clientMessageSender = new ClientMessageSender(this._communicationHandler);
-			this._clientMessageSender.getAvailableGameSessions();
+			//	this._clientMessageSender.getAvailableGameSessions();
 
 			//this._clientMessageSender.joinGame(this._gameConfig.gameId);
 		};
 	}
-
-	private onAvailableSessionsReceived(msg: MessageAvailableGameSessions) {
-		console.log('received' + msg.sessions.length);
-
-		msg.sessions.forEach((session, index) => {
-
-			// server
-			let sessionName = GuiFactory.buildBitmapText(this, 250, 220 + index * 100, `${session.name} Players ${session.numPlayers}/${session.maxPlayers}`, GuiConfig.GUI_HEADER);
-			this._container.add(sessionName);
-
-			let joinButton = GuiFactory.buildTextButton(this, 800, 210 + index * 100, TextResources.getText(Texts.SELECT_GAME.JOIN), GuiConfig.TEXT_BUTTON);
-			joinButton.onClickListener = () => {
-				this.joinSession(session.gameId);
-			};
-			this._container.add(joinButton);
-		});
-	}
-
+	/*
+		private onAvailableSessionsReceived(msg: MessageAvailableGameSessions) {
+			console.log('received' + msg.sessions.length);
+	
+			msg.sessions.forEach((session, index) => {
+	
+				// server
+				let sessionName = GuiFactory.buildBitmapText(this, 250, 220 + index * 100, `${session.name} Players ${session.numPlayers}/${session.maxPlayers}`, GuiConfig.GUI_HEADER);
+				this._container.add(sessionName);
+	
+				let joinButton = GuiFactory.buildTextButton(this, 800, 210 + index * 100, TextResources.getText(Texts.SELECT_GAME.JOIN), GuiConfig.TEXT_BUTTON);
+				joinButton.onClickListener = () => {
+					this.joinSession(session.gameId);
+				};
+				this._container.add(joinButton);
+			});
+		}
+	*/
 	private joinSession(gameId: number) {
 		this._gameId = gameId;
 		this._clientMessageSender.joinGame(gameId);

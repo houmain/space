@@ -2,14 +2,15 @@ import { GuiScene } from './guiScene';
 import { Scenes } from './scenes';
 import { GameTimeController } from '../logic/controller/gameTimeController';
 import { ServerMessageQueue } from '../communication/messageHandler';
-import { ServerMessageType, MessageStartGame, MessagePlayerInfo, MessagePlayerReady } from '../communication/communicationInterfaces';
+import { ServerMessageType, MessageGameJoined } from '../communication/communicationInterfaces';
 import { NinePatch } from '@koreez/phaser3-ninepatch';
 import { TextResources, Texts } from '../localization/textResources';
 import { Assets } from '../view/assets';
 import { SpaceGameConfig } from '../communication/communicationHandler';
 import { ClientMessageSender, SetupPlayerInfo } from '../communication/clientMessageSender';
 import { DebugInfo } from '../common/debug';
-
+import { GameState } from './createNewGame';
+/*
 class PlayerBox extends Phaser.GameObjects.Container {
 
 	private _name: Phaser.GameObjects.BitmapText;
@@ -52,28 +53,55 @@ class PlayerBox extends Phaser.GameObjects.Container {
 		}
 	}
 }
-
+*/
 export class LobbyScene extends GuiScene {
 
-	private _serverMessageQueue: ServerMessageQueue;
-	private _timeController: GameTimeController;
-	private _clientMessageSender: ClientMessageSender;
-	private _gameId: number;
-	private _playerId: number;
+	private _gameState: GameState = null;
+	private _setupPlayerInfo: SetupPlayerInfo;
+	private _serverMessageQueue: ServerMessageQueue
 
 	public constructor() {
 		super(Scenes.LOBBY);
 	}
 
 	public init(data: any) {
-		this._serverMessageQueue = data.serverMessageQueue;
-		this._timeController = data.timeController;
-		this._clientMessageSender = data.clientMessageSender;
-		this._gameId = data.gameId;
-		this._playerId = data.playerId;
+		this._gameState = data.gameState;
+		this._setupPlayerInfo = data.setupPlayerInfo;
+		this._serverMessageQueue = this._gameState.serverMessageQueue;
+	}
+
+	public create() {
+		super.create();
+
+		//this._serverMessageQueue.subscribe<MessageGameJoined>(ServerMessageType.GAME_JOINED, this.onGameJoined.bind(this));
+		//this._serverMessageQueue.subscribe<MessageGameJoined>(ServerMessageType.PLAYER_JOINED, this.onPlayerJoined.bind(this));
+
+		this.sendChatMessage('test');
+		//this.sendGameSetup();
+		//this.sendPlayerReady();
+	}
+
+	private sendChatMessage(message: string) {
+		this._gameState.clientMessageSender.sendChatMessage(message);
+	}
+
+	private sendGameSetup() {
+		this._gameState.clientMessageSender.setupGame({
+			numFactions: 2,
+			numPlanets: 5
+		});
+	}
+
+	private sendPlayerReady() {
+		this._setupPlayerInfo.ready = true;
+		this._gameState.clientMessageSender.setupPlayer(this._setupPlayerInfo);
+	}
+
+	public update() {
+		this._serverMessageQueue.handleMessages();
 	}
 }
-
+/*
 export class LobbyScene2 extends GuiScene {
 
 	private _serverMessageQueue: ServerMessageQueue;
@@ -102,55 +130,55 @@ export class LobbyScene2 extends GuiScene {
 
 		this._container = this.add.container(0, 0);
 		this._container.setPosition(window.innerWidth / 2, window.innerHeight / 2);
-		/*
+		
 				this._readyButton = new RoundButton(this);
 				this._readyButton.setPosition(100, 100);
 				this._readyButton.onClick = () => {
 					// send ready to server
 					this._clientMessageSender.sendReady();
 				};
-		*/
-		this._serverMessageQueue.subscribe<MessagePlayerInfo>(ServerMessageType.PLAYER_INFO, this.onPlayerInfo.bind(this));
-		this._serverMessageQueue.subscribe<MessageStartGame>(ServerMessageType.PLAYER_READY, this.onPlayerReady.bind(this));
-		this._serverMessageQueue.subscribe<MessageStartGame>(ServerMessageType.START_GAME, this.onStartGame.bind(this));
+		
+this._serverMessageQueue.subscribe<MessagePlayerInfo>(ServerMessageType.PLAYER_INFO, this.onPlayerInfo.bind(this));
+this._serverMessageQueue.subscribe<MessageStartGame>(ServerMessageType.PLAYER_READY, this.onPlayerReady.bind(this));
+this._serverMessageQueue.subscribe<MessageStartGame>(ServerMessageType.START_GAME, this.onStartGame.bind(this));
 	}
 	private ctr = 0;
 	private onPlayerInfo(msg: MessagePlayerInfo) {
-		console.log('PlayerInforeceived' + msg.factionId);
+	console.log('PlayerInforeceived' + msg.factionId);
 
-		let box = new PlayerBox(this, msg, msg.factionId === this._factionId, () => {
-			//this._clientMessageSender.sendReady();
-		});
-		this._container.add(box);
+	let box = new PlayerBox(this, msg, msg.factionId === this._factionId, () => {
+		//this._clientMessageSender.sendReady();
+	});
+	this._container.add(box);
 
-		box.setPosition(-600 + this.ctr * 400, -200);
-		this.ctr++;
-	}
+	box.setPosition(-600 + this.ctr * 400, -200);
+	this.ctr++;
+}
 
 	private onPlayerReady(msg: MessagePlayerReady) {
-		DebugInfo.info('Player ready ' + msg.factionId);
-	}
+	DebugInfo.info('Player ready ' + msg.factionId);
+}
 
 	private onStartGame(msg: MessageStartGame) {
 
-		console.log('StartGame' + msg.event);
+	console.log('StartGame' + msg.event);
 
-		// goto initgame
-		this.startGame();
-	}
+	// goto initgame
+	this.startGame();
+}
 
 	private startGame() {
-		let gameConfig: SpaceGameConfig = {
-			url: 'ws://127.0.0.1:9995/',
-			//gameId: 1
-		};
+	let gameConfig: SpaceGameConfig = {
+		url: 'ws://127.0.0.1:9995/',
+		//gameId: 1
+	};
 
-		this.scene.start(Scenes.INIT_GAME, {
-			gameConfig: gameConfig
-		});
-	}
+	this.scene.start(Scenes.INIT_GAME, {
+		gameConfig: gameConfig
+	});
+}
 
 	public update() {
-		this._serverMessageQueue.handleMessages();
-	}
+	this._serverMessageQueue.handleMessages();
 }
+}*/

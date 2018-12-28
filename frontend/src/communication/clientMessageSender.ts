@@ -1,6 +1,11 @@
-import { CommunicationHandler, JoinGameMessage, ClientMessageType, SendSquadron, ClientMessage, CreateGameMessage, GetAvailableGameSessions, SetupPlayerMessage } from './communicationInterfaces';
+import { CommunicationHandler, JoinGameMessage, ClientMessageType, SendSquadron, ClientMessage, CreateGameMessage, SetupPlayerMessage, SetupGameMessage, RequestGameListMessage, LeaveGameMessage, ChatMessage } from './communicationInterfaces';
 import { printCallstack } from '../common/error';
 import { NewGameSettings } from '../scenes/createNewGame';
+
+export interface SetupGameInfo {
+	numFactions: number;
+	numPlanets: number;
+}
 
 export interface SetupPlayerInfo {
 	avatar?: string;
@@ -17,11 +22,18 @@ export class ClientMessageSender {
 	public constructor(communicationHandler: CommunicationHandler) {
 		this._communicationHandler = communicationHandler;
 	}
+	/*
+		public getAvailableGameSessions() {
+			this.send<GetAvailableGameSessions>({
+				action: ClientMessageType.REQUEST_GAME_LIST
+			});
+		}*/
 
-	public getAvailableGameSessions() {
-		this.send<GetAvailableGameSessions>({
+	public requestGameList() {
+		let msg: RequestGameListMessage = {
 			action: ClientMessageType.REQUEST_GAME_LIST
-		});
+		};
+		this.send(msg);
 	}
 
 	public createGame(settings: NewGameSettings) {
@@ -45,6 +57,28 @@ export class ClientMessageSender {
 		this.send(msg);
 	}
 
+	public leaveGame() {
+		this.send<LeaveGameMessage>({
+			action: ClientMessageType.LEAVE_GAME
+		});
+	}
+
+	public sendChatMessage(message: string) {
+		this.send<ChatMessage>({
+			action: ClientMessageType.CHAT_MESSAGE,
+			message: message
+		});
+	}
+
+	public setupGame(gameInfo: SetupGameInfo) {
+		let msg: SetupGameMessage = {
+			action: ClientMessageType.SETUP_GAME,
+			numFactions: gameInfo.numFactions,
+			numPlanets: gameInfo.numPlanets
+		};
+		this.send(msg);
+	}
+
 	public setupPlayer(playerInfo: SetupPlayerInfo) {
 		let msg: SetupPlayerMessage = {
 			action: ClientMessageType.SETUP_PLAYER,
@@ -53,12 +87,6 @@ export class ClientMessageSender {
 			avatar: playerInfo.avatar,
 			color: playerInfo.color,
 			ready: playerInfo.ready
-
-			//factionId: factionId,
-			//avatar: playerInfo.avatar,
-			//color: playerInfo.color,
-			//name: playerInfo.name,
-			//faction: playerInfo.factionIcon
 		};
 
 		this.send(msg);

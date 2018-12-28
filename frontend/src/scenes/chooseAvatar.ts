@@ -1,8 +1,6 @@
 import { GuiScene } from './guiScene';
 import { Scenes } from './scenes';
-import { ServerMessageQueue } from '../communication/messageHandler';
-import { GameTimeController } from '../logic/controller/gameTimeController';
-import { ClientMessageSender, SetupPlayerInfo } from '../communication/clientMessageSender';
+import { SetupPlayerInfo } from '../communication/clientMessageSender';
 import { DebugInfo } from '../common/debug';
 import { GameState } from './createNewGame';
 

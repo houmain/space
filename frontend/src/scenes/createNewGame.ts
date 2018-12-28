@@ -67,7 +67,7 @@ export class CreateNewGameScene extends GuiScene {
 	private _container: Phaser.GameObjects.Container = null;
 
 	private _gameState: GameState = null;
-	private _serverMessageQueue: ServerMessageQueue = new ServerMessageQueue();;
+	private _serverMessageQueue: ServerMessageQueue = new ServerMessageQueue();
 
 	public constructor() {
 		super(Scenes.CREATE_NEW_GAME);

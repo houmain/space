@@ -1,4 +1,4 @@
-import { ClientMessage, ClientMessageType, SendSquadron, JoinGameMessage, ServerMessage, CreateGameMessage, PlayerReadyMessage, MessagePlayerInfo, ServerMessageType, GetAvailableGameSessions } from '../communicationInterfaces';
+import { ClientMessage, ClientMessageType, SendSquadron, JoinGameMessage, ServerMessage, CreateGameMessage, ServerMessageType } from '../communicationInterfaces';
 import { GalaxyDataHandler } from '../../logic/data/galaxyDataHandler';
 import { CommunicationHandlerMock } from './communicationHandlerMock';
 import { DebugInfo } from '../../common/debug';
@@ -34,7 +34,7 @@ export class GameServerMock {
 				this.onCreateGame(clientMessage as CreateGameMessage);
 				break;
 			case ClientMessageType.REQUEST_GAME_LIST:
-				this.onAvailableGameSessions(clientMessage as GetAvailableGameSessions);
+				//	this.onAvailableGameSessions(clientMessage as GetAvailableGameSessions);
 				break;
 			case ClientMessageType.JOIN_GAME:
 				this.onJoinGame(clientMessage as JoinGameMessage);
@@ -46,7 +46,7 @@ export class GameServerMock {
 				this.onReceivedPlayerReady(clientMessage as PlayerReadyMessage);
 				break;*/
 			case ClientMessageType.SEND_SQUADRON:
-				this.onSendSquadron(clientMessage as SendSquadron);
+				//	this.onSendSquadron(clientMessage as SendSquadron);
 				break;
 		}
 	}
@@ -73,15 +73,15 @@ export class GameServerMock {
 			//this.sendToClient(MockMessageBuilder.createMessageGameCreated(this._idGenerator.getNextId()));
 		}, 500);
 	}
-
-	private onAvailableGameSessions(msg: GetAvailableGameSessions) {
-		DebugInfo.info(`Received availableGameSessions`);
-
-		setTimeout(() => {
-			this.sendToClient(MockMessageBuilder.createAvailableGameSessions());
-		}, 500);
-	}
-
+	/*
+		private onAvailableGameSessions(msg: GetAvailableGameSessions) {
+			DebugInfo.info(`Received availableGameSessions`);
+	
+			setTimeout(() => {
+				this.sendToClient(MockMessageBuilder.createAvailableGameSessions());
+			}, 500);
+		}
+	*/
 	private _localPlayerId: number = 0;
 
 	private onJoinGame(msg: JoinGameMessage) {
@@ -89,7 +89,7 @@ export class GameServerMock {
 
 		setTimeout(() => {
 			this._localPlayerId = this._idGenerator.getNextId();
-			this.sendToClient(MockMessageBuilder.createMessagePlayerJoined(this._localPlayerId));
+			//	this.sendToClient(MockMessageBuilder.createMessagePlayerJoined(this._localPlayerId));
 		}, 500);
 
 		/*this.sendToClient(MockMessageBuilder.createMessageGameJoined(), 500, () => {  // TODO remove, send info with start game
@@ -126,50 +126,50 @@ export class GameServerMock {
 				name: name
 			};
 		}*/
-
-	private onReceivedPlayerReady(msg: PlayerReadyMessage) {
-		DebugInfo.info(`Received player ready message` + msg.factionId);
-
-		setTimeout(() => {
-			this.sendToClient(MockMessageBuilder.createMessagePlayerReady(msg));
-		}, 500);
-
-		// if all players ready send start game
-		for (let a = 0; a < this._numAIPlayers; a++) {
-			let id = this._aiPlayerIds[a];
+	/*
+		private onReceivedPlayerReady(msg: PlayerReadyMessage) {
+			DebugInfo.info(`Received player ready message` + msg.factionId);
+	
 			setTimeout(() => {
-				this.sendToClient(MockMessageBuilder.createMessagePlayerReady({
-					action: ServerMessageType.PLAYER_READY,
-					factionId: id
-				}));
-			}, 2000 + 500 * a);
-		}
-
-		// todo send start game if all players are ready
-		setTimeout(() => {
-			this.sendToClient(MockMessageBuilder.createMessageStartGame());
-		}, 5000);
-	}
-
-	private onSendSquadron(msg: SendSquadron) {
-		let squadronId: number = this._idGenerator.getNextId();
-
-		let sourcePlanet: Planet = this._galaxyDataHandler.planets.get(msg.sourcePlanetId);
-		let sourceSquadron = PlanetUtils.getSquadronByFactionId(sourcePlanet, sourcePlanet.faction.id);
-		let targetPlanet: Planet = this._galaxyDataHandler.planets.get(msg.targetPlanetId);
-
-		this.sendToClient(MockMessageBuilder.createMessageSquadronSent(msg, sourcePlanet.faction.id, sourceSquadron.id, squadronId), 5000, () => {
-			if (!targetPlanet.faction || sourcePlanet.faction.id !== targetPlanet.faction.id) { // attack
-				this.sendToClient(MockMessageBuilder.createMessageSquadronAttacks(targetPlanet.id, squadronId), 500, () => {
-					this.fight(targetPlanet, 0);
-				});
-			} else { // merge
-				let targetSquadron = sourceSquadron = PlanetUtils.getSquadronByFactionId(targetPlanet, sourcePlanet.faction.id);
-				this.sendToClient(MockMessageBuilder.createMessageSquadronsMerged(targetPlanet.id, squadronId, targetSquadron.id, msg.fighterCount));
+				this.sendToClient(MockMessageBuilder.createMessagePlayerReady(msg));
+			}, 500);
+	
+			// if all players ready send start game
+			for (let a = 0; a < this._numAIPlayers; a++) {
+				let id = this._aiPlayerIds[a];
+				setTimeout(() => {
+					this.sendToClient(MockMessageBuilder.createMessagePlayerReady({
+						action: ServerMessageType.PLAYER_READY,
+						factionId: id
+					}));
+				}, 2000 + 500 * a);
 			}
-		});
-	}
-
+	
+			// todo send start game if all players are ready
+			setTimeout(() => {
+				this.sendToClient(MockMessageBuilder.createMessageStartGame());
+			}, 5000);
+		}
+	
+		private onSendSquadron(msg: SendSquadron) {
+			let squadronId: number = this._idGenerator.getNextId();
+	
+			let sourcePlanet: Planet = this._galaxyDataHandler.planets.get(msg.sourcePlanetId);
+			let sourceSquadron = PlanetUtils.getSquadronByFactionId(sourcePlanet, sourcePlanet.faction.id);
+			let targetPlanet: Planet = this._galaxyDataHandler.planets.get(msg.targetPlanetId);
+	
+			this.sendToClient(MockMessageBuilder.createMessageSquadronSent(msg, sourcePlanet.faction.id, sourceSquadron.id, squadronId), 5000, () => {
+				if (!targetPlanet.faction || sourcePlanet.faction.id !== targetPlanet.faction.id) { // attack
+					this.sendToClient(MockMessageBuilder.createMessageSquadronAttacks(targetPlanet.id, squadronId), 500, () => {
+						this.fight(targetPlanet, 0);
+					});
+				} else { // merge
+					let targetSquadron = sourceSquadron = PlanetUtils.getSquadronByFactionId(targetPlanet, sourcePlanet.faction.id);
+					this.sendToClient(MockMessageBuilder.createMessageSquadronsMerged(targetPlanet.id, squadronId, targetSquadron.id, msg.fighterCount));
+				}
+			});
+		}
+	*/
 	private fight(planet: Planet, nextInferiourSquadronIndex: number) {
 		let squadrons = planet.squadrons.list;
 
