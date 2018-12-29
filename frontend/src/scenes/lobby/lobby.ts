@@ -1,15 +1,12 @@
-import { GuiScene } from './guiScene';
-import { Scenes } from './scenes';
-import { GameTimeController } from '../logic/controller/gameTimeController';
-import { ServerMessageQueue } from '../communication/messageHandler';
-import { ServerMessageType, MessageGameJoined, MessagePlayerSetupUpdated, MessageChatMessage, ChatMessage, MessageGameSetupUpdated } from '../communication/communicationInterfaces';
-import { NinePatch } from '@koreez/phaser3-ninepatch';
-import { TextResources, Texts } from '../localization/textResources';
-import { Assets } from '../view/assets';
-import { SpaceGameConfig } from '../communication/communicationHandler';
-import { ClientMessageSender, SetupPlayerInfo } from '../communication/clientMessageSender';
-import { DebugInfo } from '../common/debug';
+import { GuiScene } from '../guiScene';
+import { Scenes } from '../scenes';
+import { GameTimeController } from '../../logic/controller/gameTimeController';
+import { ServerMessageQueue } from '../../communication/messageHandler';
+import { ServerMessageType, MessageGameJoined, MessagePlayerSetupUpdated, MessageChatMessage, MessageGameSetupUpdated, MessageGameStarted, MessagePlayerJoined } from '../../communication/serverMessages';
+import { SetupPlayerInfo } from '../../communication/clientMessageSender';
+import { DebugInfo } from '../../common/debug';
 import { GameState } from './createNewGame';
+import { ChatMessage } from '../../communication/clientMessages';
 /*
 class PlayerBox extends Phaser.GameObjects.Container {
 
@@ -54,11 +51,22 @@ class PlayerBox extends Phaser.GameObjects.Container {
 	}
 }
 */
-export class LobbyScene extends GuiScene {
+
+export interface LobbyMessagesHandler {
+	onGameJoined(msg: MessageGameJoined);
+	onPlayerJoined(msg: MessagePlayerJoined);
+	onChatMessageReceived(msg: ChatMessage);
+	onGameSetupUpdated(msg: MessageGameSetupUpdated);
+	onPlayerSetupUpdated(msg: MessagePlayerSetupUpdated);
+	onGameStarted(msg: MessageGameStarted);
+
+}
+
+export class LobbyScene extends GuiScene implements LobbyMessagesHandler {
 
 	private _gameState: GameState = null;
 	private _setupPlayerInfo: SetupPlayerInfo;
-	private _serverMessageQueue: ServerMessageQueue
+	private _serverMessageQueue: ServerMessageQueue;
 
 	public constructor() {
 		super(Scenes.LOBBY);
@@ -74,8 +82,9 @@ export class LobbyScene extends GuiScene {
 		super.create();
 
 		this._serverMessageQueue.subscribe<MessageChatMessage>(ServerMessageType.CHAT_MESSAGE, this.onChatMessageReceived.bind(this));
-		this._serverMessageQueue.subscribe<MessagePlayerSetupUpdated>(ServerMessageType.PLAYER_SETUP_UPDATED, this.onPlayerSetupUpdated.bind(this));
 		this._serverMessageQueue.subscribe<MessageGameSetupUpdated>(ServerMessageType.GAME_SETUP_UPDATED, this.onGameSetupUpdated.bind(this));
+		this._serverMessageQueue.subscribe<MessagePlayerSetupUpdated>(ServerMessageType.PLAYER_SETUP_UPDATED, this.onPlayerSetupUpdated.bind(this));
+		this._serverMessageQueue.subscribe<MessageGameStarted>(ServerMessageType.GAME_STARTED, this.onGameStarted.bind(this));
 
 		this.time.delayedCall(100, () => {
 			this.sendChatMessage('test');
@@ -90,15 +99,26 @@ export class LobbyScene extends GuiScene {
 		}, [], this);
 	}
 
-	private onChatMessageReceived(msg: ChatMessage) {
+	public onGameJoined(msg: MessageGameJoined) {
+		throw new Error('Method not implemented.');
+	}
+	public onPlayerJoined(msg: MessagePlayerJoined) {
+		throw new Error('Method not implemented.');
+	}
+
+	public onChatMessageReceived(msg: ChatMessage) {
 		DebugInfo.info('Received: ' + JSON.stringify(msg));
 	}
 
-	private onGameSetupUpdated(msg: MessageGameSetupUpdated) {
+	public onGameSetupUpdated(msg: MessageGameSetupUpdated) {
 		DebugInfo.info('Received: ' + JSON.stringify(msg));
 	}
 
-	private onPlayerSetupUpdated(msg: MessagePlayerSetupUpdated) {
+	public onPlayerSetupUpdated(msg: MessagePlayerSetupUpdated) {
+		DebugInfo.info('Received: ' + 'Received: ' + JSON.stringify(msg));
+	}
+
+	public onGameStarted(msg: MessageGameStarted) {
 		DebugInfo.info('Received: ' + 'Received: ' + JSON.stringify(msg));
 	}
 
@@ -151,14 +171,14 @@ export class LobbyScene2 extends GuiScene {
 
 		this._container = this.add.container(0, 0);
 		this._container.setPosition(window.innerWidth / 2, window.innerHeight / 2);
-		
+
 				this._readyButton = new RoundButton(this);
 				this._readyButton.setPosition(100, 100);
 				this._readyButton.onClick = () => {
 					// send ready to server
 					this._clientMessageSender.sendReady();
 				};
-		
+
 this._serverMessageQueue.subscribe<MessagePlayerInfo>(ServerMessageType.PLAYER_INFO, this.onPlayerInfo.bind(this));
 this._serverMessageQueue.subscribe<MessageStartGame>(ServerMessageType.PLAYER_READY, this.onPlayerReady.bind(this));
 this._serverMessageQueue.subscribe<MessageStartGame>(ServerMessageType.START_GAME, this.onStartGame.bind(this));

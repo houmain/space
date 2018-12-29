@@ -1,17 +1,18 @@
-import { GuiScene } from './guiScene';
-import { Scenes } from './scenes';
-import { TextResources, Texts } from '../localization/textResources';
-import { SpaceGameConfig, CommunicationHandlerWebSocket } from '../communication/communicationHandler';
-import { CommunicationHandler, ServerMessageType, MessagePlayerJoined } from '../communication/communicationInterfaces';
-import { DebugInfo } from '../common/debug';
-import { ClientMessageSender } from '../communication/clientMessageSender';
-import { ObservableServerMessageHandler, ServerMessageQueue } from '../communication/messageHandler';
-import { GameTimeController } from '../logic/controller/gameTimeController';
-import { CommunicationHandlerMock } from '../communication/mock/communicationHandlerMock';
-import { GalaxyDataHandler } from '../logic/data/galaxyDataHandler';
-import { GuiFactory } from '../view/gui/guiFactory';
-import { Inputfield } from '../view/gui/text/inputField';
-import { GuiConfig } from '../view/gui/guiConfig';
+import { GuiScene } from '../guiScene';
+import { Scenes } from '../scenes';
+import { TextResources, Texts } from '../../localization/textResources';
+import { SpaceGameConfig, CommunicationHandlerWebSocket } from '../../communication/communicationHandler';
+import { ServerMessageType, MessagePlayerJoined } from '../../communication/serverMessages';
+import { CommunicationHandler } from '../../communication/communicationInterfaces';
+import { DebugInfo } from '../../common/debug';
+import { ClientMessageSender } from '../../communication/clientMessageSender';
+import { ObservableServerMessageHandler, ServerMessageQueue } from '../../communication/messageHandler';
+import { GameTimeController } from '../../logic/controller/gameTimeController';
+import { CommunicationHandlerMock } from '../../communication/mock/communicationHandlerMock';
+import { GalaxyDataHandler } from '../../logic/data/galaxyDataHandler';
+import { GuiFactory } from '../../view/gui/guiFactory';
+import { Inputfield } from '../../view/gui/text/inputField';
+import { GuiConfig } from '../../view/gui/guiConfig';
 
 export class SelectExistingGameScene extends GuiScene {
 
@@ -90,13 +91,13 @@ export class SelectExistingGameScene extends GuiScene {
 	/*
 		private onAvailableSessionsReceived(msg: MessageAvailableGameSessions) {
 			console.log('received' + msg.sessions.length);
-	
+
 			msg.sessions.forEach((session, index) => {
-	
+
 				// server
 				let sessionName = GuiFactory.buildBitmapText(this, 250, 220 + index * 100, `${session.name} Players ${session.numPlayers}/${session.maxPlayers}`, GuiConfig.GUI_HEADER);
 				this._container.add(sessionName);
-	
+
 				let joinButton = GuiFactory.buildTextButton(this, 800, 210 + index * 100, TextResources.getText(Texts.SELECT_GAME.JOIN), GuiConfig.TEXT_BUTTON);
 				joinButton.onClickListener = () => {
 					this.joinSession(session.gameId);

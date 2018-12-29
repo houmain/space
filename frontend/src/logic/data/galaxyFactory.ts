@@ -1,5 +1,5 @@
 import { Galaxy, Planet, Faction, Squadron, Fighter } from '../../data/galaxyModels';
-import { FactionInfo, PlanetInfo, SquadronInfo } from '../../communication/communicationInterfaces';
+import { FactionInfo, PlanetInfo, SquadronInfo } from '../../communication/serverMessages';
 import { GalaxyObjectFactory } from './galaxyObjectFactory';
 
 export class GalaxyFactory {

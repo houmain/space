@@ -1,8 +1,9 @@
-import { GuiScene } from './guiScene';
-import { Scenes } from './scenes';
+import { GuiScene } from '../scenes/guiScene';
+import { Scenes } from '../scenes/scenes';
 import { NinePatch } from '@koreez/phaser3-ninepatch';
 import { RoundButton } from '../view/gui/roundButton';
-import { CommunicationHandler, ServerMessageType, MessagePlayerJoined } from '../communication/communicationInterfaces';
+import { ServerMessageType, MessagePlayerJoined } from '../communication/serverMessages';
+import { CommunicationHandler } from "../communication/communicationInterfaces";
 import { CommunicationHandlerMock } from '../communication/mock/communicationHandlerMock';
 import { CommunicationHandlerWebSocket, SpaceGameConfig } from '../communication/communicationHandler';
 import { ClientMessageSender } from '../communication/clientMessageSender';
@@ -11,7 +12,7 @@ import { ObservableServerMessageHandler, ServerMessageQueue } from '../communica
 import { GalaxyDataHandler } from '../logic/data/galaxyDataHandler';
 import { Texts, TextResources } from '../localization/textResources';
 import { GameTimeController } from '../logic/controller/gameTimeController';
-import { GuiHelper } from './chooseGameType';
+import { GuiHelper } from '../scenes/chooseGameType';
 
 export class NewGameSettingsScene extends GuiScene { // todo remove
 

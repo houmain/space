@@ -1,4 +1,4 @@
-import { MessageGameUpdated } from '../../communication/communicationInterfaces';
+import { MessageGameUpdated } from '../../communication/serverMessages';
 
 export class GameTimeController {
 

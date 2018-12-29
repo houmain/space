@@ -3,10 +3,10 @@
 import 'phaser';
 
 import { Preloader } from './scenes/preloader';
-import { GameScene } from './scenes/game';
-import { HudScene } from './scenes/hud';
+import { GameScene } from './scenes/game/game';
+import { HudScene } from './scenes/game/hud';
 import { ErrorScene } from './scenes/error';
-import { InitGameScene } from './scenes/initGame';
+import { InitGameScene } from './scenes/game/initGame';
 import { Scenes } from './scenes/scenes';
 import { Engine } from './common/utils';
 import { Player } from './data/gameData';
@@ -16,13 +16,12 @@ import { BootScene } from './scenes/boot';
 import { NinePatchPlugin } from '@koreez/phaser3-ninepatch';
 import { SceneEvents } from './logic/event/eventInterfaces';
 import { ChooseGameTypeScene } from './scenes/chooseGameType';
-import { LobbyScene } from './scenes/lobby';
-import { PlayerSettingsScene } from './scenes/playerSettings';
-import { SelectExistingGameScene } from './scenes/selectExistingGame';
-import { CreateNewGameScene } from './scenes/createNewGame';
-import { ChooseFactionScene } from './scenes/chooseFaction';
-import { ChooseAvatarScene } from './scenes/chooseAvatar';
-import { ChooseNameScene } from './scenes/chooseName';
+import { LobbyScene } from './scenes/lobby/lobby';
+import { SelectExistingGameScene } from './scenes/lobby/selectExistingGame';
+import { CreateNewGameScene } from './scenes/lobby/createNewGame';
+import { ChooseFactionScene } from './scenes/lobby/chooseFaction';
+import { ChooseAvatarScene } from './scenes/lobby/chooseAvatar';
+import { ChooseNameScene } from './scenes/lobby/chooseName';
 export class SpaceGame extends Phaser.Game {
 
     private _player: Player;
@@ -40,18 +39,19 @@ export class SpaceGame extends Phaser.Game {
         this.scene.add(Scenes.CHOOSE_GAME_TYPE, new ChooseGameTypeScene());
 
         this.scene.add(Scenes.CREATE_NEW_GAME, new CreateNewGameScene());
-        //this.scene.add(Scenes.NEW_GAME_SETTINGS, new NewGameSettingsScene()); // TODO deprecated
+        this.scene.add(Scenes.SELECT_EXISTING_GAME, new SelectExistingGameScene());
         this.scene.add(Scenes.CHOOSE_FACTION, new ChooseFactionScene());
         this.scene.add(Scenes.CHOOSE_AVATAR, new ChooseAvatarScene());
         this.scene.add(Scenes.CHOOSE_NAME, new ChooseNameScene());
 
-        this.scene.add(Scenes.SELECT_EXISTING_GAME, new SelectExistingGameScene());
-        this.scene.add(Scenes.PLAYER_SETTINGS, new PlayerSettingsScene());
         this.scene.add(Scenes.LOBBY, new LobbyScene());
+
         this.scene.add(Scenes.BOT_MENU, new BotMenuScene());
+
         this.scene.add(Scenes.INIT_GAME, new InitGameScene(this));
         this.scene.add(Scenes.GAME, new GameScene());
         this.scene.add(Scenes.HUD, new HudScene());
+
         this.scene.add(Scenes.ERROR, new ErrorScene());
     }
 

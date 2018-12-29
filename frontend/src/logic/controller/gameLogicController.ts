@@ -1,12 +1,11 @@
 import { GalaxyDataHandler } from '../data/galaxyDataHandler';
 import { ObservableServerMessageHandler, ServerMessageQueue } from '../../communication/messageHandler';
-import { MessageGameJoined, ServerMessageType, MessageFighterCreated, MessageSquadronSent, MessageSquadronsMerged, MessageSquadronAttacks, MessageFighterDestroyed, MessagePlanetConquered, MessageSquadronDestroyed, MessagePlayerJoined, MessageFactionDestroyed, MessageFactionWon } from '../../communication/communicationInterfaces';
+import { MessageGameJoined, ServerMessageType, MessageFighterCreated, MessageSquadronSent, MessageSquadronsMerged, MessageSquadronAttacks, MessageFighterDestroyed, MessagePlanetConquered, MessageSquadronDestroyed, MessagePlayerJoined, MessageFactionDestroyed, MessageFactionWon } from '../../communication/serverMessages';
 import { Player } from '../../data/gameData';
 import { Fighter, Squadron, Faction, Planet } from '../../data/galaxyModels';
 import { Assert, DebugInfo } from '../../common/debug';
 import { GameEventNotifier, GameEvent, EventPlayerJoined, GameEventType, EventFighterCreated, EventSquadronCreated, EventSquadronDestroyed, EventFighterDestroyed, EventPlanetConquered, EventFactionDestroyed, EventSquadronAttacksPlanet, EventFactionWon } from '../event/eventInterfaces';
 import { GalaxyObjectFactory } from '../data/galaxyObjectFactory';
-import { GalaxyFactory } from '../data/galaxyFactory';
 import { JSONDebugger, SeedableRng } from '../../common/utils';
 import { PlanetUtils } from '../utils/utils';
 import { ArrayUtils } from '../../common/utils';

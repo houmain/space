@@ -1,12 +1,13 @@
 import {
-    CommunicationHandler, ClientMessage, ClientMessageType, MessageGameJoined,
-    ServerMessageType, FactionInfo, PlanetInfo, MessageFighterCreated, ServerMessage
-} from '../communicationInterfaces';
+    ServerMessage
+} from '../serverMessages';
+import { CommunicationHandler } from '../communicationInterfaces';
 import { SpaceGameConfig } from '../communicationHandler';
-import { ServerMessageHandler, ServerMessageQueue } from '../messageHandler';
+import { ServerMessageHandler } from '../messageHandler';
 import { GalaxyDataHandler } from '../../logic/data/galaxyDataHandler';
 import { GameServerMock } from './gameServerMock';
 import { DebugInfo } from '../../common/debug';
+import { ClientMessage } from '../clientMessages';
 
 export class CommunicationHandlerMock implements CommunicationHandler {
 

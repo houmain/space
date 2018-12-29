@@ -1,12 +1,12 @@
-import { GameInfoHandler } from '../view/gameInfo';
-import { Player } from '../data/gameData';
-import { Scenes } from './scenes';
-import { PlayerHud } from '../view/playerHud';
-import { Assets } from '../view/assets';
-import { Planet } from '../data/galaxyModels';
-import { PlanetInfoBox } from '../view/gui/planetInfoBox';
-import { ImageButton } from '../view/gui/guiModels';
-import { GameEventObserver, SceneEvents } from '../logic/event/eventInterfaces';
+import { GameInfoHandler } from '../../view/gameInfo';
+import { Player } from '../../data/gameData';
+import { Scenes } from '../scenes';
+import { PlayerHud } from '../../view/playerHud';
+import { Assets } from '../../view/assets';
+import { Planet } from '../../data/galaxyModels';
+import { PlanetInfoBox } from '../../view/gui/planetInfoBox';
+import { ImageButton } from '../../view/gui/guiModels';
+import { GameEventObserver, SceneEvents } from '../../logic/event/eventInterfaces';
 
 export class HudScene extends Phaser.Scene {
 

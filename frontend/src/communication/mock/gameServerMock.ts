@@ -1,10 +1,10 @@
-import { ClientMessage, ClientMessageType, SendSquadron, JoinGameMessage, ServerMessage, CreateGameMessage, ServerMessageType } from '../communicationInterfaces';
+import { ServerMessage } from '../serverMessages';
 import { GalaxyDataHandler } from '../../logic/data/galaxyDataHandler';
 import { CommunicationHandlerMock } from './communicationHandlerMock';
 import { DebugInfo } from '../../common/debug';
 import { MockMessageBuilder } from './mockMessageBuilder';
 import { Planet } from '../../data/galaxyModels';
-import { PlanetUtils } from '../../logic/utils/utils';
+import { CreateGameMessage, ClientMessageType, ClientMessage, JoinGameMessage } from '../clientMessages';
 
 class IdGenerator {
 
@@ -37,7 +37,7 @@ export class GameServerMock {
 				//	this.onAvailableGameSessions(clientMessage as GetAvailableGameSessions);
 				break;
 			case ClientMessageType.JOIN_GAME:
-				this.onJoinGame(clientMessage as JoinGameMessage);
+				//this.onJoinGame(clientMessage as JoinGameMessages);
 				break;
 			/*case ClientMessageType.PLAYER_INFO:
 				this.onPlayerInfo(clientMessage as PlayerInfoMessage);
@@ -76,7 +76,7 @@ export class GameServerMock {
 	/*
 		private onAvailableGameSessions(msg: GetAvailableGameSessions) {
 			DebugInfo.info(`Received availableGameSessions`);
-	
+
 			setTimeout(() => {
 				this.sendToClient(MockMessageBuilder.createAvailableGameSessions());
 			}, 500);
@@ -129,11 +129,11 @@ export class GameServerMock {
 	/*
 		private onReceivedPlayerReady(msg: PlayerReadyMessage) {
 			DebugInfo.info(`Received player ready message` + msg.factionId);
-	
+
 			setTimeout(() => {
 				this.sendToClient(MockMessageBuilder.createMessagePlayerReady(msg));
 			}, 500);
-	
+
 			// if all players ready send start game
 			for (let a = 0; a < this._numAIPlayers; a++) {
 				let id = this._aiPlayerIds[a];
@@ -144,20 +144,20 @@ export class GameServerMock {
 					}));
 				}, 2000 + 500 * a);
 			}
-	
+
 			// todo send start game if all players are ready
 			setTimeout(() => {
 				this.sendToClient(MockMessageBuilder.createMessageStartGame());
 			}, 5000);
 		}
-	
+
 		private onSendSquadron(msg: SendSquadron) {
 			let squadronId: number = this._idGenerator.getNextId();
-	
+
 			let sourcePlanet: Planet = this._galaxyDataHandler.planets.get(msg.sourcePlanetId);
 			let sourceSquadron = PlanetUtils.getSquadronByFactionId(sourcePlanet, sourcePlanet.faction.id);
 			let targetPlanet: Planet = this._galaxyDataHandler.planets.get(msg.targetPlanetId);
-	
+
 			this.sendToClient(MockMessageBuilder.createMessageSquadronSent(msg, sourcePlanet.faction.id, sourceSquadron.id, squadronId), 5000, () => {
 				if (!targetPlanet.faction || sourcePlanet.faction.id !== targetPlanet.faction.id) { // attack
 					this.sendToClient(MockMessageBuilder.createMessageSquadronAttacks(targetPlanet.id, squadronId), 500, () => {

@@ -1,15 +1,15 @@
-import { Scenes } from './scenes';
-import { InputHandler } from '../input/selectionHandler';
-import { GameTimeController } from '../logic/controller/gameTimeController';
-import { ObservableServerMessageHandler, ServerMessageQueue } from '../communication/messageHandler';
-import { Player } from '../data/gameData';
-import { GalaxyDataHandler } from '../logic/data/galaxyDataHandler';
-import { GameSceneRenderer } from '../view/gameSceneRenderer';
-import { GameSceneUpdater } from '../logic/controller/gameSceneUpdater';
-import { GameEventObserver, SceneEvents } from '../logic/event/eventInterfaces';
-import { TextResources, Texts } from '../localization/textResources';
-import { Planet } from '../data/galaxyModels';
-import { ClientMessageSender } from '../communication/clientMessageSender';
+import { Scenes } from '../scenes';
+import { InputHandler } from '../../input/selectionHandler';
+import { GameTimeController } from '../../logic/controller/gameTimeController';
+import { ObservableServerMessageHandler, ServerMessageQueue } from '../../communication/messageHandler';
+import { Player } from '../../data/gameData';
+import { GalaxyDataHandler } from '../../logic/data/galaxyDataHandler';
+import { GameSceneRenderer } from '../../view/gameSceneRenderer';
+import { GameSceneUpdater } from '../../logic/controller/gameSceneUpdater';
+import { GameEventObserver, SceneEvents } from '../../logic/event/eventInterfaces';
+import { TextResources, Texts } from '../../localization/textResources';
+import { Planet } from '../../data/galaxyModels';
+import { ClientMessageSender } from '../../communication/clientMessageSender';
 
 export class GameScene extends Phaser.Scene {
 

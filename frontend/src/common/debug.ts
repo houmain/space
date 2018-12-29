@@ -44,23 +44,27 @@ export class DebugInfo {
 
 	public static debug(text: string) {
 		if (DebugInfo.level <= LogLevel.DEBUG) {
-			console.log(`[DEBUG] ${text}`);
+			console.log(`[DEBUG] ${DebugInfo.time} ${text}`);
 		}
 	}
 
 	public static info(text: string) {
 		if (DebugInfo.level <= LogLevel.INFO) {
-			console.log(`[INFO] ${text}`);
+			console.log(`[INFO] ${DebugInfo.time} ${text}`);
 		}
 	}
 
 	public static warn(text: string) {
 		if (DebugInfo.level <= LogLevel.WARN) {
-			console.warn(`[WARN] ${text}`);
+			console.warn(`[WARN] ${DebugInfo.time} ${text}`);
 		}
 	}
 
 	public static error(text: string) {
-		console.error(`[ERROR] ${text}`);
+		console.error(`[ERROR] ${DebugInfo.time} ${text}`);
+	}
+
+	private static get time(): string {
+		return new Date().toLocaleTimeString('de-de');
 	}
 }

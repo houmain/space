@@ -1,6 +1,7 @@
-import { CommunicationHandler, JoinGameMessage, ClientMessageType, SendSquadron, ClientMessage, CreateGameMessage, SetupPlayerMessage, SetupGameMessage, RequestGameListMessage, LeaveGameMessage, ChatMessage } from './communicationInterfaces';
+import { CommunicationHandler } from './communicationInterfaces';
 import { printCallstack } from '../common/error';
-import { NewGameSettings } from '../scenes/createNewGame';
+import { NewGameSettings } from '../scenes/lobby/createNewGame';
+import { RequestGameListMessage, ClientMessageType, CreateGameMessage, JoinGameMessage, LeaveGameMessage, ChatMessage, SetupGameMessage, SetupPlayerMessage, SendSquadron, ClientMessage } from './clientMessages';
 
 export interface SetupGameInfo {
 	numFactions: number;

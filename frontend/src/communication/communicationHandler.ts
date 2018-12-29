@@ -1,8 +1,9 @@
-import { ClientMessage, ClientMessageType, JoinGameMessage, SendSquadron, CommunicationHandler } from './communicationInterfaces';
+import { CommunicationHandler } from './communicationInterfaces';
 import { ServerMessageHandler } from './messageHandler';
 import { printCallstack } from '../common/error';
 import { Engine } from '../common/utils';
 import { DebugInfo } from '../common/debug';
+import { ClientMessage } from './clientMessages';
 
 export interface SpaceGameConfig {
     url: string;

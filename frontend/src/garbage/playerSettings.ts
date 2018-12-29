@@ -1,5 +1,5 @@
-import { GuiScene } from './guiScene';
-import { Scenes } from './scenes';
+import { GuiScene } from '../scenes/guiScene';
+import { Scenes } from '../scenes/scenes';
 import { Assets } from '../view/assets';
 import { RoundButton } from '../view/gui/roundButton';
 import { Texts, TextResources } from '../localization/textResources';

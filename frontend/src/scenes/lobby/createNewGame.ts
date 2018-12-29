@@ -1,20 +1,21 @@
-import { GuiHelper } from './chooseGameType';
+import { GuiHelper } from '../chooseGameType';
 import { NinePatch } from '@koreez/phaser3-ninepatch';
-import { Scenes } from './scenes';
-import { GuiScene } from './guiScene';
-import { GuiConfig } from '../view/gui/guiConfig';
-import { TextResources, Texts } from '../localization/textResources';
-import { Slider } from '../view/gui/slider';
-import { RoundButton } from '../view/gui/roundButton';
-import { ServerMessageQueue, ObservableServerMessageHandler } from '../communication/messageHandler';
-import { CommunicationHandler, MessageGameJoined, ServerMessageType, MessagePlayerJoined } from '../communication/communicationInterfaces';
-import { CommunicationHandlerMock } from '../communication/mock/communicationHandlerMock';
-import { CommunicationHandlerWebSocket, SpaceGameConfig } from '../communication/communicationHandler';
-import { GalaxyDataHandler } from '../logic/data/galaxyDataHandler';
-import { GameTimeController } from '../logic/controller/gameTimeController';
-import { DebugInfo } from '../common/debug';
-import { CookieHelper, GuidHelper } from '../common/utils';
-import { ClientMessageSender } from '../communication/clientMessageSender';
+import { Scenes } from '../scenes';
+import { GuiScene } from '../guiScene';
+import { GuiConfig } from '../../view/gui/guiConfig';
+import { TextResources, Texts } from '../../localization/textResources';
+import { Slider } from '../../view/gui/slider';
+import { RoundButton } from '../../view/gui/roundButton';
+import { ServerMessageQueue, ObservableServerMessageHandler } from '../../communication/messageHandler';
+import { MessageGameJoined, ServerMessageType, MessagePlayerJoined } from '../../communication/serverMessages';
+import { CommunicationHandler } from '../../communication/communicationInterfaces';
+import { CommunicationHandlerMock } from '../../communication/mock/communicationHandlerMock';
+import { CommunicationHandlerWebSocket, SpaceGameConfig } from '../../communication/communicationHandler';
+import { GalaxyDataHandler } from '../../logic/data/galaxyDataHandler';
+import { GameTimeController } from '../../logic/controller/gameTimeController';
+import { DebugInfo } from '../../common/debug';
+import { CookieHelper, GuidHelper } from '../../common/utils';
+import { ClientMessageSender } from '../../communication/clientMessageSender';
 
 export class NewGameSettings {
 	clientId: string;
@@ -166,7 +167,7 @@ export class CreateNewGameScene extends GuiScene {
 
 	private _gameCounter: number = 0;
 
-	private onGameJoined(msg: MessageGameJoined) {
+	public onGameJoined(msg: MessageGameJoined) {
 		// go to next scene
 		DebugInfo.info(JSON.stringify(msg));
 
@@ -177,7 +178,7 @@ export class CreateNewGameScene extends GuiScene {
 		});
 	}
 
-	private onPlayerJoined(msg: MessagePlayerJoined) {
+	public onPlayerJoined(msg: MessagePlayerJoined) {
 		DebugInfo.info(JSON.stringify(msg));
 	}
 

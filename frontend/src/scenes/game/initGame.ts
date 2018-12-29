@@ -1,20 +1,20 @@
-import { Scenes } from './scenes';
-import { GameLogicController } from '../logic/controller/gameLogicController';
-import { SpaceGame } from '../Game';
-import { ObservableServerMessageHandler, ServerMessageQueue } from '../communication/messageHandler';
-import { SpaceGameConfig, CommunicationHandlerWebSocket } from '../communication/communicationHandler';
-import { GalaxyDataHandler } from '../logic/data/galaxyDataHandler';
-import { GameInfoHandler } from '../view/gameInfo';
-import { Assets } from '../view/assets';
-import { GuiScene } from './guiScene';
-import { TextResources, Texts } from '../localization/textResources';
-import { CommunicationHandler } from '../communication/communicationInterfaces';
-import { CommunicationHandlerMock } from '../communication/mock/communicationHandlerMock';
-import { GameEventObserverImpl } from '../logic/event/gameEventObserver';
-import { DebugInfo } from '../common/debug';
-import { SceneEvents } from '../logic/event/eventInterfaces';
-import { ClientMessageSender } from '../communication/clientMessageSender';
-import { GameTimeController } from '../logic/controller/gameTimeController';
+import { Scenes } from '../scenes';
+import { GameLogicController } from '../../logic/controller/gameLogicController';
+import { SpaceGame } from '../../Game';
+import { ObservableServerMessageHandler, ServerMessageQueue } from '../../communication/messageHandler';
+import { SpaceGameConfig, CommunicationHandlerWebSocket } from '../../communication/communicationHandler';
+import { GalaxyDataHandler } from '../../logic/data/galaxyDataHandler';
+import { GameInfoHandler } from '../../view/gameInfo';
+import { Assets } from '../../view/assets';
+import { GuiScene } from '../guiScene';
+import { TextResources, Texts } from '../../localization/textResources';
+import { CommunicationHandler } from '../../communication/communicationInterfaces';
+import { CommunicationHandlerMock } from '../../communication/mock/communicationHandlerMock';
+import { GameEventObserverImpl } from '../../logic/event/gameEventObserver';
+import { DebugInfo } from '../../common/debug';
+import { SceneEvents } from '../../logic/event/eventInterfaces';
+import { ClientMessageSender } from '../../communication/clientMessageSender';
+import { GameTimeController } from '../../logic/controller/gameTimeController';
 
 export class InitGameScene extends GuiScene {
 

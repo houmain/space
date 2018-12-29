@@ -1,4 +1,4 @@
-import { ServerMessage, ServerMessageType, MessageGameUpdated } from './communicationInterfaces';
+import { ServerMessage, ServerMessageType, MessageGameUpdated } from './serverMessages';
 import { Observer } from '../common/commonInterfaces';
 import { printCallstack } from '../common/error';
 import { GameTimeController } from '../logic/controller/gameTimeController';

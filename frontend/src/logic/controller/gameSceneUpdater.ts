@@ -1,5 +1,5 @@
 import { Map } from '../../common/collections';
-import { Planet, Squadron, Fighter } from '../../data/galaxyModels';
+import { Planet, Squadron } from '../../data/galaxyModels';
 import { GalaxyDataHandler } from '../data/galaxyDataHandler';
 
 export class GameSceneUpdater {
