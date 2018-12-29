@@ -28,6 +28,7 @@ public:
 private:
   void chat_message_received(messages::ChatMessage message);
   void start_game();
+  void update_game();
 
   const GameId m_game_id;
   const std::string m_name;

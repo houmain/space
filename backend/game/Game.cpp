@@ -89,13 +89,25 @@ void Game::chat_message_received(messages::ChatMessage message) {
     m_last_chat_messages.pop_front();
 }
 
+void Game::update() {
+  if (!is_running())
+    start_game();
+  else
+    update_game();
+}
+
 void Game::start_game() {
+  assert(!m_logic);
+  if (!std::all_of(begin(m_players), end(m_players),
+        [](const auto& player) { return player->ready(); }))
+    return;
+
   m_logic = std::make_unique<Logic>(this);
 }
 
-void Game::update() {
-  if (is_running())
-    m_logic->update();
+void Game::update_game() {
+  assert(m_logic);
+  m_logic->update();
 }
 
 void Game::broadcast(std::string_view message) {

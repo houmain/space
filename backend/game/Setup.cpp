@@ -17,6 +17,8 @@ void Setup::setup(const messages::SetupGame& setup) {
   if (setup.num_factions)
     m_num_factions = *setup.num_factions;
 
+  // TODO: reset player ready status
+
   m_game.broadcast(build_game_setup_updated(setup));
 }
 

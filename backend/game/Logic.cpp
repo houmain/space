@@ -39,7 +39,7 @@ void Logic::start() {
   m_planets.reserve(50);
   auto& sun = m_planets.emplace_back();
   sun.id = next_planet_id++;
-  for (auto i = 0; i < setup.num_planets(); ++i) {
+  for (auto i = 0; i < setup.num_factions(); ++i) {
     auto& planet = m_planets.emplace_back();
     planet.id = next_planet_id++;
     planet.parent = &sun;

@@ -58,16 +58,17 @@ void GameManager::thread_func() noexcept {
 
 void GameManager::update() noexcept {
   auto lock = std::lock_guard(m_games_mutex);
-  for (auto it = m_games.begin(); it != m_games.end(); ) {
+  for (auto it = begin(m_games); it != end(m_games); ) {
+    auto keep_running = false;
     try {
+      // TODO: check if there are still players
       it->second->update();
-      ++it;
-      continue;
+      keep_running = true;
     }
     catch (const std::exception& ex) {
       std::cerr << "unhandled exception: " << ex.what() << std::endl;
     }
-    it = m_games.erase(it);
+    it = (keep_running ? std::next(it) : m_games.erase(it));
   }
 }
 
