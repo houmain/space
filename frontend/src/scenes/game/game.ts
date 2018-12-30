@@ -34,14 +34,13 @@ export class GameScene extends Phaser.Scene {
 
 	public init(data: any) {
 
-		this._clientMessageSender = data.clientMessageSender;
-		this._serverMessageObserver = data.serverMessageObserver;
-		this._gameEventObserver = data.gameEventObserver;
-		this._galaxyDataHandler = data.galaxyDataHandler;
-		this._serverMessageQueue = data.serverMessageQueue;
-		this._timeController = data.timeController;
-
-		this._player = data.player;
+		this._clientMessageSender = data.gameState.clientMessageSender;
+		this._serverMessageObserver = data.gameState.serverMessageObserver;
+		this._gameEventObserver = data.gameState.gameEventObserver;
+		this._galaxyDataHandler = data.gameState.galaxyDataHandler;
+		this._serverMessageQueue = data.gameState.serverMessageQueue;
+		this._timeController = data.gameState.timeController;
+		this._player = data.gameState.player;
 	}
 
 	public create() {

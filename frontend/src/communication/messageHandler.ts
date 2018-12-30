@@ -53,7 +53,7 @@ export interface HandleServerMessage<T extends ServerMessage> {
 export interface ServerMessageHandler {
     handle(msg: ServerMessage);
 }
-
+// todo remove
 export class ObservableServerMessageHandler implements ServerMessageHandler, Observer {
 
     private _serverMessageQueue: ServerMessageQueue;

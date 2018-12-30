@@ -6,7 +6,7 @@ import { GuiConfig } from '../../view/gui/guiConfig';
 import { TextResources, Texts } from '../../localization/textResources';
 import { Slider } from '../../view/gui/slider';
 import { RoundButton } from '../../view/gui/roundButton';
-import { ServerMessageQueue, ObservableServerMessageHandler } from '../../communication/messageHandler';
+import { ServerMessageQueue } from '../../communication/messageHandler';
 import { MessageGameJoined, ServerMessageType, MessagePlayerJoined } from '../../communication/serverMessages';
 import { CommunicationHandler } from '../../communication/communicationInterfaces';
 import { CommunicationHandlerMock } from '../../communication/mock/communicationHandlerMock';
@@ -16,6 +16,9 @@ import { GameTimeController } from '../../logic/controller/gameTimeController';
 import { DebugInfo } from '../../common/debug';
 import { CookieHelper, GuidHelper } from '../../common/utils';
 import { ClientMessageSender } from '../../communication/clientMessageSender';
+import { GameEventObserver } from '../../logic/event/eventInterfaces';
+import { Player } from '../../data/gameData';
+import { GameEventObserverImpl } from '../../logic/event/gameEventObserver';
 
 export class NewGameSettings {
 	clientId: string;
@@ -28,8 +31,10 @@ export class GameState {
 	private readonly _serverMessageQueue: ServerMessageQueue;
 	private readonly _timeController: GameTimeController;
 	private readonly _clientMessageSender: ClientMessageSender;
+	private _gameEventObserver: GameEventObserver = new GameEventObserverImpl();
+	private readonly _galaxyDataHandler: GalaxyDataHandler = new GalaxyDataHandler();
+	private readonly _player: Player = new Player();
 	private _gameId: number;
-	private _playerId: number;
 
 	public constructor(clientMessageSender: ClientMessageSender, serverMessageQueue: ServerMessageQueue, timeController: GameTimeController) {
 		this._clientMessageSender = clientMessageSender;
@@ -49,8 +54,8 @@ export class GameState {
 		return this._clientMessageSender;
 	}
 
-	public get playerId(): number {
-		return this._playerId;
+	public get player(): Player {
+		return this._player;
 	}
 
 	public get gameId(): number {
@@ -59,7 +64,15 @@ export class GameState {
 
 	public addGameInfo(gameId: number, playerId: number) {
 		this._gameId = gameId;
-		this._playerId = playerId;
+		this._player.playerId = playerId;
+	}
+
+	public get galaxyDataHandler(): GalaxyDataHandler {
+		return this._galaxyDataHandler;
+	}
+
+	public get gameEventObserver(): GameEventObserver {
+		return this._gameEventObserver;
 	}
 }
 

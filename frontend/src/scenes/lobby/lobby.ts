@@ -2,7 +2,7 @@ import { GuiScene } from '../guiScene';
 import { Scenes } from '../scenes';
 import { GameTimeController } from '../../logic/controller/gameTimeController';
 import { ServerMessageQueue } from '../../communication/messageHandler';
-import { ServerMessageType, MessageGameJoined, MessagePlayerSetupUpdated, MessageChatMessage, MessageGameSetupUpdated, MessageGameStarted, MessagePlayerJoined } from '../../communication/serverMessages';
+import { ServerMessageType, MessageGameJoined, MessagePlayerSetupUpdated, MessageChatMessage, MessageGameSetupUpdated, MessageGameStarted, MessagePlayerJoined, PlanetInfo, FactionInfo, SquadronInfo } from '../../communication/serverMessages';
 import { SetupPlayerInfo } from '../../communication/clientMessageSender';
 import { DebugInfo } from '../../common/debug';
 import { GameState } from './createNewGame';
@@ -59,7 +59,12 @@ export interface LobbyMessagesHandler {
 	onGameSetupUpdated(msg: MessageGameSetupUpdated);
 	onPlayerSetupUpdated(msg: MessagePlayerSetupUpdated);
 	onGameStarted(msg: MessageGameStarted);
+}
 
+export interface BuildGameInfo {
+	factions: FactionInfo[];
+	planets: PlanetInfo[];
+	movingSquadrons: SquadronInfo[];
 }
 
 export class LobbyScene extends GuiScene implements LobbyMessagesHandler {
@@ -115,11 +120,16 @@ export class LobbyScene extends GuiScene implements LobbyMessagesHandler {
 	}
 
 	public onPlayerSetupUpdated(msg: MessagePlayerSetupUpdated) {
-		DebugInfo.info('Received: ' + 'Received: ' + JSON.stringify(msg));
+		DebugInfo.info('Received: ' + JSON.stringify(msg));
 	}
 
 	public onGameStarted(msg: MessageGameStarted) {
 		DebugInfo.info('Received: ' + 'Received: ' + JSON.stringify(msg));
+		this.goToInitGame({
+			factions: msg.factions,
+			planets: msg.planets,
+			movingSquadrons: msg.squadrons
+		});
 	}
 
 	private sendChatMessage(message: string) {
@@ -136,6 +146,13 @@ export class LobbyScene extends GuiScene implements LobbyMessagesHandler {
 	private sendPlayerReady() {
 		this._setupPlayerInfo.ready = true;
 		this._gameState.clientMessageSender.setupPlayer(this._setupPlayerInfo);
+	}
+
+	private goToInitGame(buildGameInfo: BuildGameInfo) {
+		this.scene.start(Scenes.INIT_GAME, {
+			gameState: this._gameState,
+			buildGameInfo: buildGameInfo
+		});
 	}
 
 	public update() {

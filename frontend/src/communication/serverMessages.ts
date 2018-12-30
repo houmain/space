@@ -70,7 +70,7 @@ export interface MessagePlayerSetupUpdated extends ServerMessage {
 export interface MessageGameStarted extends ServerMessage {
     factions: FactionInfo[];
     planets: PlanetInfo[];
-    movingSquadrons: SquadronInfo[];
+    squadrons: SquadronInfo[];
 }
 
 export interface SessionInfo {

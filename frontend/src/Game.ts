@@ -24,14 +24,10 @@ import { ChooseAvatarScene } from './scenes/lobby/chooseAvatar';
 import { ChooseNameScene } from './scenes/lobby/chooseName';
 export class SpaceGame extends Phaser.Game {
 
-    private _player: Player;
-
     constructor(config: GameConfig) {
         super(config);
 
         Engine.init(this);
-
-        this._player = new Player();
 
         this.scene.add(Scenes.BOOT, new BootScene(), true);
         this.scene.add(Scenes.PRELOADER, new Preloader());
@@ -53,10 +49,6 @@ export class SpaceGame extends Phaser.Game {
         this.scene.add(Scenes.HUD, new HudScene());
 
         this.scene.add(Scenes.ERROR, new ErrorScene());
-    }
-
-    public get player(): Player {
-        return this._player;
     }
 }
 

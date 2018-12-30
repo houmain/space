@@ -46,7 +46,7 @@ export class CommunicationHandlerWebSocket implements CommunicationHandler {
                 }
             };
             this._socket.onclose = () => {
-                console.log('Disconnected from server');
+                DebugInfo.error('Disconnected from server');
                 this._connectionFailed = true;
 
                 Engine.instance.events.emit('disconnected');

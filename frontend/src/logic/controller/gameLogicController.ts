@@ -1,5 +1,5 @@
 import { GalaxyDataHandler } from '../data/galaxyDataHandler';
-import { ObservableServerMessageHandler, ServerMessageQueue } from '../../communication/messageHandler';
+import { ServerMessageQueue } from '../../communication/messageHandler';
 import { MessageGameJoined, ServerMessageType, MessageFighterCreated, MessageSquadronSent, MessageSquadronsMerged, MessageSquadronAttacks, MessageFighterDestroyed, MessagePlanetConquered, MessageSquadronDestroyed, MessagePlayerJoined, MessageFactionDestroyed, MessageFactionWon } from '../../communication/serverMessages';
 import { Player } from '../../data/gameData';
 import { Fighter, Squadron, Faction, Planet } from '../../data/galaxyModels';
@@ -19,7 +19,7 @@ export class GameLogicController {
 
 	private _galaxyObjectfactory: GalaxyObjectFactory;
 
-	public constructor(player: Player, serverMessageObserver: ObservableServerMessageHandler, galaxyDataHandler: GalaxyDataHandler, gameEventNotifier: GameEventNotifier, serverMessageQueue: ServerMessageQueue) {
+	public constructor(player: Player, galaxyDataHandler: GalaxyDataHandler, gameEventNotifier: GameEventNotifier, serverMessageQueue: ServerMessageQueue) {
 		this._player = player;
 
 		this._galaxyDataHandler = galaxyDataHandler;
@@ -27,8 +27,8 @@ export class GameLogicController {
 
 		this._galaxyObjectfactory = new GalaxyObjectFactory();
 
-		serverMessageQueue.subscribe<MessageGameJoined>(ServerMessageType.GAME_JOINED, this.onGameJoined.bind(this));
-		serverMessageQueue.subscribe<MessagePlayerJoined>(ServerMessageType.PLAYER_JOINED, this.onPlayerJoined.bind(this));
+		//serverMessageQueue.subscribe<MessageGameJoined>(ServerMessageType.GAME_JOINED, this.onGameJoined.bind(this));
+		//serverMessageQueue.subscribe<MessagePlayerJoined>(ServerMessageType.PLAYER_JOINED, this.onPlayerJoined.bind(this));
 		serverMessageQueue.subscribe<MessageFighterCreated>(ServerMessageType.FIGHTER_CREATED, this.onFighterCreated.bind(this));
 		serverMessageQueue.subscribe<MessageSquadronSent>(ServerMessageType.SQUADRON_SENT, this.onSquadronSent.bind(this));
 		serverMessageQueue.subscribe<MessageSquadronsMerged>(ServerMessageType.SQUADRONS_MERGED, this.onSquadronsMerged.bind(this));
