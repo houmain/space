@@ -26,6 +26,8 @@ export interface CreateGameMessage extends ClientMessage {
 
 export interface JoinGameMessage extends ClientMessage {
 	gameId: number;
+	clientId: string;
+	password?: string;
 }
 
 export interface LeaveGameMessage extends ClientMessage {

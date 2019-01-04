@@ -49,10 +49,12 @@ export class ClientMessageSender {
 		this.send(msg);
 	}
 
-	public joinGame(gameId: number) {
+	public joinGame(gameId: number, clientId: string, password: string) {
 		let msg: JoinGameMessage = {
 			action: ClientMessageType.JOIN_GAME,
-			gameId: gameId
+			gameId: gameId,
+			clientId: clientId,
+			password: password
 		};
 
 		this.send(msg);

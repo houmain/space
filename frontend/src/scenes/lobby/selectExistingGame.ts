@@ -2,7 +2,7 @@ import { GuiScene } from '../guiScene';
 import { Scenes } from '../scenes';
 import { TextResources, Texts } from '../../localization/textResources';
 import { SpaceGameConfig, CommunicationHandlerWebSocket } from '../../communication/communicationHandler';
-import { ServerMessageType, MessagePlayerJoined } from '../../communication/serverMessages';
+import { ServerMessageType, MessagePlayerJoined, MessageGameJoined, MessageGameList } from '../../communication/serverMessages';
 import { CommunicationHandler } from '../../communication/communicationInterfaces';
 import { DebugInfo } from '../../common/debug';
 import { ClientMessageSender } from '../../communication/clientMessageSender';
@@ -10,26 +10,14 @@ import { ObservableServerMessageHandler, ServerMessageQueue } from '../../commun
 import { GameTimeController } from '../../logic/controller/gameTimeController';
 import { CommunicationHandlerMock } from '../../communication/mock/communicationHandlerMock';
 import { GalaxyDataHandler } from '../../logic/data/galaxyDataHandler';
-import { GuiFactory } from '../../view/gui/guiFactory';
-import { Inputfield } from '../../view/gui/text/inputField';
-import { GuiConfig } from '../../view/gui/guiConfig';
+import { GameState } from './createNewGame';
+import { CookieHelper, GuidHelper } from '../../common/utils';
 
 export class SelectExistingGameScene extends GuiScene {
 
-	private _container: Phaser.GameObjects.Container;
-	private _server: Inputfield;
-
-	private _gameSessions: Phaser.GameObjects.BitmapText[];
-
-	private _communicationHandler: CommunicationHandler;
-	private _clientMessageSender: ClientMessageSender;
-	private _serverMessageObserver: ObservableServerMessageHandler;
-	private _serverMessageQueue: ServerMessageQueue;
-	private _timeController: GameTimeController;
-	private _galaxyDataHandler: GalaxyDataHandler;
-
-	private _factionId: number;
-	private _gameId: number;
+	private _container: Phaser.GameObjects.Container = null;
+	private _serverMessageQueue: ServerMessageQueue = new ServerMessageQueue();
+	private _gameState: GameState = null;
 
 	public constructor() {
 		super(Scenes.SELECT_EXISTING_GAME);
@@ -40,92 +28,81 @@ export class SelectExistingGameScene extends GuiScene {
 
 		this._container = this.add.container(0, 0);
 
-		let box = GuiFactory.buildBox(this, 0, 0, GuiConfig.SELECT_SESSION_BOX);
-		let serverLabel = GuiFactory.buildBitmapText(this, 40, 100, TextResources.getText(Texts.COMMON.SERVER), GuiConfig.GUI_HEADER);
-		this._server = new Inputfield(this, 240, 100, 'ws://127.0.0.1:9995/');
-		let connectButton = GuiFactory.buildTextButton(this, 810, 100, TextResources.getText(Texts.SELECT_GAME.CONNECT), GuiConfig.TEXT_BUTTON);
-		connectButton.onClickListener = () => {
-			this._server.blur();
-			this.connectToServer();
-		};
-		let gameSessionsLabel = GuiFactory.buildBitmapText(this, 40, 220, TextResources.getText(Texts.SELECT_GAME.SESSIONS), GuiConfig.GUI_HEADER);
+		this.connectToServer(this.sendRequestGameListMessage.bind(this));
+	}
 
-		this._container.add(box);
-		this._container.add(serverLabel);
-		this._container.add(this._server);
-		this._container.add(connectButton);
-		this._container.add(gameSessionsLabel);
-		this._container.setPosition(window.innerWidth / 2 - box.width / 2, window.innerHeight / 2 - box.height / 2);
+	private connectToServer(onConnected: Function) {
+		DebugInfo.info('Connecting to server ....');
 
-		this._serverMessageQueue = new ServerMessageQueue();
-		this._serverMessageObserver = new ObservableServerMessageHandler(this._serverMessageQueue, this._timeController);
-		let mockServer = true;
+		let timeController = new GameTimeController();
+		this._serverMessageQueue.subscribe<MessageGameList>(ServerMessageType.GAME_LIST, this.onGameListReceived.bind(this));
+		this._serverMessageQueue.subscribe<MessageGameJoined>(ServerMessageType.GAME_JOINED, this.onGameJoined.bind(this));
+		this._serverMessageQueue.subscribe<MessageGameJoined>(ServerMessageType.PLAYER_JOINED, this.onPlayerJoined.bind(this));
+
+		let communicationHandler: CommunicationHandler;
+		let serverMessageObserver = new ObservableServerMessageHandler(this._serverMessageQueue, timeController);
+		let mockServer = false;
 		if (mockServer) {
 			console.warn('Launching mock communication handler');
-			this._galaxyDataHandler = new GalaxyDataHandler();
-			this._communicationHandler = new CommunicationHandlerMock(this._serverMessageObserver, this._galaxyDataHandler);
+			let galaxyDataHandler = new GalaxyDataHandler();
+			communicationHandler = new CommunicationHandlerMock(serverMessageObserver, galaxyDataHandler);
 		} else {
-			this._communicationHandler = new CommunicationHandlerWebSocket(this._serverMessageObserver);
+			communicationHandler = new CommunicationHandlerWebSocket(serverMessageObserver);
+		}
+		communicationHandler.onConnected = () => {
+			DebugInfo.debug('Connected to server');
+			onConnected();
+		};
+		communicationHandler.onDisconnected = () => {
+			DebugInfo.error('Connection failed');
+		};
+		communicationHandler.connect({
+			url: 'ws://127.0.0.1:9995/'
+		});
+		let clientMessageSender = new ClientMessageSender(communicationHandler);
+		this._gameState = new GameState(clientMessageSender, this._serverMessageQueue, timeController);
+	}
+
+	private sendRequestGameListMessage() {
+		DebugInfo.info('Create RequestGameListMessage');
+
+		this._gameState.clientMessageSender.requestGameList();
+	}
+
+	private onGameListReceived(msg: MessageGameList) {
+		DebugInfo.info(JSON.stringify(msg));
+
+		if (msg.games.length > 0) {
+			this.joinGame(msg.games[0].gameId);
+		}
+	}
+
+	private joinGame(gameId: number) {
+
+		const CLIENT_ID_COOKIE = 'clientId';
+
+		let clientId = CookieHelper.getCookie(CLIENT_ID_COOKIE);
+		if (!clientId) {
+			clientId = GuidHelper.newGuid();
+			CookieHelper.setCookie(CLIENT_ID_COOKIE, clientId, 365);
 		}
 
-		//	this._serverMessageQueue.subscribe<MessageAvailableGameSessions>(ServerMessageType.AVAILABLE_SESSIONS, this.onAvailableSessionsReceived.bind(this));
-		this._serverMessageQueue.subscribe<MessagePlayerJoined>(ServerMessageType.PLAYER_JOINED, this.onPlayerJoined.bind(this));
-		this._timeController = new GameTimeController();
+		this._gameState.clientMessageSender.joinGame(gameId, clientId, '');
 	}
 
-	private connectToServer() {
-		let gameConfig: SpaceGameConfig = {
-			url: this._server.text,
-			//gameId: null
-		};
-		this._communicationHandler.connect(gameConfig);
-		this._communicationHandler.onConnected = () => {
-			DebugInfo.debug('Connected to server ' + this._server.text);
+	public onGameJoined(msg: MessageGameJoined) {
+		// go to next scene
+		DebugInfo.info(JSON.stringify(msg));
 
-			this._clientMessageSender = new ClientMessageSender(this._communicationHandler);
-			//	this._clientMessageSender.getAvailableGameSessions();
+		this._gameState.addGameInfo(msg.gameId, msg.playerId);
 
-			//this._clientMessageSender.joinGame(this._gameConfig.gameId);
-		};
-	}
-	/*
-		private onAvailableSessionsReceived(msg: MessageAvailableGameSessions) {
-			console.log('received' + msg.sessions.length);
-
-			msg.sessions.forEach((session, index) => {
-
-				// server
-				let sessionName = GuiFactory.buildBitmapText(this, 250, 220 + index * 100, `${session.name} Players ${session.numPlayers}/${session.maxPlayers}`, GuiConfig.GUI_HEADER);
-				this._container.add(sessionName);
-
-				let joinButton = GuiFactory.buildTextButton(this, 800, 210 + index * 100, TextResources.getText(Texts.SELECT_GAME.JOIN), GuiConfig.TEXT_BUTTON);
-				joinButton.onClickListener = () => {
-					this.joinSession(session.gameId);
-				};
-				this._container.add(joinButton);
-			});
-		}
-	*/
-	private joinSession(gameId: number) {
-		this._gameId = gameId;
-		this._clientMessageSender.joinGame(gameId);
+		this.scene.start(Scenes.CHOOSE_FACTION, {
+			gameState: this._gameState
+		});
 	}
 
-
-	private onPlayerJoined(msg: MessagePlayerJoined) {
-		//	this._factionId = msg.factionId;
-
-		this.goToPlayerSettingsScene();
-	}
-
-	private goToPlayerSettingsScene() {
-		/*this.scene.start(Scenes.PLAYER_SETTINGS, {
-			serverMessageQueue: this._serverMessageQueue,
-			timeController: this._timeController,
-			clientMessageSender: this._clientMessageSender,
-			gameId: this._gameId,
-			factionId: this._factionId
-		});*/
+	public onPlayerJoined(msg: MessagePlayerJoined) {
+		DebugInfo.info(JSON.stringify(msg));
 	}
 
 	public update() {

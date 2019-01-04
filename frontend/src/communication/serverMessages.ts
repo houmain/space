@@ -28,8 +28,15 @@ export interface ServerMessage {
     event: string;
 }
 
+interface GameInfo {
+    gameId: number;
+    name: string;
+    maxPlayers: number;
+    numPlayers: number;
+}
+
 export interface MessageGameList extends ServerMessage {
-    //todo
+    games: GameInfo[];
 }
 
 export interface MessageGameJoined extends ServerMessage {
