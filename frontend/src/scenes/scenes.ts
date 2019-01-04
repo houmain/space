@@ -14,9 +14,6 @@ export enum Scenes {
 	CHOOSE_AVATAR = 'chooseAvatar',
 	CHOOSE_NAME = 'chooseName',
 
-	PLAYER_SETTINGS = 'playerSettings', // remove
-	NEW_GAME_SETTINGS = 'newGameSettings', // todo remove
-
 	LOBBY = 'lobby',
 	BOT_MENU = 'botMenu',
 

@@ -6,7 +6,7 @@ import { GuiConfig } from '../../view/gui/guiConfig';
 import { TextResources, Texts } from '../../localization/textResources';
 import { Slider } from '../../view/gui/slider';
 import { RoundButton } from '../../view/gui/roundButton';
-import { ServerMessageQueue } from '../../communication/messageHandler';
+import { ServerMessageQueue, ObservableServerMessageHandler } from '../../communication/messageHandler';
 import { MessageGameJoined, ServerMessageType, MessagePlayerJoined } from '../../communication/serverMessages';
 import { CommunicationHandler } from '../../communication/communicationInterfaces';
 import { CommunicationHandlerMock } from '../../communication/mock/communicationHandlerMock';

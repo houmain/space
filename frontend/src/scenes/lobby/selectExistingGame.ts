@@ -119,13 +119,13 @@ export class SelectExistingGameScene extends GuiScene {
 	}
 
 	private goToPlayerSettingsScene() {
-		this.scene.start(Scenes.PLAYER_SETTINGS, {
+		/*this.scene.start(Scenes.PLAYER_SETTINGS, {
 			serverMessageQueue: this._serverMessageQueue,
 			timeController: this._timeController,
 			clientMessageSender: this._clientMessageSender,
 			gameId: this._gameId,
 			factionId: this._factionId
-		});
+		});*/
 	}
 
 	public update() {

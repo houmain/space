@@ -28,13 +28,6 @@ class TextResourcesCreateNewGame {
 	public readonly NUM_FACTIONS = 'createNewGame.numFactions';
 }
 
-class TextResourcesNewGameSettings {
-	public readonly TITLE = 'newGameSettings.title';
-	public readonly CREATE = 'newGameSettings.create';
-	public readonly NUM_PLANETS = 'newGameSettings.numPlanets';
-	public readonly NUM_FACTIONS = 'newGameSettings.numFactions';
-}
-
 class TextResourcesSelectGame {
 	public readonly TITLE = 'selectGame.title';
 	public readonly SESSIONS = 'selectGame.sessions';
@@ -90,7 +83,6 @@ export class Texts {
 	public static readonly MAIN_MENU: TextResourcesMenu = new TextResourcesMenu();
 	public static readonly CHOOSE_GAME_TYPE: TextResourcesChooseGameType = new TextResourcesChooseGameType();
 	public static readonly SELECT_GAME: TextResourcesSelectGame = new TextResourcesSelectGame();
-	public static readonly NEW_GAME_SETTINGS: TextResourcesNewGameSettings = new TextResourcesNewGameSettings(); // TODO remove
 	public static readonly CREATE_NEW_GAME: TextResourcesCreateNewGame = new TextResourcesCreateNewGame();
 	public static readonly PLAYER_SETTINGS: TextResourcesPlayerSettings = new TextResourcesPlayerSettings();
 	public static readonly LOBBY: TextResourcesLobby = new TextResourcesLobby();
@@ -119,14 +111,10 @@ export class TextResources {
 		TextResources._resources[Texts.CHOOSE_GAME_TYPE.CREATE_NEW_GAME] = 'create new';
 		TextResources._resources[Texts.CHOOSE_GAME_TYPE.JOIN_GAME] = 'join existing';
 
-		TextResources._resources[Texts.NEW_GAME_SETTINGS.TITLE] = 'New Game settings';
-		TextResources._resources[Texts.NEW_GAME_SETTINGS.CREATE] = 'Create';
-
 		TextResources._resources[Texts.CREATE_NEW_GAME.TITLE] = 'Create new game';
 		TextResources._resources[Texts.CREATE_NEW_GAME.CREATE] = 'Create';
-
-		TextResources._resources[Texts.NEW_GAME_SETTINGS.NUM_FACTIONS] = '# factions';
-		TextResources._resources[Texts.NEW_GAME_SETTINGS.NUM_PLANETS] = '# planets';
+		TextResources._resources[Texts.CREATE_NEW_GAME.NUM_FACTIONS] = '# factions';
+		TextResources._resources[Texts.CREATE_NEW_GAME.NUM_PLANETS] = '# planets';
 
 		TextResources._resources[Texts.SELECT_GAME.TITLE] = 'Select game';
 		TextResources._resources[Texts.SELECT_GAME.SESSIONS] = 'Sessions';
