@@ -1,5 +1,4 @@
 import { Scenes } from './scenes';
-import { SpaceGameConfig } from '../communication/communicationHandler';
 import { GuiScene } from './guiScene';
 import { Texts, TextResources } from '../localization/textResources';
 import { MainMenuButton } from '../view/gui/mainMenuButton';
@@ -62,18 +61,9 @@ export class MainMenuScene extends GuiScene {
 		let gameButton = new MainMenuButton(this, TextResources.getText(Texts.MAIN_MENU.PLAY).toUpperCase());
 		gameButton.setPosition(this.sys.canvas.width / 2, this.sys.canvas.height / 2);
 		gameButton.onClick = () => {
-			this.startGame();
-		};
-		this.add.existing(gameButton);
-
-		let multiplayerGameButton = new MainMenuButton(this, 'LOBBY TEST');
-		multiplayerGameButton.setPosition(this.sys.canvas.width / 2 - 350, this.sys.canvas.height / 2);
-		multiplayerGameButton.setScale(0.9);
-		multiplayerGameButton.setAlpha(0.9);
-		multiplayerGameButton.onClick = () => {
 			this.chooseGameType();
 		};
-		this.add.existing(multiplayerGameButton);
+		this.add.existing(gameButton);
 
 		let quitButton = new MainMenuButton(this, TextResources.getText(Texts.MAIN_MENU.QUIT).toUpperCase());
 		quitButton.setPosition(this.sys.canvas.width / 2 + 350, this.sys.canvas.height / 2);
@@ -93,17 +83,6 @@ export class MainMenuScene extends GuiScene {
 
 	private chooseGameType() {
 		this.scene.start(Scenes.CHOOSE_GAME_TYPE);
-	}
-
-	private startGame() {
-		let gameConfig: SpaceGameConfig = {
-			url: 'ws://127.0.0.1:9995/',
-			//gameId: 1
-		};
-
-		this.scene.start(Scenes.INIT_GAME, {
-			gameConfig: gameConfig
-		});
 	}
 
 	private startAiMenu() {

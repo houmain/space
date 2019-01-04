@@ -1,7 +1,6 @@
 import { GuiScene } from '../guiScene';
 import { Scenes } from '../scenes';
-import { TextResources, Texts } from '../../localization/textResources';
-import { SpaceGameConfig, CommunicationHandlerWebSocket } from '../../communication/communicationHandler';
+import { CommunicationHandlerWebSocket } from '../../communication/communicationHandler';
 import { ServerMessageType, MessagePlayerJoined, MessageGameJoined, MessageGameList } from '../../communication/serverMessages';
 import { CommunicationHandler } from '../../communication/communicationInterfaces';
 import { DebugInfo } from '../../common/debug';
@@ -10,8 +9,8 @@ import { ObservableServerMessageHandler, ServerMessageQueue } from '../../commun
 import { GameTimeController } from '../../logic/controller/gameTimeController';
 import { CommunicationHandlerMock } from '../../communication/mock/communicationHandlerMock';
 import { GalaxyDataHandler } from '../../logic/data/galaxyDataHandler';
-import { GameState } from './createNewGame';
-import { CookieHelper, GuidHelper } from '../../common/utils';
+import { GameState } from '../../logic/data/gameState';
+import { ClientIdHandler } from '../../common/clientIdHandler';
 
 export class SelectExistingGameScene extends GuiScene {
 
@@ -73,28 +72,28 @@ export class SelectExistingGameScene extends GuiScene {
 		DebugInfo.info(JSON.stringify(msg));
 
 		if (msg.games.length > 0) {
-			this.joinGame(msg.games[0].gameId);
+			this.joinGame({
+				gameId: msg.games[0].gameId,
+				clientId: ClientIdHandler.getClientId(),
+				password: ''
+			});
+		} else {
+			DebugInfo.info('No games found.');
 		}
 	}
 
-	private joinGame(gameId: number) {
-
-		const CLIENT_ID_COOKIE = 'clientId';
-
-		let clientId = CookieHelper.getCookie(CLIENT_ID_COOKIE);
-		if (!clientId) {
-			clientId = GuidHelper.newGuid();
-			CookieHelper.setCookie(CLIENT_ID_COOKIE, clientId, 365);
-		}
-
-		this._gameState.clientMessageSender.joinGame(gameId, clientId, '');
+	private joinGame(joinInfo: { gameId: number, clientId: string, password?: string }) {
+		this._gameState.clientMessageSender.joinGame(joinInfo.gameId, joinInfo.clientId, joinInfo.password);
 	}
 
 	public onGameJoined(msg: MessageGameJoined) {
+		// TODO info comes from server
+		msg.canSetupGame = false;
+
 		// go to next scene
 		DebugInfo.info(JSON.stringify(msg));
 
-		this._gameState.addGameInfo(msg.gameId, msg.playerId);
+		this._gameState.addGameInfo(msg);
 
 		this.scene.start(Scenes.CHOOSE_FACTION, {
 			gameState: this._gameState

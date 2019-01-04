@@ -2,7 +2,7 @@ import { GuiScene } from '../guiScene';
 import { Scenes } from '../scenes';
 import { SetupPlayerInfo } from '../../communication/clientMessageSender';
 import { DebugInfo } from '../../common/debug';
-import { GameState } from './createNewGame';
+import { GameState } from '../../logic/data/gameState';
 
 export class ChooseNameScene extends GuiScene {
 
@@ -21,8 +21,14 @@ export class ChooseNameScene extends GuiScene {
 	public create() {
 		super.create();
 
-		this._setupPlayerInfo.name = 'berni';
-		this._setupPlayerInfo.color = '0xff0000';
+		if (this._gameState.canSetupGame) {
+			this._setupPlayerInfo.name = 'berni Client 1';
+			this._setupPlayerInfo.color = '0xff0000';
+		} else {
+			this._setupPlayerInfo.name = 'berni Client 2';
+			this._setupPlayerInfo.color = '0x00ff00';
+		}
+
 		DebugInfo.info(`using Name ${this._setupPlayerInfo.name} color: ${this._setupPlayerInfo.color}`);
 
 		this.sendPlayerData();

@@ -14,66 +14,15 @@ import { CommunicationHandlerWebSocket, SpaceGameConfig } from '../../communicat
 import { GalaxyDataHandler } from '../../logic/data/galaxyDataHandler';
 import { GameTimeController } from '../../logic/controller/gameTimeController';
 import { DebugInfo } from '../../common/debug';
-import { CookieHelper, GuidHelper } from '../../common/utils';
 import { ClientMessageSender } from '../../communication/clientMessageSender';
-import { GameEventObserver } from '../../logic/event/eventInterfaces';
-import { Player } from '../../data/gameData';
-import { GameEventObserverImpl } from '../../logic/event/gameEventObserver';
+import { ClientIdHandler } from '../../common/clientIdHandler';
+import { GameState } from '../../logic/data/gameState';
 
 export class NewGameSettings {
 	clientId: string;
 	name: string;
 	password: string;
 	maxPlayers: number;
-}
-
-export class GameState {
-	private readonly _serverMessageQueue: ServerMessageQueue;
-	private readonly _timeController: GameTimeController;
-	private readonly _clientMessageSender: ClientMessageSender;
-	private _gameEventObserver: GameEventObserver = new GameEventObserverImpl();
-	private readonly _galaxyDataHandler: GalaxyDataHandler = new GalaxyDataHandler();
-	private readonly _player: Player = new Player();
-	private _gameId: number;
-
-	public constructor(clientMessageSender: ClientMessageSender, serverMessageQueue: ServerMessageQueue, timeController: GameTimeController) {
-		this._clientMessageSender = clientMessageSender;
-		this._serverMessageQueue = serverMessageQueue;
-		this._timeController = timeController;
-	}
-
-	public get serverMessageQueue(): ServerMessageQueue {
-		return this._serverMessageQueue;
-	}
-
-	public get timeController(): GameTimeController {
-		return this._timeController;
-	}
-
-	public get clientMessageSender(): ClientMessageSender {
-		return this._clientMessageSender;
-	}
-
-	public get player(): Player {
-		return this._player;
-	}
-
-	public get gameId(): number {
-		return this._gameId;
-	}
-
-	public addGameInfo(gameId: number, playerId: number) {
-		this._gameId = gameId;
-		this._player.playerId = playerId;
-	}
-
-	public get galaxyDataHandler(): GalaxyDataHandler {
-		return this._galaxyDataHandler;
-	}
-
-	public get gameEventObserver(): GameEventObserver {
-		return this._gameEventObserver;
-	}
 }
 
 export class CreateNewGameScene extends GuiScene {
@@ -162,16 +111,8 @@ export class CreateNewGameScene extends GuiScene {
 	private sendCreateGameMessage() {
 		DebugInfo.info('Create game message');
 
-		const CLIENT_ID_COOKIE = 'clientId';
-
-		let clientId = CookieHelper.getCookie(CLIENT_ID_COOKIE);
-		if (!clientId) {
-			clientId = GuidHelper.newGuid();
-			CookieHelper.setCookie(CLIENT_ID_COOKIE, clientId, 365);
-		}
-
 		this._gameState.clientMessageSender.createGame({
-			clientId: clientId,
+			clientId: ClientIdHandler.getClientId(),
 			name: 'Testsession ' + ++this._gameCounter,
 			password: '',
 			maxPlayers: 4
@@ -181,10 +122,13 @@ export class CreateNewGameScene extends GuiScene {
 	private _gameCounter: number = 0;
 
 	public onGameJoined(msg: MessageGameJoined) {
+		// TODO info comes from server
+		msg.canSetupGame = true;
+
 		// go to next scene
 		DebugInfo.info(JSON.stringify(msg));
 
-		this._gameState.addGameInfo(msg.gameId, msg.playerId);
+		this._gameState.addGameInfo(msg);
 
 		this.scene.start(Scenes.CHOOSE_FACTION, {
 			gameState: this._gameState

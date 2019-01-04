@@ -4,7 +4,7 @@ import { SpaceGame } from '../../Game';
 import { GameInfoHandler } from '../../view/gameInfo';
 import { Assets } from '../../view/assets';
 import { GuiScene } from '../guiScene';
-import { GameState } from '../lobby/createNewGame';
+import { GameState } from '../../logic/data/gameState';
 import { BuildGameInfo } from '../lobby/lobby';
 import { GalaxyObjectFactory } from '../../logic/data/galaxyObjectFactory';
 import { GalaxyFactory } from '../../logic/data/galaxyFactory';

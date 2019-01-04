@@ -42,6 +42,7 @@ export interface MessageGameList extends ServerMessage {
 export interface MessageGameJoined extends ServerMessage {
     gameId: number;
     playerId: number;
+    canSetupGame: boolean;
 }
 
 export interface MessagePlayerJoined extends ServerMessage {

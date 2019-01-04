@@ -2,7 +2,7 @@ import { GuiScene } from '../guiScene';
 import { Scenes } from '../scenes';
 import { SetupPlayerInfo } from '../../communication/clientMessageSender';
 import { DebugInfo } from '../../common/debug';
-import { GameState } from './createNewGame';
+import { GameState } from '../../logic/data/gameState';
 
 export class ChooseAvatarScene extends GuiScene {
 

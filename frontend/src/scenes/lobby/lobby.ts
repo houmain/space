@@ -4,7 +4,7 @@ import { ServerMessageQueue } from '../../communication/messageHandler';
 import { ServerMessageType, MessageGameJoined, MessagePlayerSetupUpdated, MessageChatMessage, MessageGameSetupUpdated, MessageGameStarted, MessagePlayerJoined, PlanetInfo, FactionInfo, SquadronInfo } from '../../communication/serverMessages';
 import { SetupPlayerInfo } from '../../communication/clientMessageSender';
 import { DebugInfo } from '../../common/debug';
-import { GameState } from './createNewGame';
+import { GameState } from '../../logic/data/gameState';
 import { ChatMessage } from '../../communication/clientMessages';
 
 export interface LobbyMessagesHandler {
@@ -50,9 +50,12 @@ export class LobbyScene extends GuiScene implements LobbyMessagesHandler {
 			this.sendChatMessage('test');
 		}, [], this);
 
-		this.time.delayedCall(300, () => {
-			this.sendGameSetup();
-		}, [], this);
+		if (this._gameState.canSetupGame) {
+			this.time.delayedCall(300, () => {
+
+				this.sendGameSetup();
+			}, [], this);
+		}
 
 		this.time.delayedCall(500, () => {
 			this.sendPlayerReady();
