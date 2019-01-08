@@ -12,7 +12,7 @@ export interface SetupPlayerInfo {
 	avatar?: string;
 	color?: string;
 	name?: string;
-	faction?: string;
+	factionId?: number;
 	ready: boolean;
 }
 
@@ -86,7 +86,7 @@ export class ClientMessageSender {
 		let msg: SetupPlayerMessage = {
 			action: ClientMessageType.SETUP_PLAYER,
 			name: playerInfo.name,
-			factionId: playerInfo.faction,
+			factionId: playerInfo.factionId,
 			avatar: playerInfo.avatar,
 			color: playerInfo.color,
 			ready: playerInfo.ready

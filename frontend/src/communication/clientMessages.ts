@@ -45,7 +45,7 @@ export interface SetupGameMessage extends ClientMessage {
 export interface SetupPlayerMessage extends ClientMessage {
 	name: string;
 	avatar: string;
-	factionId: string;
+	factionId: number;
 	color: string;
 	ready: boolean;
 }

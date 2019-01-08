@@ -23,8 +23,8 @@ export class ChooseFactionScene extends GuiScene {
 	public create() {
 		super.create();
 
-		this._setupPlayerInfo.faction = 'faction01';
-		DebugInfo.info(`using Faction ${this._setupPlayerInfo.faction}`);
+		this._setupPlayerInfo.factionId = 1;
+		DebugInfo.info(`using Faction ${this._setupPlayerInfo.factionId}`);
 
 		this.gotToChooseAvatarScene();
 	}

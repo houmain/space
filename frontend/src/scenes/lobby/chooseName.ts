@@ -24,9 +24,11 @@ export class ChooseNameScene extends GuiScene {
 		if (this._gameState.canSetupGame) {
 			this._setupPlayerInfo.name = 'berni Client 1';
 			this._setupPlayerInfo.color = '0xff0000';
+			this._setupPlayerInfo.factionId = 1;
 		} else {
 			this._setupPlayerInfo.name = 'berni Client 2';
 			this._setupPlayerInfo.color = '0x00ff00';
+			this._setupPlayerInfo.factionId = 2;
 		}
 
 		DebugInfo.info(`using Name ${this._setupPlayerInfo.name} color: ${this._setupPlayerInfo.color}`);
