@@ -98,7 +98,9 @@ void Game::update() {
 
 void Game::start_game() {
   assert(!m_logic);
-  if (!std::all_of(begin(m_players), end(m_players),
+
+  if (m_players.empty() ||
+      !std::all_of(begin(m_players), end(m_players),
         [](const auto& player) { return player->ready(); }))
     return;
 
