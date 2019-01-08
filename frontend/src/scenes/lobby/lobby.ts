@@ -57,7 +57,7 @@ export class LobbyScene extends GuiScene implements LobbyMessagesHandler {
 			}, [], this);
 		}
 
-		this.time.delayedCall(500, () => {
+		this.time.delayedCall(10000, () => {
 			this.sendPlayerReady();
 		}, [], this);
 	}
