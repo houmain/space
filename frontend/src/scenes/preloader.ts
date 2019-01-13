@@ -105,6 +105,11 @@ export class Preloader extends Phaser.Scene {
         this.load.image('menuIcon', './images/menu_icon.png');
         this.load.image('settingsentry', './images/settingsentry.png');
         this.load.image('setttingsokbuttons', './images/setttingsokbuttons.png');
+
+        this.load.image('sliderBox', './images/slider_box.png');
+        this.load.image('sliderKnob', './images/slider_knob.png');
+        this.load.image('sliderBarEmpty', './images/slider_bar_empty.png');
+        this.load.image('sliderBarFull', './images/slider_bar_full.png');
     }
 
     public create() {

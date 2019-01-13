@@ -10,13 +10,18 @@ import { ServerMessageQueue, ObservableServerMessageHandler } from '../../commun
 import { MessageGameJoined, ServerMessageType, MessagePlayerJoined } from '../../communication/serverMessages';
 import { CommunicationHandler } from '../../communication/communicationInterfaces';
 import { CommunicationHandlerMock } from '../../communication/mock/communicationHandlerMock';
-import { CommunicationHandlerWebSocket, SpaceGameConfig } from '../../communication/communicationHandler';
+import { CommunicationHandlerWebSocket } from '../../communication/communicationHandler';
 import { GalaxyDataHandler } from '../../logic/data/galaxyDataHandler';
 import { GameTimeController } from '../../logic/controller/gameTimeController';
 import { DebugInfo } from '../../common/debug';
 import { ClientMessageSender } from '../../communication/clientMessageSender';
 import { ClientIdHandler } from '../../common/clientIdHandler';
 import { GameState } from '../../logic/data/gameState';
+
+export interface GameConfig {
+	minPlayers: number;
+	maxPlayers: number;
+}
 
 export class NewGameSettings {
 	clientId: string;
@@ -39,6 +44,12 @@ export class CreateNewGameScene extends GuiScene {
 	public create() {
 		super.create();
 
+		// TODO received from server on connect
+		let gameConfig: GameConfig = {
+			minPlayers: 1,
+			maxPlayers: 8
+		};
+
 		this._container = this.add.container(0, 0);
 
 		let box = new NinePatch(this, 0, 0, 1200, 500, 'settingsBox', null, {
@@ -57,7 +68,10 @@ export class CreateNewGameScene extends GuiScene {
 		header.setOrigin(0, 0);
 		this._container.add(header);
 
-		let maxPlayers = new Slider(this, 30, 100, 'Max Players');
+		let maxPlayers = new Slider(this, 30, 100, 'Max Players', {
+			minValue: gameConfig.minPlayers,
+			maxValue: gameConfig.maxPlayers
+		});
 		this._container.add(maxPlayers);
 
 		let createButton = new RoundButton(this);

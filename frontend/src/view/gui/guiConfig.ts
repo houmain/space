@@ -35,6 +35,21 @@ export class Labels {
 		fontName: 'font_8',
 		fontSize: 50,
 	};
+
+	public SLIDER_VALUE: BitmapTextConfig = {
+		fontName: 'font_8',
+		fontSize: 50,
+	};
+
+	public SLIDER_MINMAX_VALUE: BitmapTextConfig = {
+		fontName: 'font_8',
+		fontSize: 50,
+	};
+
+	public SLIDER_LABEL: BitmapTextConfig = {
+		fontName: 'font_8',
+		fontSize: 40,
+	};
 }
 
 class Sliders {
