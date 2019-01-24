@@ -90,6 +90,76 @@ export class MainMenuScene extends GuiScene {
 	}
 
 	private quitGame() {
-		self.close();
+		this.openDialog();
+		/*
+		var inputField = document.createElement("input");
+		inputField.setAttribute('type', 'text');
+		inputField.setAttribute('name', "username");
+		inputField.setAttribute('value', 'default');
+
+		var button = document.createElement("input");
+		button.type = "button";
+		button.value = "im a button";
+		button.className = 'test';
+		button.onclick = () => {
+			console.log(inputField.value);
+			inputField.parentNode.removeChild(inputField);
+			button.parentNode.removeChild(button);
+
+			el.style.visibility = 'hidden';
+		};
+
+		let el = document.getElementById('overlay');
+		el.style.visibility = (el.style.visibility == 'visible') ? 'hidden' : 'visible';
+		window.scrollTo(0, 0);
+
+		el.appendChild(inputField);
+		el.appendChild(button);
+*/
+		//self.close();
 	}
+
+	private openDialog() {
+
+		let overlay = document.getElementById('overlay');
+
+		let messageBox = document.createElement('div');
+		messageBox.className = 'messageBox';
+
+		let messageBoxTitle = document.createElement('div');
+		messageBoxTitle.className = 'messageBoxTitle';
+		messageBoxTitle.innerHTML = 'Test';
+
+		let inputField = document.createElement('input');
+		inputField.className = 'messageBoxInput';
+		inputField.setAttribute('type', 'text');
+		inputField.type = 'text';
+		inputField.value = 'My session';
+
+		let okButton = document.createElement('input');
+		okButton.type = 'button';
+		okButton.value = 'OK';
+		okButton.className = 'messageBoxButton';
+		okButton.onclick = () => {
+			console.log(inputField.value);
+			messageBoxTitle.parentNode.removeChild(messageBoxTitle);
+			inputField.parentNode.removeChild(inputField);
+			okButton.parentNode.removeChild(okButton);
+
+			messageBox.parentNode.removeChild(messageBox);
+
+			overlay.style.visibility = 'hidden';
+		};
+
+		messageBox.appendChild(messageBoxTitle);
+		messageBox.appendChild(inputField);
+		messageBox.appendChild(okButton);
+
+		overlay.appendChild(messageBox);
+
+		overlay.style.visibility = 'visible';
+		window.scrollTo(0, 0);
+	}
+
+
 }

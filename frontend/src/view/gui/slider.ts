@@ -8,6 +8,7 @@ import { BitmapTextConfig } from './guiConfigInterfaces';
 export interface SliderConfig {
 	minValue: number;
 	maxValue: number;
+	defaultValue: number;
 }
 
 export class Slider extends Phaser.GameObjects.Container {
@@ -19,59 +20,76 @@ export class Slider extends Phaser.GameObjects.Container {
 
 	private _stepSize: number;
 	private _numSteps: number;
-	private _minKnobX = 0;
-	private _maxKnobX = 0;
-	private _knobMargin = 10;
+
+	private _barMarginLeft: number = 20;
+	private _barMarginTop: number = 20;
+
+	private _bar: Phaser.GameObjects.Sprite;
+	private _barFull: Phaser.GameObjects.Sprite;
+	private _box: Phaser.GameObjects.Sprite;
 
 	public constructor(scene: Phaser.Scene, x: number, y: number, label: string, sliderConfig: SliderConfig) {
 		super(scene, x, y);
 
 		this._sliderConfig = sliderConfig;
 
-		let box = scene.add.sprite(0, 0, 'sliderBox');
-		box.setOrigin(0, 0);
-		this.add(box);
+		this._box = scene.add.sprite(0, 0, 'sliderBox');
+		this._box.setOrigin(0, 0);
+		this.add(this._box);
 
-		let bar = scene.add.sprite(0, 40, 'sliderBarEmpty');
-		bar.setOrigin(0, 0);
+		this._bar = scene.add.sprite(this._barMarginLeft, this._barMarginTop, 'sliderBarEmpty');
+		this._bar.setOrigin(0, 0.5);
 
-		this._minKnobX = this._knobMargin;
-		this._maxKnobX = bar.width - this._knobMargin;
+		this._barFull = scene.add.sprite(this._barMarginLeft, this._barMarginTop, 'sliderBarFull');
+		this._barFull.setOrigin(0, 0.5);
+
 		this._numSteps = sliderConfig.maxValue - sliderConfig.minValue;
-		this._stepSize = bar.width / this._numSteps;
+		this._stepSize = this._bar.width / this._numSteps;
 
-		box.setInteractive();
-		box.on('pointerup', (pointer: Phaser.Input.Pointer) => {
-
-			let step = this.getKnobStep(this.getKnobXPosition(pointer));
-			this.positionKnob(step);
-
-			this._value.setText(step + '');
-		});
-
-		box.on('pointermove', (pointer: Phaser.Input.Pointer) => {
-			if (pointer.isDown) {
-				let x = this.getKnobXPosition(pointer);
-				this._knob.setPosition(x, 20);
-
-				let step = this.getKnobStep(x);
-				this._value.setText(this._sliderConfig.minValue + step + '');
-			}
-		});
-		this.add(bar);
+		this.add(this._bar);
+		this.add(this._barFull);
 
 		this._knob = scene.add.sprite(0, 20, 'sliderKnob');
+		this._knob.setOrigin(0, 0.5);
 		this.add(this._knob);
 
-		this.addText(scene, 25, 20, label, GuiConfig.LABELS.SLIDER_LABEL);
+		this.addText(scene, 25, 30, label, GuiConfig.LABELS.SLIDER_LABEL);
 
 		let defaultValue = sliderConfig.minValue;
+
 		this._value = this.addText(scene, 325, 20, defaultValue.toString(), GuiConfig.LABELS.SLIDER_VALUE);
-		this.positionKnob(defaultValue);
+
+		let defaultPercentage = sliderConfig.defaultValue === sliderConfig.minValue ? 0 : (sliderConfig.defaultValue - sliderConfig.minValue) / (sliderConfig.maxValue - sliderConfig.minValue);
+		this.updateSlider(defaultPercentage);
+	}
+
+	public get box() {
+		return this._box;
 	}
 
 	public get value(): number {
 		return Number(this._value.text);
+	}
+
+	public onPointerMove(pointer: Phaser.Input.Pointer) {
+		let percentage = this.getPercentage(pointer);
+
+		this.updateSlider(percentage);
+	}
+
+	private getPercentage(pointer: Phaser.Input.Pointer) {
+		let x = pointer.x - this.x - this.parentContainer.x - this._bar.x;
+
+		if (x < 0) {
+			x = 0;
+		}
+
+		if (x > this._bar.width) {
+			x = this._bar.width;
+		}
+
+		let percentage = x / this._bar.width;
+		return percentage;
 	}
 
 	private addText(scene: Phaser.Scene, x: number, y: number, label: string, config: BitmapTextConfig): BitmapText {
@@ -81,26 +99,12 @@ export class Slider extends Phaser.GameObjects.Container {
 		return text;
 	}
 
-	private getKnobXPosition(pointer: Phaser.Input.Pointer): number {
-		let x = pointer.x - this.parentContainer.x;
+	private updateSlider(percentage: number) {
+		this._knob.setPosition(this._barMarginLeft + percentage * this._bar.width, this._barMarginTop);
 
-		if (x < this._minKnobX) {
-			x = this._minKnobX;
-		}
+		let value = this._sliderConfig.minValue + Math.round(this._numSteps * percentage);
+		this._value.setText(value.toString());
 
-		if (x > this._maxKnobX) {
-			x = this._maxKnobX;
-		}
-
-		return x;
-	}
-
-	private positionKnob(step: number) {
-		this._knob.setPosition(this._knobMargin + (step - this._sliderConfig.minValue) * this._stepSize, 20);
-	}
-
-	private getKnobStep(knobPositionX: number): number {
-		let step = this._sliderConfig.minValue + knobPositionX / this._stepSize;
-		return Math.round(step);
+		this._barFull.setScale(percentage * this._bar.width, 1);
 	}
 }

@@ -37,6 +37,8 @@ export class CreateNewGameScene extends GuiScene {
 	private _gameState: GameState = null;
 	private _serverMessageQueue: ServerMessageQueue = new ServerMessageQueue();
 
+	private _selectedSlider: Slider = null;
+
 	public constructor() {
 		super(Scenes.CREATE_NEW_GAME);
 	}
@@ -68,9 +70,10 @@ export class CreateNewGameScene extends GuiScene {
 		header.setOrigin(0, 0);
 		this._container.add(header);
 
-		let maxPlayers = new Slider(this, 30, 100, 'Max Players', {
+		let maxPlayers = new Slider(this, 130, 130, 'Max Players', {
 			minValue: gameConfig.minPlayers,
-			maxValue: gameConfig.maxPlayers
+			maxValue: gameConfig.maxPlayers,
+			defaultValue: 4
 		});
 		this._container.add(maxPlayers);
 
@@ -83,6 +86,27 @@ export class CreateNewGameScene extends GuiScene {
 		this._container.add(createButton);
 
 		this._container.setPosition(window.innerWidth / 2 - box.width / 2, window.innerHeight / 2 - box.height / 2);
+
+		box.setInteractive();
+		box.on('pointermove', (pointer: Phaser.Input.Pointer) => {
+			if (pointer.isDown && this._selectedSlider) {
+				this._selectedSlider.onPointerMove(pointer);
+			}
+		});
+
+		box.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+			this._selectedSlider = null;
+		});
+
+		maxPlayers.box.setInteractive();
+		maxPlayers.box.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+			this._selectedSlider = maxPlayers;
+		});
+		maxPlayers.box.on('pointermove', (pointer: Phaser.Input.Pointer) => {
+			if (pointer.isDown) {
+				maxPlayers.onPointerMove(pointer);
+			}
+		});
 
 		new GuiHelper().addMainMenuButton(this);
 	}

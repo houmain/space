@@ -1,24 +1,78 @@
 ﻿<html>
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <title>Bug? Galore! Space Game</title>
-    <link rel="stylesheet" href="./app.css" type="text/css" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	<title>Bug? Galore! Space Game</title>
+	<link rel="stylesheet" href="./app.css" type="text/css" />
 </head>
 
 <body class="body" style="background-color:black;">
-    <style>
-    </style>
-    <div id="topDiv" style="visibility:hidden;">
-        AI Scripts
-    </div>
+	<style>
+	</style>
+	<div id="topDiv" style="visibility:hidden;">
+		AI Scripts
+	</div>
 
-    <div id="container" style="position: relative; width: 100%; height: 100%;z-index:990;">
-        <div id="canvas" />
-    </div>
+	<div id="container" style="position: relative; width: 100%; height: 100%;z-index:990;">
+		<div id="canvas" />
+		<div id="overlay" style="visibility:visible">
+			<div class="messageBox" style="visibility: hidden;">
+				<div class="messageBoxTitle">Sessionname</div>
+				<input type="text" class="messageBoxInput" value="hallo" />
+				<input type="button" class="messageBoxButton" value="hallo">
+			</div>
+		</div>
+	</div>
 
-    <!-- Script swill be injected here -->
+	</div>
+
+	<!-- Script swill be injected here -->
 </body>
+
+<style>
+	#overlay {
+		visibility: hidden;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		margin-top: -50px;
+		margin-left: -50px;
+		width: 100px;
+		height: 100px;
+		z-index: 1000;
+	}
+
+	.messageBox {
+		background-image: url(assets/images/menu_background.png);
+		width: 400px;
+		height: 200px;
+		padding: 20px;
+		border: 2px solid white;
+	}
+
+	.messageBoxTitle {
+		background-color: unset;
+		font-size: 46px;
+		color: white;
+		font-family: Verdana, Geneva, Tahoma, sans-serif;
+	}
+
+	.messageBoxInput {
+		background-image: url(assets/images/textfield_focus.png);
+		width: 391;
+		height: 116px;
+		padding-left: 40px;
+		font-size: 20px;
+	}
+
+	.messageBoxButton {
+		background: url(assets/images/button.png);
+		width: 237px;
+		height: 135px;
+		cursor: pointer;
+		border: none;
+	}
+</style>
 
 </html>

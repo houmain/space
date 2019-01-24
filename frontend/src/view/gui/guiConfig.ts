@@ -48,7 +48,7 @@ export class Labels {
 
 	public SLIDER_LABEL: BitmapTextConfig = {
 		fontName: 'font_8',
-		fontSize: 40,
+		fontSize: 30,
 	};
 }
 
